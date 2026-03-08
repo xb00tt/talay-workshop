@@ -1,0 +1,324 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ─── Enums ───────────────────────────────────────────────────────────────────
+
+enum Role {
+  MANAGER
+  ASSISTANT
+}
+
+enum ServiceStatus {
+  SCHEDULED
+  INTAKE
+  IN_PROGRESS
+  QUALITY_CHECK
+  READY
+  COMPLETED
+  CANCELLED
+}
+
+enum SectionType {
+  CHECKLIST
+  DRIVER_FEEDBACK
+  MID_SERVICE
+  EQUIPMENT_CHECK
+  CUSTOM
+}
+
+enum WorkCardStatus {
+  PENDING
+  ASSIGNED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum EquipmentStatus {
+  PRESENT
+  MISSING
+  RESTOCKED
+}
+
+enum CheckType {
+  INTAKE
+  EXIT
+}
+
+// ─── Models ──────────────────────────────────────────────────────────────────
+
+model User {
+  id              Int      @id @default(autoincrement())
+  username        String   @unique
+  name            String
+  passwordHash    String
+  role            Role     @default(ASSISTANT)
+  /// JSON string array of permission action strings
+  permissions     String   @default("[]")
+  pageSize        Int      @default(10)
+  preferredLocale String   @default("bg")
+  darkMode        Boolean  @default(true)
+  recoveryCode    String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  notes         Note[]
+  workCardNotes WorkCardNote[]
+  auditLogs     AuditLog[]
+}
+
+/// Singleton — always id = 1
+model Settings {
+  id              Int     @id @default(1)
+  companyName     String  @default("")
+  companyAddress  String  @default("")
+  logoPath        String?
+  frotcomUsername String  @default("B5jX21vu0w3SV6S")
+  frotcomPassword String  @default("0NnHoC6cF119xPSJLnbNcTBgSXq2")
+  frotcomToken    String?
+}
+
+model Bay {
+  id            Int            @id @default(autoincrement())
+  name          String
+  isActive      Boolean        @default(true)
+  serviceOrders ServiceOrder[]
+}
+
+model Truck {
+  id               Int      @id @default(autoincrement())
+  plateNumber      String   @unique
+  make             String
+  model            String
+  year             Int?
+  frotcomVehicleId String?  @unique
+  currentMileage   Float?
+  /// From Frotcom; selects odometerCanbus vs odometerGps on sync
+  useCanbusMileage Boolean  @default(true)
+  mileageTriggerKm Float    @default(30000)
+  isAdr            Boolean  @default(false)
+  isActive         Boolean  @default(true)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  serviceOrders           ServiceOrder[]
+  truckEquipmentSnapshots TruckEquipmentSnapshot[]
+}
+
+model Mechanic {
+  id       Int        @id @default(autoincrement())
+  name     String
+  isActive Boolean    @default(true)
+  workCards WorkCard[]
+}
+
+/// Populated via Frotcom truck import only
+model Driver {
+  id              Int            @id @default(autoincrement())
+  name            String
+  frotcomDriverId String?        @unique
+  isActive        Boolean        @default(true)
+  serviceOrders   ServiceOrder[]
+}
+
+model ServiceOrder {
+  id                  Int           @id @default(autoincrement())
+  truckId             Int
+  truck               Truck         @relation(fields: [truckId], references: [id])
+  truckPlateSnapshot  String
+  status              ServiceStatus @default(SCHEDULED)
+  bayId               Int?
+  bay                 Bay?          @relation(fields: [bayId], references: [id])
+  bayNameSnapshot     String?
+  scheduledDate       DateTime      // Date only — store as start-of-day UTC
+  startDate           DateTime?
+  endDate             DateTime?
+  mileageAtService    Float?
+  driverId            Int?
+  driver              Driver?       @relation(fields: [driverId], references: [id])
+  driverNameSnapshot  String?
+  driverFeedbackNotes String?
+  cancellationReason  String?
+  createdAt           DateTime      @default(now())
+  updatedAt           DateTime      @updatedAt
+
+  sections                ServiceSection[]
+  equipmentCheckItems     EquipmentCheckItem[]
+  truckEquipmentSnapshots TruckEquipmentSnapshot[]
+  driverFeedbackItems     DriverFeedbackItem[]
+  photos                  Photo[]
+  notes                   Note[]
+}
+
+model ServiceSection {
+  id             Int          @id @default(autoincrement())
+  serviceOrderId Int
+  serviceOrder   ServiceOrder @relation(fields: [serviceOrderId], references: [id])
+  type           SectionType
+  title          String
+  order          Int
+
+  /// EQUIPMENT_CHECK only — intake phase skip
+  intakeSkippedAt DateTime?
+  intakeSkipNote  String?
+  /// EQUIPMENT_CHECK only — exit phase skip
+  exitSkippedAt   DateTime?
+  exitSkipNote    String?
+
+  checklistItems ServiceChecklistItem[]
+  workCards      WorkCard[]
+}
+
+model ServiceChecklistItem {
+  id               Int            @id @default(autoincrement())
+  serviceSectionId Int
+  serviceSection   ServiceSection @relation(fields: [serviceSectionId], references: [id])
+  description      String
+  isCompleted      Boolean        @default(false)
+  completedAt      DateTime?
+  /// Name of logged-in user who marked complete
+  completedByName  String?
+}
+
+model WorkCard {
+  id                  Int            @id @default(autoincrement())
+  serviceSectionId    Int
+  serviceSection      ServiceSection @relation(fields: [serviceSectionId], references: [id])
+  description         String
+  mechanicId          Int?
+  mechanic            Mechanic?      @relation(fields: [mechanicId], references: [id])
+  mechanicName        String?
+  status              WorkCardStatus @default(PENDING)
+  specialInstructions String?
+  cancelledAt         DateTime?
+  reopenedAt          DateTime?
+
+  notes  WorkCardNote[]
+  parts  Part[]
+  photos Photo[]
+}
+
+model WorkCardNote {
+  id               Int      @id @default(autoincrement())
+  workCardId       Int
+  workCard         WorkCard @relation(fields: [workCardId], references: [id])
+  content          String
+  userId           Int
+  user             User     @relation(fields: [userId], references: [id])
+  userNameSnapshot String
+  createdAt        DateTime @default(now())
+}
+
+model ChecklistTemplate {
+  id          Int     @id @default(autoincrement())
+  description String
+  order       Int
+  isActive    Boolean @default(true)
+}
+
+model EquipmentItem {
+  id          Int     @id @default(autoincrement())
+  name        String
+  description String  @default("")
+  order       Int
+  isActive    Boolean @default(true)
+}
+
+model AdrEquipmentItem {
+  id          Int     @id @default(autoincrement())
+  name        String
+  description String  @default("")
+  order       Int
+  isActive    Boolean @default(true)
+}
+
+model EquipmentCheckItem {
+  id             Int             @id @default(autoincrement())
+  serviceOrderId Int
+  serviceOrder   ServiceOrder    @relation(fields: [serviceOrderId], references: [id])
+  itemName       String
+  status         EquipmentStatus @default(PRESENT)
+  explanation    String?
+  checkType      CheckType
+}
+
+model TruckEquipmentSnapshot {
+  id             Int          @id @default(autoincrement())
+  truckId        Int
+  truck          Truck        @relation(fields: [truckId], references: [id])
+  serviceOrderId Int
+  serviceOrder   ServiceOrder @relation(fields: [serviceOrderId], references: [id])
+  createdAt      DateTime     @default(now())
+
+  items TruckEquipmentSnapshotItem[]
+}
+
+model TruckEquipmentSnapshotItem {
+  id         Int                    @id @default(autoincrement())
+  snapshotId Int
+  snapshot   TruckEquipmentSnapshot @relation(fields: [snapshotId], references: [id])
+  itemName   String
+  status     EquipmentStatus
+}
+
+model DriverFeedbackItem {
+  id             Int          @id @default(autoincrement())
+  serviceOrderId Int
+  serviceOrder   ServiceOrder @relation(fields: [serviceOrderId], references: [id])
+  description    String
+  order          Int
+}
+
+model Part {
+  id         Int      @id @default(autoincrement())
+  workCardId Int
+  workCard   WorkCard @relation(fields: [workCardId], references: [id])
+  name       String
+  partNumber String?
+  quantity   Float
+  unitCost   Float?
+}
+
+model Photo {
+  id             Int           @id @default(autoincrement())
+  serviceOrderId Int?
+  serviceOrder   ServiceOrder? @relation(fields: [serviceOrderId], references: [id])
+  workCardId     Int?
+  workCard       WorkCard?     @relation(fields: [workCardId], references: [id])
+  caption        String?
+  /// Path relative to UPLOADS_DIR env var
+  filePath       String
+  createdAt      DateTime      @default(now())
+}
+
+model Note {
+  id               Int          @id @default(autoincrement())
+  serviceOrderId   Int
+  serviceOrder     ServiceOrder @relation(fields: [serviceOrderId], references: [id])
+  content          String
+  userId           Int
+  user             User         @relation(fields: [userId], references: [id])
+  userNameSnapshot String
+  createdAt        DateTime     @default(now())
+}
+
+model AuditLog {
+  id               Int      @id @default(autoincrement())
+  userId           Int?
+  user             User?    @relation(fields: [userId], references: [id])
+  userNameSnapshot String
+  action           String
+  entityType       String
+  entityId         String
+  /// JSON string of previous value
+  oldValue         String?
+  /// JSON string of new value
+  newValue         String?
+  createdAt        DateTime @default(now())
+}

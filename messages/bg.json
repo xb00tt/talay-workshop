@@ -1,0 +1,279 @@
+{
+  "common": {
+    "save": "Запази",
+    "cancel": "Откажи",
+    "delete": "Изтрий",
+    "edit": "Редактирай",
+    "add": "Добави",
+    "back": "Назад",
+    "confirm": "Потвърди",
+    "search": "Търси",
+    "loading": "Зареждане...",
+    "error": "Грешка",
+    "success": "Успешно",
+    "noResults": "Няма резултати",
+    "actions": "Действия",
+    "status": "Статус",
+    "date": "Дата",
+    "name": "Име",
+    "note": "Забележка",
+    "yes": "Да",
+    "no": "Не",
+    "active": "Активен",
+    "inactive": "Неактивен",
+    "deactivate": "Деактивирай",
+    "activate": "Активирай",
+    "print": "Печат",
+    "export": "Експорт",
+    "import": "Импорт",
+    "close": "Затвори",
+    "page": "Страница",
+    "of": "от",
+    "rowsPerPage": "Редове на страница",
+    "total": "Общо",
+    "required": "Задължително",
+    "optional": "По избор"
+  },
+  "nav": {
+    "dashboard": "Табло",
+    "services": "Услуги",
+    "trucks": "Камиони",
+    "mechanics": "Механици",
+    "bays": "Сервизни места",
+    "users": "Потребители",
+    "settings": "Настройки",
+    "reports": "Отчети",
+    "calendar": "Календар",
+    "checklistTemplate": "Шаблон чеклист",
+    "equipment": "Оборудване",
+    "drivers": "Шофьори",
+    "auditLog": "Журнал"
+  },
+  "auth": {
+    "login": "Вход",
+    "logout": "Изход",
+    "username": "Потребителско име",
+    "password": "Парола",
+    "loginButton": "Влез",
+    "invalidCredentials": "Невалидни данни за вход",
+    "recoveryCode": "Код за възстановяване",
+    "recoverPassword": "Възстановяване на парола"
+  },
+  "setup": {
+    "title": "Първоначална настройка",
+    "welcome": "Добре дошли в Talay Workshop",
+    "step": "Стъпка {current} от {total}",
+    "companyInfo": "Информация за компанията",
+    "companyName": "Име на компанията",
+    "companyAddress": "Адрес",
+    "firstManager": "Първи мениджър",
+    "bays": "Сервизни места",
+    "mechanics": "Механици",
+    "equipmentList": "Списък оборудване",
+    "adrEquipment": "ADR оборудване",
+    "checklistTemplate": "Шаблон чеклист",
+    "finish": "Завърши настройката",
+    "addBay": "Добави сервизно място",
+    "addMechanic": "Добави механик",
+    "addItem": "Добави позиция"
+  },
+  "dashboard": {
+    "title": "Табло",
+    "bays": "Сервизни места",
+    "upcomingServices": "Предстоящи услуги",
+    "noBaysOccupied": "Няма камиони в сервиза",
+    "noUpcoming": "Няма предстоящи услуги",
+    "daysInService": "{days} дни",
+    "mileageAlert": "Известие за пробег",
+    "syncMileage": "Синхронизирай пробег"
+  },
+  "service": {
+    "title": "Сервизна поръчка",
+    "new": "Нова сервизна поръчка",
+    "list": "Сервизни поръчки",
+    "status": {
+      "SCHEDULED": "Планирана",
+      "INTAKE": "Приемане",
+      "IN_PROGRESS": "В процес",
+      "QUALITY_CHECK": "Контрол на качеството",
+      "READY": "Готова",
+      "COMPLETED": "Завършена",
+      "CANCELLED": "Отменена"
+    },
+    "scheduledDate": "Планирана дата",
+    "startDate": "Начална дата",
+    "endDate": "Крайна дата",
+    "bay": "Сервизно място",
+    "driver": "Шофьор",
+    "mileageAtService": "Пробег при приемане",
+    "cancellationReason": "Причина за отмяна",
+    "cancel": "Отмени поръчката",
+    "reschedule": "Пренасрочи",
+    "moveToIntake": "Приемане",
+    "moveToInProgress": "Започни работа",
+    "moveToQualityCheck": "Контрол на качеството",
+    "moveToReady": "Готова за предаване",
+    "moveToCompleted": "Завърши",
+    "confirmComplete": "Потвърди завършването",
+    "driverFeedback": "Коментари на шофьора"
+  },
+  "section": {
+    "type": {
+      "CHECKLIST": "Чеклист",
+      "DRIVER_FEEDBACK": "Коментари на шофьора",
+      "MID_SERVICE": "По време на сервиза",
+      "EQUIPMENT_CHECK": "Проверка на оборудване",
+      "CUSTOM": "Персонализирана"
+    },
+    "addSection": "Добави раздел",
+    "deleteSection": "Изтрий раздел",
+    "addWorkCard": "Добави работна карта"
+  },
+  "workCard": {
+    "title": "Работна карта",
+    "description": "Описание",
+    "mechanic": "Механик",
+    "specialInstructions": "Специални инструкции",
+    "status": {
+      "PENDING": "Изчакващ",
+      "ASSIGNED": "Назначен",
+      "IN_PROGRESS": "В процес",
+      "COMPLETED": "Завършен",
+      "CANCELLED": "Отменен"
+    },
+    "cancel": "Отмени работната карта",
+    "reopen": "Отвори отново",
+    "complete": "Завърши",
+    "addNote": "Добави забележка",
+    "parts": "Части",
+    "addPart": "Добави част",
+    "print": "Печат на работна карта",
+    "lastService": "Последен сервиз"
+  },
+  "equipment": {
+    "title": "Оборудване",
+    "globalList": "Глобален списък",
+    "adrList": "ADR оборудване",
+    "status": {
+      "PRESENT": "Налично",
+      "MISSING": "Липсва",
+      "RESTOCKED": "Попълнено"
+    },
+    "intakeCheck": "Проверка при приемане",
+    "exitCheck": "Проверка при предаване",
+    "skip": "Пропусни проверката",
+    "skipNote": "Причина за пропускане",
+    "previouslyMissing": "Липсвало при последния сервиз"
+  },
+  "truck": {
+    "title": "Камион",
+    "list": "Камиони",
+    "new": "Нов камион",
+    "plateNumber": "Регистрационен номер",
+    "make": "Марка",
+    "model": "Модел",
+    "year": "Година",
+    "currentMileage": "Текущ пробег",
+    "mileageTrigger": "Праг за пробег (км)",
+    "isAdr": "ADR",
+    "frotcomImport": "Импорт от Frotcom",
+    "importInProgress": "Импортиране...",
+    "serviceHistory": "История на сервизите",
+    "deactivate": "Деактивирай камион",
+    "updateMileage": "Обнови пробег"
+  },
+  "mechanic": {
+    "title": "Механик",
+    "list": "Механици",
+    "new": "Нов механик",
+    "deactivate": "Деактивирай механик"
+  },
+  "bay": {
+    "title": "Сервизно място",
+    "list": "Сервизни места",
+    "new": "Ново сервизно място",
+    "deactivate": "Деактивирай"
+  },
+  "driver": {
+    "title": "Шофьор",
+    "list": "Шофьори",
+    "deactivate": "Деактивирай шофьор"
+  },
+  "user": {
+    "title": "Потребител",
+    "list": "Потребители",
+    "new": "Нов потребител",
+    "role": {
+      "MANAGER": "Мениджър",
+      "ASSISTANT": "Асистент"
+    },
+    "permissions": "Права за достъп",
+    "preferredLocale": "Език",
+    "darkMode": "Тъмен режим",
+    "pageSize": "Редове на страница",
+    "recoveryCode": "Код за възстановяване",
+    "resetPassword": "Нулирай парола",
+    "changePassword": "Смени парола"
+  },
+  "settings": {
+    "title": "Настройки",
+    "company": "Компания",
+    "frotcom": "Frotcom интеграция",
+    "logo": "Лого",
+    "uploadLogo": "Качи лого",
+    "appearance": "Изглед"
+  },
+  "report": {
+    "title": "Отчети",
+    "monthly": "Месечен преглед",
+    "costPerTruck": "Разходи по камион",
+    "timeInWorkshop": "Престой в сервиза",
+    "partsUsage": "Използвани части",
+    "dateFrom": "От",
+    "dateTo": "До",
+    "truck": "Камион",
+    "allTrucks": "Всички камиони",
+    "generate": "Генерирай",
+    "downloadPdf": "Изтегли PDF",
+    "downloadExcel": "Изтегли Excel"
+  },
+  "calendar": {
+    "title": "Календар",
+    "week": "Седмица",
+    "month": "Месец",
+    "newService": "Нова поръчка"
+  },
+  "photo": {
+    "upload": "Качи снимки",
+    "delete": "Изтрий снимка",
+    "caption": "Надпис",
+    "gallery": "Галерия"
+  },
+  "note": {
+    "add": "Добави забележка",
+    "placeholder": "Въведете забележка..."
+  },
+  "checklist": {
+    "title": "Чеклист",
+    "addItem": "Добави позиция",
+    "template": "Шаблон",
+    "markComplete": "Отбележи като завършена"
+  },
+  "auditLog": {
+    "title": "Журнал на действията",
+    "user": "Потребител",
+    "action": "Действие",
+    "entity": "Обект",
+    "oldValue": "Стара стойност",
+    "newValue": "Нова стойност",
+    "timestamp": "Дата и час"
+  },
+  "errors": {
+    "truckAlreadyActive": "Камионът вече има активна поръчка",
+    "bayAlreadyOccupied": "Сервизното място е заето",
+    "required": "Полето е задължително",
+    "notFound": "Не е намерено",
+    "unauthorized": "Нямате права за това действие",
+    "generic": "Възникна грешка. Моля, опитайте отново."
+  }
+}

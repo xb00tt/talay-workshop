@@ -1,0 +1,279 @@
+{
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "add": "Add",
+    "back": "Back",
+    "confirm": "Confirm",
+    "search": "Search",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "noResults": "No results",
+    "actions": "Actions",
+    "status": "Status",
+    "date": "Date",
+    "name": "Name",
+    "note": "Note",
+    "yes": "Yes",
+    "no": "No",
+    "active": "Active",
+    "inactive": "Inactive",
+    "deactivate": "Deactivate",
+    "activate": "Activate",
+    "print": "Print",
+    "export": "Export",
+    "import": "Import",
+    "close": "Close",
+    "page": "Page",
+    "of": "of",
+    "rowsPerPage": "Rows per page",
+    "total": "Total",
+    "required": "Required",
+    "optional": "Optional"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "services": "Services",
+    "trucks": "Trucks",
+    "mechanics": "Mechanics",
+    "bays": "Bays",
+    "users": "Users",
+    "settings": "Settings",
+    "reports": "Reports",
+    "calendar": "Calendar",
+    "checklistTemplate": "Checklist Template",
+    "equipment": "Equipment",
+    "drivers": "Drivers",
+    "auditLog": "Audit Log"
+  },
+  "auth": {
+    "login": "Login",
+    "logout": "Logout",
+    "username": "Username",
+    "password": "Password",
+    "loginButton": "Sign In",
+    "invalidCredentials": "Invalid credentials",
+    "recoveryCode": "Recovery Code",
+    "recoverPassword": "Recover Password"
+  },
+  "setup": {
+    "title": "Initial Setup",
+    "welcome": "Welcome to Talay Workshop",
+    "step": "Step {current} of {total}",
+    "companyInfo": "Company Information",
+    "companyName": "Company Name",
+    "companyAddress": "Address",
+    "firstManager": "First Manager Account",
+    "bays": "Service Bays",
+    "mechanics": "Mechanics",
+    "equipmentList": "Equipment List",
+    "adrEquipment": "ADR Equipment",
+    "checklistTemplate": "Checklist Template",
+    "finish": "Finish Setup",
+    "addBay": "Add Bay",
+    "addMechanic": "Add Mechanic",
+    "addItem": "Add Item"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "bays": "Service Bays",
+    "upcomingServices": "Upcoming Services",
+    "noBaysOccupied": "No trucks in workshop",
+    "noUpcoming": "No upcoming services",
+    "daysInService": "{days} days",
+    "mileageAlert": "Mileage Alert",
+    "syncMileage": "Sync Mileage"
+  },
+  "service": {
+    "title": "Service Order",
+    "new": "New Service Order",
+    "list": "Service Orders",
+    "status": {
+      "SCHEDULED": "Scheduled",
+      "INTAKE": "Intake",
+      "IN_PROGRESS": "In Progress",
+      "QUALITY_CHECK": "Quality Check",
+      "READY": "Ready",
+      "COMPLETED": "Completed",
+      "CANCELLED": "Cancelled"
+    },
+    "scheduledDate": "Scheduled Date",
+    "startDate": "Start Date",
+    "endDate": "End Date",
+    "bay": "Bay",
+    "driver": "Driver",
+    "mileageAtService": "Mileage at Service",
+    "cancellationReason": "Cancellation Reason",
+    "cancel": "Cancel Order",
+    "reschedule": "Reschedule",
+    "moveToIntake": "Move to Intake",
+    "moveToInProgress": "Start Work",
+    "moveToQualityCheck": "Quality Check",
+    "moveToReady": "Mark Ready",
+    "moveToCompleted": "Complete",
+    "confirmComplete": "Confirm Completion",
+    "driverFeedback": "Driver Feedback"
+  },
+  "section": {
+    "type": {
+      "CHECKLIST": "Checklist",
+      "DRIVER_FEEDBACK": "Driver Feedback",
+      "MID_SERVICE": "Mid-Service",
+      "EQUIPMENT_CHECK": "Equipment Check",
+      "CUSTOM": "Custom"
+    },
+    "addSection": "Add Section",
+    "deleteSection": "Delete Section",
+    "addWorkCard": "Add Work Card"
+  },
+  "workCard": {
+    "title": "Work Card",
+    "description": "Description",
+    "mechanic": "Mechanic",
+    "specialInstructions": "Special Instructions",
+    "status": {
+      "PENDING": "Pending",
+      "ASSIGNED": "Assigned",
+      "IN_PROGRESS": "In Progress",
+      "COMPLETED": "Completed",
+      "CANCELLED": "Cancelled"
+    },
+    "cancel": "Cancel Work Card",
+    "reopen": "Reopen",
+    "complete": "Complete",
+    "addNote": "Add Note",
+    "parts": "Parts",
+    "addPart": "Add Part",
+    "print": "Print Work Card",
+    "lastService": "Last Service"
+  },
+  "equipment": {
+    "title": "Equipment",
+    "globalList": "Global List",
+    "adrList": "ADR Equipment",
+    "status": {
+      "PRESENT": "Present",
+      "MISSING": "Missing",
+      "RESTOCKED": "Restocked"
+    },
+    "intakeCheck": "Intake Check",
+    "exitCheck": "Exit Check",
+    "skip": "Skip Check",
+    "skipNote": "Reason for skipping",
+    "previouslyMissing": "Previously missing at last service"
+  },
+  "truck": {
+    "title": "Truck",
+    "list": "Trucks",
+    "new": "New Truck",
+    "plateNumber": "License Plate",
+    "make": "Make",
+    "model": "Model",
+    "year": "Year",
+    "currentMileage": "Current Mileage",
+    "mileageTrigger": "Mileage Trigger (km)",
+    "isAdr": "ADR",
+    "frotcomImport": "Import from Frotcom",
+    "importInProgress": "Importing...",
+    "serviceHistory": "Service History",
+    "deactivate": "Deactivate Truck",
+    "updateMileage": "Update Mileage"
+  },
+  "mechanic": {
+    "title": "Mechanic",
+    "list": "Mechanics",
+    "new": "New Mechanic",
+    "deactivate": "Deactivate Mechanic"
+  },
+  "bay": {
+    "title": "Bay",
+    "list": "Bays",
+    "new": "New Bay",
+    "deactivate": "Deactivate"
+  },
+  "driver": {
+    "title": "Driver",
+    "list": "Drivers",
+    "deactivate": "Deactivate Driver"
+  },
+  "user": {
+    "title": "User",
+    "list": "Users",
+    "new": "New User",
+    "role": {
+      "MANAGER": "Manager",
+      "ASSISTANT": "Assistant"
+    },
+    "permissions": "Permissions",
+    "preferredLocale": "Language",
+    "darkMode": "Dark Mode",
+    "pageSize": "Rows per Page",
+    "recoveryCode": "Recovery Code",
+    "resetPassword": "Reset Password",
+    "changePassword": "Change Password"
+  },
+  "settings": {
+    "title": "Settings",
+    "company": "Company",
+    "frotcom": "Frotcom Integration",
+    "logo": "Logo",
+    "uploadLogo": "Upload Logo",
+    "appearance": "Appearance"
+  },
+  "report": {
+    "title": "Reports",
+    "monthly": "Monthly Summary",
+    "costPerTruck": "Cost per Truck",
+    "timeInWorkshop": "Time in Workshop",
+    "partsUsage": "Parts Usage",
+    "dateFrom": "From",
+    "dateTo": "To",
+    "truck": "Truck",
+    "allTrucks": "All Trucks",
+    "generate": "Generate",
+    "downloadPdf": "Download PDF",
+    "downloadExcel": "Download Excel"
+  },
+  "calendar": {
+    "title": "Calendar",
+    "week": "Week",
+    "month": "Month",
+    "newService": "New Service"
+  },
+  "photo": {
+    "upload": "Upload Photos",
+    "delete": "Delete Photo",
+    "caption": "Caption",
+    "gallery": "Gallery"
+  },
+  "note": {
+    "add": "Add Note",
+    "placeholder": "Enter note..."
+  },
+  "checklist": {
+    "title": "Checklist",
+    "addItem": "Add Item",
+    "template": "Template",
+    "markComplete": "Mark Complete"
+  },
+  "auditLog": {
+    "title": "Audit Log",
+    "user": "User",
+    "action": "Action",
+    "entity": "Entity",
+    "oldValue": "Old Value",
+    "newValue": "New Value",
+    "timestamp": "Timestamp"
+  },
+  "errors": {
+    "truckAlreadyActive": "This truck already has an active service order",
+    "bayAlreadyOccupied": "This bay is already occupied",
+    "required": "This field is required",
+    "notFound": "Not found",
+    "unauthorized": "You do not have permission to do this",
+    "generic": "An error occurred. Please try again."
+  }
+}
