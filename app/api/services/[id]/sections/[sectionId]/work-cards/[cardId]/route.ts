@@ -84,6 +84,9 @@ export async function PATCH(request: Request, { params }: Params) {
 
     // Manual advance: ASSIGNED or IN_PROGRESS
     if (status === 'ASSIGNED' || status === 'IN_PROGRESS') {
+      if (!hasPermission(session.user.role, session.user.permissions, 'workcard.create')) {
+        return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+      }
       if (workCard.status === 'CANCELLED' || workCard.status === 'COMPLETED') {
         return NextResponse.json({ error: 'Невалиден статус.' }, { status: 422 })
       }
@@ -99,6 +102,10 @@ export async function PATCH(request: Request, { params }: Params) {
   }
 
   // ── Field updates ──────────────────────────────────────────────────────────
+  if (!hasPermission(session.user.role, session.user.permissions, 'workcard.create')) {
+    return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+  }
+
   const data: Record<string, unknown> = {}
 
   if (description !== undefined) {

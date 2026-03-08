@@ -22,6 +22,7 @@ export async function POST(request: Request, { params }: Params) {
 
   const { content } = await request.json()
   if (!content?.trim()) return NextResponse.json({ error: 'Въведете съдържание.' }, { status: 422 })
+  if (content.trim().length > 5000) return NextResponse.json({ error: 'Бележката не може да надвишава 5000 знака.' }, { status: 422 })
 
   const note = await prisma.note.create({
     data: {

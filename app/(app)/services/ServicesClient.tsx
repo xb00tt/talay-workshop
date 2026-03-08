@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import useSWR from 'swr'
 import Pagination from '@/components/Pagination'
+import { useTranslations } from 'next-intl'
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json())
 
@@ -31,17 +32,7 @@ interface Truck {
   isActive: boolean
 }
 
-// ─── Status config ─────────────────────────────────────────────────────────────
-
-const STATUS_LABEL: Record<ServiceStatus, string> = {
-  SCHEDULED:     'Планирана',
-  INTAKE:        'Приемане',
-  IN_PROGRESS:   'В процес',
-  QUALITY_CHECK: 'Контрол на качеството',
-  READY:         'Готова',
-  COMPLETED:     'Завършена',
-  CANCELLED:     'Отменена',
-}
+// ─── Status colors ──────────────────────────────────────────────────────────────
 
 const STATUS_COLOR: Record<ServiceStatus, string> = {
   SCHEDULED:     'bg-amber-600/20 text-amber-400',
@@ -121,10 +112,10 @@ function Modal({ title, onClose, children }: { title: string; onClose: () => voi
   )
 }
 
-function StatusBadge({ status }: { status: ServiceStatus }) {
+function StatusBadge({ status, label }: { status: ServiceStatus; label: string }) {
   return (
     <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${STATUS_COLOR[status]}`}>
-      {STATUS_LABEL[status]}
+      {label}
     </span>
   )
 }
@@ -142,18 +133,22 @@ function CreateModal({
   onCreated: (service: ServiceRow) => void
   preselectedDate?: string
 }) {
+  const t = useTranslations('service')
+  const tCommon = useTranslations('common')
+  const tErrors = useTranslations('errors')
+
   const [truckId, setTruckId]           = useState('')
   const [scheduledDate, setScheduledDate] = useState(preselectedDate ?? '')
   const [error,   setError]   = useState('')
   const [loading, setLoading] = useState(false)
 
-  const activeTrucks = trucks.filter((t) => t.isActive)
+  const activeTrucks = trucks.filter((tr) => tr.isActive)
 
   async function submit(e: React.FormEvent) {
     e.preventDefault()
     setError('')
-    if (!truckId)       { setError('Изберете камион.'); return }
-    if (!scheduledDate) { setError('Изберете дата.'); return }
+    if (!truckId)       { setError(t('selectTruck')); return }
+    if (!scheduledDate) { setError(t('selectDate')); return }
     setLoading(true)
     try {
       const res = await fetch('/api/services', {
@@ -162,11 +157,11 @@ function CreateModal({
         body: JSON.stringify({ truckId: Number(truckId), scheduledDate }),
       })
       const json = await res.json()
-      if (!res.ok) { setError(json.error ?? 'Грешка.'); return }
+      if (!res.ok) { setError(json.error ?? tErrors('generic')); return }
       onCreated(json.service)
       onClose()
     } catch {
-      setError('Неуспешна връзка.')
+      setError(tErrors('generic'))
     } finally {
       setLoading(false)
     }
@@ -175,18 +170,18 @@ function CreateModal({
   return (
     <form onSubmit={submit} className="space-y-4">
       <div>
-        <Label>Камион *</Label>
+        <Label>{tCommon('truck') ?? 'Камион'} *</Label>
         <Select value={truckId} onChange={(e) => setTruckId(e.target.value)} className="w-full">
-          <option value="">— Изберете камион —</option>
-          {activeTrucks.map((t) => (
-            <option key={t.id} value={t.id}>
-              {t.plateNumber} — {t.make} {t.model}
+          <option value="">{t('selectTruckPlaceholder')}</option>
+          {activeTrucks.map((tr) => (
+            <option key={tr.id} value={tr.id}>
+              {tr.plateNumber} — {tr.make} {tr.model}
             </option>
           ))}
         </Select>
       </div>
       <div>
-        <Label>Планирана дата *</Label>
+        <Label>{t('scheduledDate')} *</Label>
         <Input
           type="date"
           value={scheduledDate}
@@ -197,11 +192,11 @@ function CreateModal({
       <div className="flex gap-3 pt-1">
         <button type="button" onClick={onClose}
           className="flex-1 py-2.5 rounded-xl border border-gray-600 text-gray-300 hover:bg-gray-800 transition-colors text-sm">
-          Откажи
+          {tCommon('cancel')}
         </button>
         <button type="submit" disabled={loading}
           className="flex-1 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold text-sm transition-colors disabled:opacity-50">
-          {loading ? 'Създаване...' : 'Създай'}
+          {loading ? t('creating') : t('create')}
         </button>
       </div>
     </form>
@@ -219,6 +214,10 @@ function RescheduleModal({
   onClose: () => void
   onUpdated: (s: ServiceRow) => void
 }) {
+  const t = useTranslations('service')
+  const tCommon = useTranslations('common')
+  const tErrors = useTranslations('errors')
+
   const isoDate = new Date(service.scheduledDate).toISOString().slice(0, 10)
   const [date,    setDate]    = useState(isoDate)
   const [error,   setError]   = useState('')
@@ -226,7 +225,7 @@ function RescheduleModal({
 
   async function submit(e: React.FormEvent) {
     e.preventDefault()
-    if (!date) { setError('Изберете дата.'); return }
+    if (!date) { setError(t('selectDate')); return }
     setError('')
     setLoading(true)
     try {
@@ -236,11 +235,11 @@ function RescheduleModal({
         body: JSON.stringify({ scheduledDate: date }),
       })
       const json = await res.json()
-      if (!res.ok) { setError(json.error ?? 'Грешка.'); return }
+      if (!res.ok) { setError(json.error ?? tErrors('generic')); return }
       onUpdated(json.service)
       onClose()
     } catch {
-      setError('Неуспешна връзка.')
+      setError(tErrors('generic'))
     } finally {
       setLoading(false)
     }
@@ -249,22 +248,22 @@ function RescheduleModal({
   return (
     <form onSubmit={submit} className="space-y-4">
       <p className="text-sm text-gray-400">
-        Пренасрочване на{' '}
+        {t('reschedulingOf')}{' '}
         <strong className="text-white">{service.truckPlateSnapshot}</strong>
       </p>
       <div>
-        <Label>Нова дата *</Label>
+        <Label>{t('newDate')} *</Label>
         <Input type="date" value={date} onChange={(e) => setDate(e.target.value)} autoFocus />
       </div>
       {error && <ErrorBox msg={error} />}
       <div className="flex gap-3 pt-1">
         <button type="button" onClick={onClose}
           className="flex-1 py-2.5 rounded-xl border border-gray-600 text-gray-300 hover:bg-gray-800 transition-colors text-sm">
-          Откажи
+          {tCommon('cancel')}
         </button>
         <button type="submit" disabled={loading}
           className="flex-1 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold text-sm transition-colors disabled:opacity-50">
-          {loading ? 'Запазване...' : 'Пренасрочи'}
+          {loading ? t('saving') : t('reschedule')}
         </button>
       </div>
     </form>
@@ -293,6 +292,10 @@ export default function ServicesClient({
   canCreate: boolean
   canReschedule: boolean
 }) {
+  const t = useTranslations('service')
+  const tCommon = useTranslations('common')
+  const tTruck = useTranslations('truck')
+
   const [modal,        setModal]        = useState<ModalState>(null)
   const [statusFilter, setStatusFilter] = useState<string>('active')
   const [search,       setSearch]       = useState('')
@@ -322,7 +325,7 @@ export default function ServicesClient({
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   function upsert(_?: ServiceRow) {
-    mutate()   // revalidate current page after create/reschedule
+    mutate()
   }
 
   return (
@@ -331,8 +334,8 @@ export default function ServicesClient({
         {/* Header */}
         <div className="flex flex-wrap items-center justify-between gap-3 mb-5">
           <div>
-            <h1 className="text-2xl font-bold text-white">Сервизни поръчки</h1>
-            <p className="text-sm text-gray-500 mt-0.5">{total} резултата</p>
+            <h1 className="text-2xl font-bold text-white">{t('list')}</h1>
+            <p className="text-sm text-gray-500 mt-0.5">{t('resultsCount', { count: total })}</p>
           </div>
           {canCreate && (
             <button
@@ -340,7 +343,7 @@ export default function ServicesClient({
               className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white text-sm font-semibold rounded-xl transition-colors"
             >
               <span className="text-lg leading-none">+</span>
-              Нова поръчка
+              {t('new')}
             </button>
           )}
         </div>
@@ -348,17 +351,17 @@ export default function ServicesClient({
         {/* Filters */}
         <div className="flex items-center gap-2 mb-4 flex-wrap">
           <Select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
-            <option value="active">Активни</option>
-            <option value="all">Всички</option>
+            <option value="active">{t('filterActive')}</option>
+            <option value="all">{t('filterAll')}</option>
             {ALL_STATUSES.map((s) => (
-              <option key={s} value={s}>{STATUS_LABEL[s]}</option>
+              <option key={s} value={s}>{t(`status.${s}`)}</option>
             ))}
           </Select>
           <input
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Търси по рег. номер, марка, модел..."
+            placeholder={t('searchPlaceholder')}
             className="flex-1 min-w-[200px] bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
@@ -369,10 +372,10 @@ export default function ServicesClient({
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-gray-800">
-                  <th className="text-left px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Камион</th>
-                  <th className="text-left px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider hidden sm:table-cell">Дата</th>
-                  <th className="text-left px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Статус</th>
-                  <th className="text-left px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider hidden lg:table-cell">Бокс</th>
+                  <th className="text-left px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">{tTruck('title')}</th>
+                  <th className="text-left px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider hidden sm:table-cell">{tCommon('date')}</th>
+                  <th className="text-left px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">{tCommon('status')}</th>
+                  <th className="text-left px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider hidden lg:table-cell">{t('bay')}</th>
                   <th className="px-5 py-3" />
                 </tr>
               </thead>
@@ -387,7 +390,7 @@ export default function ServicesClient({
                       {fmtDate(s.scheduledDate)}
                     </td>
                     <td className="px-5 py-4">
-                      <StatusBadge status={s.status} />
+                      <StatusBadge status={s.status} label={t(`status.${s.status}`)} />
                     </td>
                     <td className="px-5 py-4 text-gray-400 hidden lg:table-cell">
                       {s.bayNameSnapshot ?? '—'}
@@ -399,14 +402,14 @@ export default function ServicesClient({
                             onClick={() => setModal({ type: 'reschedule', service: s })}
                             className="px-2.5 py-1.5 text-xs rounded-lg border border-gray-700 text-gray-400 hover:text-white hover:border-gray-500 transition-colors"
                           >
-                            Пренасрочи
+                            {t('reschedule')}
                           </button>
                         )}
                         <Link
                           href={`/services/${s.id}`}
                           className="px-2.5 py-1.5 text-xs rounded-lg bg-gray-800 hover:bg-gray-700 text-gray-300 hover:text-white transition-colors"
                         >
-                          Отвори →
+                          {t('open')}
                         </Link>
                       </div>
                     </td>
@@ -415,7 +418,7 @@ export default function ServicesClient({
                 {services.length === 0 && (
                   <tr>
                     <td colSpan={5} className="px-5 py-12 text-center text-gray-500">
-                      Няма намерени поръчки.
+                      {t('noResults')}
                     </td>
                   </tr>
                 )}
@@ -433,7 +436,7 @@ export default function ServicesClient({
       </div>
 
       {modal === 'create' && (
-        <Modal title="Нова сервизна поръчка" onClose={() => setModal(null)}>
+        <Modal title={t('new')} onClose={() => setModal(null)}>
           <CreateModal
             trucks={trucks}
             onClose={() => setModal(null)}
@@ -442,7 +445,7 @@ export default function ServicesClient({
         </Modal>
       )}
       {modal !== null && modal !== 'create' && modal.type === 'reschedule' && (
-        <Modal title="Пренасрочване" onClose={() => setModal(null)}>
+        <Modal title={t('reschedule')} onClose={() => setModal(null)}>
           <RescheduleModal
             service={modal.service}
             onClose={() => setModal(null)}

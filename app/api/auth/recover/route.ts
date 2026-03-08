@@ -1,8 +1,19 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import bcrypt from 'bcryptjs'
+import { rateLimit, getIp } from '@/lib/rateLimit'
 
 export async function POST(request: Request) {
+  // Rate-limit: 5 attempts per 15 minutes per IP
+  const ip = getIp(request)
+  const rl = rateLimit(`recover:${ip}`, 5, 15 * 60 * 1000)
+  if (!rl.allowed) {
+    return NextResponse.json(
+      { error: 'Твърде много опити. Опитайте отново след 15 минути.' },
+      { status: 429, headers: { 'Retry-After': String(Math.ceil((rl.resetAt - Date.now()) / 1000)) } },
+    )
+  }
+
   const { username, recoveryCode, newPassword } = await request.json()
 
   if (!username?.trim() || !recoveryCode?.trim() || !newPassword) {

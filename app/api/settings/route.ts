@@ -20,7 +20,7 @@ export async function GET() {
       logoPath:       settings?.logoPath       ?? null,
       ...(canEdit && {
         frotcomUsername: settings?.frotcomUsername ?? '',
-        frotcomPassword: settings?.frotcomPassword ?? '',
+        // frotcomPassword intentionally omitted — write-only credential; never sent to client
       }),
     },
     canEdit,

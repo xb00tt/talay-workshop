@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import { useTranslations } from 'next-intl'
 import { PhotoGallery, NotesSection, type Photo, type NoteItem } from '@/components/PhotosAndNotes'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -31,13 +32,6 @@ interface WorkCardDetail {
 
 // ─── Config ───────────────────────────────────────────────────────────────────
 
-const WC_LABEL: Record<WorkCardStatus, string> = {
-  PENDING:     'Изчакваща',
-  ASSIGNED:    'Назначена',
-  IN_PROGRESS: 'В процес',
-  COMPLETED:   'Завършена',
-  CANCELLED:   'Отменена',
-}
 const WC_COLOR: Record<WorkCardStatus, string> = {
   PENDING:     'bg-gray-600/20 text-gray-400',
   ASSIGNED:    'bg-blue-600/20 text-blue-400',
@@ -93,6 +87,10 @@ function AddPartModal({
   serviceId: number; sectionId: number; cardId: number
   onClose: () => void; onAdded: (p: Part) => void
 }) {
+  const t = useTranslations('workCard')
+  const tCommon = useTranslations('common')
+  const tErrors = useTranslations('errors')
+
   const [name,       setName]       = useState('')
   const [partNumber, setPartNumber] = useState('')
   const [quantity,   setQuantity]   = useState('1')
@@ -102,8 +100,8 @@ function AddPartModal({
 
   async function submit(e: React.FormEvent) {
     e.preventDefault()
-    if (!name.trim())          { setError('Въведете наименование.'); return }
-    if (!quantity || Number(quantity) <= 0) { setError('Въведете количество.'); return }
+    if (!name.trim())          { setError(t('partName')); return }
+    if (!quantity || Number(quantity) <= 0) { setError(t('partQuantity')); return }
     setError(''); setLoading(true)
     try {
       const res  = await fetch(
@@ -120,29 +118,29 @@ function AddPartModal({
         },
       )
       const json = await res.json()
-      if (!res.ok) { setError(json.error ?? 'Грешка.'); return }
+      if (!res.ok) { setError(json.error ?? tErrors('genericShort')); return }
       onAdded(json.part); onClose()
-    } catch { setError('Неуспешна връзка.') }
+    } catch { setError(tCommon('connectionFailed')) }
     finally   { setLoading(false) }
   }
 
   return (
     <form onSubmit={submit} className="space-y-4">
       <div>
-        <Label>Наименование *</Label>
-        <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="напр. Маслен филтър" autoFocus />
+        <Label>{t('partName')}</Label>
+        <Input value={name} onChange={(e) => setName(e.target.value)} placeholder={t('partNamePlaceholder')} autoFocus />
       </div>
       <div>
-        <Label>Артикулен номер</Label>
-        <Input value={partNumber} onChange={(e) => setPartNumber(e.target.value)} placeholder="напр. OC90" />
+        <Label>{t('partNumber')}</Label>
+        <Input value={partNumber} onChange={(e) => setPartNumber(e.target.value)} placeholder={t('partNumberPlaceholder')} />
       </div>
       <div className="grid grid-cols-2 gap-3">
         <div>
-          <Label>Количество *</Label>
+          <Label>{t('partQuantity')}</Label>
           <Input type="number" step="0.01" min="0.01" value={quantity} onChange={(e) => setQuantity(e.target.value)} />
         </div>
         <div>
-          <Label>Единична цена (€)</Label>
+          <Label>{t('partUnitCost')}</Label>
           <Input type="number" step="0.01" min="0" value={unitCost} onChange={(e) => setUnitCost(e.target.value)} placeholder="0.00" />
         </div>
       </div>
@@ -150,11 +148,11 @@ function AddPartModal({
       <div className="flex gap-3 pt-1">
         <button type="button" onClick={onClose}
           className="flex-1 py-2.5 rounded-xl border border-gray-600 text-gray-300 hover:bg-gray-800 transition-colors text-sm">
-          Откажи
+          {tCommon('cancel')}
         </button>
         <button type="submit" disabled={loading}
           className="flex-1 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold text-sm transition-colors disabled:opacity-50">
-          {loading ? 'Добавяне...' : 'Добави'}
+          {loading ? t('adding') : tCommon('add')}
         </button>
       </div>
     </form>
@@ -178,6 +176,9 @@ export default function WorkCardClient({
   canCreateNote: boolean
   canUploadPhoto: boolean
 }) {
+  const t = useTranslations('workCard')
+  const tCommon = useTranslations('common')
+
   const [wc,          setWc]          = useState<WorkCardDetail>(initialWorkCard)
   const [showAddPart, setShowAddPart] = useState(false)
   const [statusLoading, setStatusLoading] = useState(false)
@@ -190,7 +191,7 @@ export default function WorkCardClient({
   }
 
   async function deletePart(partId: number) {
-    if (!confirm('Изтриване на частта?')) return
+    if (!confirm(t('deletePart'))) return
     await fetch(
       `/api/services/${serviceId}/sections/${sectionId}/work-cards/${wc.id}/parts/${partId}`,
       { method: 'DELETE' },
@@ -228,7 +229,7 @@ export default function WorkCardClient({
         href={`/services/${serviceId}`}
         className="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-300 transition-colors"
       >
-        ← Назад към поръчката
+        ← {t('backToOrder')}
       </Link>
 
       {/* Header */}
@@ -239,18 +240,18 @@ export default function WorkCardClient({
             <h1 className="text-lg font-semibold text-white leading-snug">{wc.description}</h1>
           </div>
           <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${WC_COLOR[wc.status]}`}>
-            {WC_LABEL[wc.status]}
+            {t(`status.${wc.status}`)}
           </span>
         </div>
 
         <div className="grid grid-cols-2 gap-3 text-sm mb-4">
           <div>
-            <p className="text-xs text-gray-600 mb-0.5">Механик</p>
+            <p className="text-xs text-gray-600 mb-0.5">{t('mechanic')}</p>
             <p className="text-gray-300">{wc.mechanicName ?? '—'}</p>
           </div>
           {wc.specialInstructions && (
             <div className="col-span-2">
-              <p className="text-xs text-gray-600 mb-0.5">Специални инструкции</p>
+              <p className="text-xs text-gray-600 mb-0.5">{t('specialInstructions')}</p>
               <p className="text-gray-300 whitespace-pre-wrap">{wc.specialInstructions}</p>
             </div>
           )}
@@ -262,7 +263,7 @@ export default function WorkCardClient({
             href={`/services/${serviceId}/work-cards/${wc.id}/print`}
             className="px-3 py-1.5 text-xs rounded-lg border border-gray-700 text-gray-400 hover:text-white hover:border-gray-500 transition-colors"
           >
-            Принтирай →
+            {tCommon('print')} →
           </Link>
           {!isTerminal && canCancelWorkCard && (
             <button
@@ -270,7 +271,7 @@ export default function WorkCardClient({
               disabled={statusLoading}
               className="px-3 py-1.5 text-xs rounded-lg border border-red-800 text-red-400 hover:text-red-300 hover:border-red-600 transition-colors disabled:opacity-40"
             >
-              Отмени карта
+              {t('cancel')}
             </button>
           )}
           {wc.status === 'CANCELLED' && canReopenWorkCard && (
@@ -279,7 +280,7 @@ export default function WorkCardClient({
               disabled={statusLoading}
               className="px-3 py-1.5 text-xs rounded-lg border border-blue-700 text-blue-400 hover:text-blue-300 transition-colors disabled:opacity-40"
             >
-              Отвори отново
+              {t('reopen')}
             </button>
           )}
           {!isTerminal && canCompleteWorkCard && (
@@ -288,7 +289,7 @@ export default function WorkCardClient({
               disabled={statusLoading}
               className="px-3 py-1.5 text-xs rounded-lg border border-green-800 text-green-400 hover:text-green-300 transition-colors disabled:opacity-40"
             >
-              Завърши карта
+              {t('complete')}
             </button>
           )}
         </div>
@@ -297,28 +298,28 @@ export default function WorkCardClient({
       {/* Parts */}
       <div className="bg-gray-900 rounded-2xl overflow-hidden">
         <div className="flex items-center justify-between px-5 py-3 border-b border-gray-800">
-          <h2 className="text-sm font-semibold text-white">Части и материали</h2>
+          <h2 className="text-sm font-semibold text-white">{t('partsAndMaterials')}</h2>
           {!isTerminal && (
             <button
               onClick={() => setShowAddPart(true)}
               className="text-sm text-blue-400 hover:text-blue-300 transition-colors"
             >
-              + Добави
+              + {tCommon('add')}
             </button>
           )}
         </div>
 
         {wc.parts.length === 0 ? (
-          <p className="px-5 py-8 text-sm text-gray-500 text-center">Няма добавени части.</p>
+          <p className="px-5 py-8 text-sm text-gray-500 text-center">{t('noParts')}</p>
         ) : (
           <>
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-gray-800">
-                  <th className="text-left px-5 py-2 text-xs font-semibold text-gray-500">Наименование</th>
-                  <th className="text-left px-5 py-2 text-xs font-semibold text-gray-500 hidden sm:table-cell">Арт. №</th>
-                  <th className="text-right px-5 py-2 text-xs font-semibold text-gray-500">Кол.</th>
-                  <th className="text-right px-5 py-2 text-xs font-semibold text-gray-500">Цена (€)</th>
+                  <th className="text-left px-5 py-2 text-xs font-semibold text-gray-500">{t('partName')}</th>
+                  <th className="text-left px-5 py-2 text-xs font-semibold text-gray-500 hidden sm:table-cell">{t('partNumber')}</th>
+                  <th className="text-right px-5 py-2 text-xs font-semibold text-gray-500">{t('partQuantity')}</th>
+                  <th className="text-right px-5 py-2 text-xs font-semibold text-gray-500">{t('partUnitCost')}</th>
                   <th className="px-5 py-2" />
                 </tr>
               </thead>
@@ -347,7 +348,7 @@ export default function WorkCardClient({
               {totalCost > 0 && (
                 <tfoot>
                   <tr className="border-t border-gray-800">
-                    <td colSpan={3} className="px-5 py-2 text-xs text-gray-500 text-right">Общо части:</td>
+                    <td colSpan={3} className="px-5 py-2 text-xs text-gray-500 text-right">{t('partsTotal')}:</td>
                     <td className="px-5 py-2 text-sm font-semibold text-white text-right tabular-nums">
                       {totalCost.toFixed(2)} €
                     </td>
@@ -379,7 +380,7 @@ export default function WorkCardClient({
       />
 
       {showAddPart && (
-        <Modal title="Добави части / материали" onClose={() => setShowAddPart(false)}>
+        <Modal title={t('addPartsModal')} onClose={() => setShowAddPart(false)}>
           <AddPartModal
             serviceId={serviceId}
             sectionId={sectionId}

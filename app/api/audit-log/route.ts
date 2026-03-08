@@ -7,6 +7,9 @@ import { prisma } from '@/lib/prisma'
 export async function GET(request: Request) {
   const session = await getServerSession(authOptions)
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  if (session.user.role !== 'MANAGER') {
+    return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+  }
 
   const url      = new URL(request.url)
   const page     = Math.max(1, Number(url.searchParams.get('page') ?? '1'))

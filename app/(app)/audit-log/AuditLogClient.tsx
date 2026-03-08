@@ -1,6 +1,20 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
+import Link from 'next/link'
+import { useTranslations } from 'next-intl'
+
+function entityLink(type: string, id: string): string | null {
+  switch (type) {
+    case 'ServiceOrder': return `/services/${id}`
+    case 'Truck':        return `/trucks/${id}`
+    case 'User':         return `/users`
+    case 'Bay':          return `/bays`
+    case 'Mechanic':     return `/mechanics`
+    case 'Driver':       return `/drivers`
+    default:             return null
+  }
+}
 
 interface AuditEntry {
   id: number
@@ -32,6 +46,8 @@ function fmtDateTime(iso: string) {
 }
 
 export default function AuditLogClient() {
+  const t      = useTranslations('auditLog')
+  const tCommon = useTranslations('common')
   const [data,     setData]     = useState<LogResult | null>(null)
   const [page,     setPage]     = useState(1)
   const [search,   setSearch]   = useState('')
@@ -66,8 +82,12 @@ export default function AuditLogClient() {
     <div className="p-6 lg:p-8 max-w-6xl mx-auto space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-bold text-white">Журнал на действията</h1>
-          {data && <p className="text-sm text-gray-500 mt-0.5">Общо {data.total.toLocaleString('bg-BG')} записа</p>}
+          <h1 className="text-xl font-bold text-white">{t('title')}</h1>
+          {data && (
+            <p className="text-sm text-gray-500 mt-0.5">
+              {t('totalRecords', { count: data.total.toLocaleString() })}
+            </p>
+          )}
         </div>
       </div>
 
@@ -76,7 +96,7 @@ export default function AuditLogClient() {
         <input
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          placeholder="Търси по действие, тип обект, потребител..."
+          placeholder={t('searchPlaceholder')}
           className="flex-1 bg-gray-800 border border-gray-700 rounded-xl px-4 py-2 text-white placeholder-gray-600 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
         <button
@@ -84,25 +104,25 @@ export default function AuditLogClient() {
           disabled={loading}
           className="px-4 py-2 text-sm bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-xl transition-colors disabled:opacity-50 border border-gray-700"
         >
-          Търси
+          {tCommon('search')}
         </button>
       </form>
 
       {/* Log table */}
       <div className="bg-gray-900 rounded-2xl overflow-hidden">
         {loading ? (
-          <p className="px-5 py-10 text-sm text-gray-500 text-center">Зареждане...</p>
+          <p className="px-5 py-10 text-sm text-gray-500 text-center">{tCommon('loading')}</p>
         ) : !data || data.logs.length === 0 ? (
-          <p className="px-5 py-10 text-sm text-gray-500 text-center">Няма записи.</p>
+          <p className="px-5 py-10 text-sm text-gray-500 text-center">{t('noRecords')}</p>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-gray-800">
-                  <th className="text-left px-4 py-3 text-xs text-gray-500 font-semibold uppercase tracking-wider">Дата/час</th>
-                  <th className="text-left px-4 py-3 text-xs text-gray-500 font-semibold uppercase tracking-wider">Потребител</th>
-                  <th className="text-left px-4 py-3 text-xs text-gray-500 font-semibold uppercase tracking-wider">Действие</th>
-                  <th className="text-left px-4 py-3 text-xs text-gray-500 font-semibold uppercase tracking-wider hidden md:table-cell">Обект</th>
+                  <th className="text-left px-4 py-3 text-xs text-gray-500 font-semibold uppercase tracking-wider">{t('timestamp')}</th>
+                  <th className="text-left px-4 py-3 text-xs text-gray-500 font-semibold uppercase tracking-wider">{t('user')}</th>
+                  <th className="text-left px-4 py-3 text-xs text-gray-500 font-semibold uppercase tracking-wider">{t('action')}</th>
+                  <th className="text-left px-4 py-3 text-xs text-gray-500 font-semibold uppercase tracking-wider hidden md:table-cell">{t('entity')}</th>
                   <th className="px-4 py-3" />
                 </tr>
               </thead>
@@ -124,7 +144,15 @@ export default function AuditLogClient() {
                         </span>
                       </td>
                       <td className="px-4 py-3 text-gray-500 text-xs hidden md:table-cell">
-                        {entry.entityType} #{entry.entityId}
+                        {(() => {
+                          const href = entityLink(entry.entityType, entry.entityId)
+                          const label = `${entry.entityType} #${entry.entityId}`
+                          return href ? (
+                            <Link href={href} className="text-blue-400 hover:text-blue-300 hover:underline transition-colors" onClick={(e) => e.stopPropagation()}>
+                              {label}
+                            </Link>
+                          ) : <span>{label}</span>
+                        })()}
                       </td>
                       <td className="px-4 py-3 text-gray-600 text-xs">
                         {(entry.oldValue || entry.newValue) ? (expanded === entry.id ? '▲' : '▼') : ''}
@@ -136,17 +164,17 @@ export default function AuditLogClient() {
                           <div className="grid grid-cols-2 gap-4 text-xs">
                             {entry.oldValue && (
                               <div>
-                                <p className="text-gray-500 font-semibold mb-1">Преди</p>
+                                <p className="text-gray-500 font-semibold mb-1">{t('before')}</p>
                                 <pre className="text-gray-400 whitespace-pre-wrap font-mono bg-gray-900 p-2 rounded overflow-auto max-h-40">
-                                  {JSON.stringify(JSON.parse(entry.oldValue), null, 2)}
+                                  {(() => { try { return JSON.stringify(JSON.parse(entry.oldValue), null, 2) } catch { return entry.oldValue } })()}
                                 </pre>
                               </div>
                             )}
                             {entry.newValue && (
                               <div>
-                                <p className="text-gray-500 font-semibold mb-1">След</p>
+                                <p className="text-gray-500 font-semibold mb-1">{t('after')}</p>
                                 <pre className="text-gray-400 whitespace-pre-wrap font-mono bg-gray-900 p-2 rounded overflow-auto max-h-40">
-                                  {JSON.stringify(JSON.parse(entry.newValue), null, 2)}
+                                  {(() => { try { return JSON.stringify(JSON.parse(entry.newValue), null, 2) } catch { return entry.newValue } })()}
                                 </pre>
                               </div>
                             )}

@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import { useTranslations, useLocale } from 'next-intl'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -32,19 +33,6 @@ const STATUS_COLOR: Record<ServiceStatus, string> = {
   COMPLETED:     'bg-gray-600/30 text-gray-400',
   CANCELLED:     'bg-red-600/30 text-red-400',
 }
-const STATUS_LABEL: Record<ServiceStatus, string> = {
-  SCHEDULED:     'Планирана',
-  INTAKE:        'Приемане',
-  IN_PROGRESS:   'В процес',
-  QUALITY_CHECK: 'Контрол',
-  READY:         'Готова',
-  COMPLETED:     'Завършена',
-  CANCELLED:     'Отменена',
-}
-
-const MONTH_BG = ['Януари','Февруари','Март','Април','Май','Юни',
-                  'Юли','Август','Септември','Октомври','Ноември','Декември']
-const DOW_BG   = ['Пн','Вт','Ср','Чт','Пт','Сб','Нд']
 
 // ─── CreateServiceModal ───────────────────────────────────────────────────────
 
@@ -54,6 +42,9 @@ function CreateServiceModal({
   date: string; trucks: TruckOption[]
   onClose: () => void; onCreated: (service: CalService) => void
 }) {
+  const t       = useTranslations('calendar')
+  const tCommon = useTranslations('common')
+
   const [truckId, setTruckId] = useState('')
   const [error,   setError]   = useState('')
   const [saving,  setSaving]  = useState(false)
@@ -61,7 +52,7 @@ function CreateServiceModal({
 
   async function submit(e: React.FormEvent) {
     e.preventDefault()
-    if (!truckId) { setError('Изберете камион.'); return }
+    if (!truckId) { setError(tCommon('error')); return }
     setSaving(true); setError('')
     try {
       const res  = await fetch('/api/services', {
@@ -70,7 +61,7 @@ function CreateServiceModal({
         body: JSON.stringify({ truckId: Number(truckId), scheduledDate: date }),
       })
       const json = await res.json()
-      if (!res.ok) { setError(json.error ?? 'Грешка.'); return }
+      if (!res.ok) { setError(json.error ?? tCommon('error')); return }
       onCreated({
         id:                json.service.id,
         truckPlateSnapshot: json.service.truckPlateSnapshot,
@@ -80,7 +71,7 @@ function CreateServiceModal({
         endDate:           null,
       })
       router.push(`/services/${json.service.id}`)
-    } catch { setError('Неуспешна връзка.') }
+    } catch { setError(tCommon('connectionFailed')) }
     finally { setSaving(false) }
   }
 
@@ -91,20 +82,20 @@ function CreateServiceModal({
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
       <div className="bg-gray-900 rounded-2xl w-full max-w-md p-6 space-y-4">
         <div className="flex items-center justify-between">
-          <h2 className="text-base font-semibold text-white">Нова поръчка — {display}</h2>
+          <h2 className="text-base font-semibold text-white">{t('newOrderFor', { date: display })}</h2>
           <button onClick={onClose} className="text-gray-500 hover:text-white text-xl">×</button>
         </div>
         <form onSubmit={submit} className="space-y-3">
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-1">Камион *</label>
+            <label className="block text-sm font-medium text-gray-300 mb-1">{t('selectTruckLabel')}</label>
             <select
               value={truckId} onChange={(e) => setTruckId(e.target.value)}
               className="w-full bg-gray-800 border border-gray-700 rounded-xl px-3 py-2 text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               autoFocus
             >
-              <option value="">— Изберете камион —</option>
-              {trucks.map((t) => (
-                <option key={t.id} value={t.id}>{t.plateNumber} — {t.make} {t.model}</option>
+              <option value="">{t('selectTruckPlaceholder')}</option>
+              {trucks.map((tr) => (
+                <option key={tr.id} value={tr.id}>{tr.plateNumber} — {tr.make} {tr.model}</option>
               ))}
             </select>
           </div>
@@ -112,11 +103,11 @@ function CreateServiceModal({
           <div className="flex gap-2 justify-end">
             <button type="button" onClick={onClose}
               className="px-3 py-1.5 text-sm text-gray-400 hover:text-gray-200 transition-colors">
-              Отказ
+              {tCommon('cancel')}
             </button>
             <button type="submit" disabled={saving || !truckId}
               className="px-4 py-1.5 text-sm bg-blue-600 hover:bg-blue-500 text-white rounded-xl transition-colors disabled:opacity-50">
-              {saving ? 'Създаване...' : 'Създай'}
+              {saving ? t('creating') : t('create')}
             </button>
           </div>
         </form>
@@ -133,6 +124,12 @@ function MonthView({
   year: number; month: number; services: CalService[]
   canCreate: boolean; onDayClick: (date: string) => void
 }) {
+  const locale = useLocale()
+
+  const DAYS = Array.from({ length: 7 }, (_, i) =>
+    new Intl.DateTimeFormat(locale, { weekday: 'short' }).format(new Date(2024, 0, i + 1))
+  )
+
   const firstDay = new Date(year, month, 1)
   // Monday-first: 0=Mon,...,6=Sun
   const startDow = (firstDay.getDay() + 6) % 7
@@ -155,7 +152,7 @@ function MonthView({
     <div>
       {/* Day headers */}
       <div className="grid grid-cols-7 mb-1">
-        {DOW_BG.map((d) => (
+        {DAYS.map((d) => (
           <div key={d} className="text-center text-xs text-gray-500 font-medium py-1">{d}</div>
         ))}
       </div>
@@ -209,6 +206,14 @@ function WeekView({
   weekStart: Date; services: CalService[]
   canCreate: boolean; onDayClick: (date: string) => void
 }) {
+  const t       = useTranslations('calendar')
+  const tService = useTranslations('service')
+  const locale  = useLocale()
+
+  const DAYS = Array.from({ length: 7 }, (_, i) =>
+    new Intl.DateTimeFormat(locale, { weekday: 'short' }).format(new Date(2024, 0, i + 1))
+  )
+
   const days = Array.from({ length: 7 }, (_, i) => {
     const d = new Date(weekStart)
     d.setDate(weekStart.getDate() + i)
@@ -231,7 +236,7 @@ function WeekView({
             onClick={() => canCreate && onDayClick(ds)}
           >
             <div className="mb-2">
-              <p className="text-xs text-gray-500">{DOW_BG[(day.getDay() + 6) % 7]}</p>
+              <p className="text-xs text-gray-500">{DAYS[(day.getDay() + 6) % 7]}</p>
               <p className={`text-sm font-semibold ${isToday ? 'text-blue-400' : 'text-white'}`}>
                 {day.getDate()}.{String(day.getMonth() + 1).padStart(2, '0')}
               </p>
@@ -245,12 +250,12 @@ function WeekView({
                   className={`block px-2 py-1 rounded-lg text-xs ${STATUS_COLOR[svc.status]}`}
                 >
                   <p className="font-mono font-semibold">{svc.truckPlateSnapshot}</p>
-                  <p className="opacity-80">{STATUS_LABEL[svc.status]}</p>
+                  <p className="opacity-80">{tService(`status.${svc.status}`)}</p>
                 </Link>
               ))}
               {canCreate && (
                 <div className="mt-auto pt-1">
-                  <p className="text-xs text-gray-700 hover:text-gray-500 text-center">+ нова</p>
+                  <p className="text-xs text-gray-700 hover:text-gray-500 text-center">{t('newHint')}</p>
                 </div>
               )}
             </div>
@@ -270,6 +275,14 @@ export default function CalendarClient({
   trucks: TruckOption[]
   canCreate: boolean
 }) {
+  const t        = useTranslations('calendar')
+  const tService = useTranslations('service')
+  const locale   = useLocale()
+
+  const MONTHS = Array.from({ length: 12 }, (_, i) =>
+    new Intl.DateTimeFormat(locale, { month: 'long' }).format(new Date(2024, i, 1))
+  )
+
   const today = new Date()
   const [viewMode,    setViewMode]    = useState<'month' | 'week'>('month')
   const [currentDate, setCurrentDate] = useState(new Date(today.getFullYear(), today.getMonth(), 1))
@@ -306,7 +319,7 @@ export default function CalendarClient({
   }
 
   const headerLabel = viewMode === 'month'
-    ? `${MONTH_BG[currentDate.getMonth()]} ${currentDate.getFullYear()}`
+    ? `${MONTHS[currentDate.getMonth()]} ${currentDate.getFullYear()}`
     : (() => {
         const ws = weekStart
         const we = new Date(ws); we.setDate(ws.getDate() + 6)
@@ -341,7 +354,7 @@ export default function CalendarClient({
           </button>
           <button onClick={goToday}
             className="px-3 py-1.5 text-sm text-gray-400 hover:text-gray-200 border border-gray-700 hover:border-gray-500 rounded-lg transition-colors">
-            Днес
+            {t('today')}
           </button>
         </div>
 
@@ -353,7 +366,7 @@ export default function CalendarClient({
               viewMode === 'month' ? 'bg-blue-600 text-white' : 'text-gray-400 hover:text-gray-200'
             }`}
           >
-            Месец
+            {t('month')}
           </button>
           <button
             onClick={() => setViewMode('week')}
@@ -361,7 +374,7 @@ export default function CalendarClient({
               viewMode === 'week' ? 'bg-blue-600 text-white' : 'text-gray-400 hover:text-gray-200'
             }`}
           >
-            Седмица
+            {t('week')}
           </button>
         </div>
       </div>
@@ -370,7 +383,7 @@ export default function CalendarClient({
       <div className="flex flex-wrap gap-3">
         {(Object.entries(STATUS_COLOR) as [ServiceStatus, string][]).map(([status, color]) => (
           <span key={status} className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-xs ${color}`}>
-            {STATUS_LABEL[status]}
+            {tService(`status.${status}`)}
           </span>
         ))}
       </div>
@@ -394,7 +407,7 @@ export default function CalendarClient({
       )}
 
       {canCreate && (
-        <p className="text-xs text-gray-600 text-center">Кликнете върху ден, за да създадете нова поръчка.</p>
+        <p className="text-xs text-gray-600 text-center">{t('clickDayHint')}</p>
       )}
     </div>
   )

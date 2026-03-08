@@ -1,9 +1,11 @@
 import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
-import { hasPermission } from '@/lib/permissions'
+import { hasPermission, PERMISSIONS } from '@/lib/permissions'
 import { prisma } from '@/lib/prisma'
 import { logAudit, auditActor } from '@/lib/audit'
+
+const VALID_PERMISSIONS = new Set(Object.values(PERMISSIONS))
 
 async function authorize() {
   const session = await getServerSession(authOptions)
@@ -41,10 +43,14 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     data: {
       ...(name !== undefined        && { name: name.trim() }),
       ...(role !== undefined        && { role }),
-      ...(permissions !== undefined && { permissions: JSON.stringify(Array.isArray(permissions) ? permissions : []) }),
+      ...(permissions !== undefined && {
+        permissions: JSON.stringify(
+          Array.isArray(permissions) ? permissions.filter((p: unknown) => typeof p === 'string' && VALID_PERMISSIONS.has(p as never)) : []
+        ),
+      }),
       ...(preferredLocale !== undefined && { preferredLocale }),
       ...(darkMode !== undefined    && { darkMode: Boolean(darkMode) }),
-      ...(pageSize !== undefined    && { pageSize: Number(pageSize) }),
+      ...(pageSize !== undefined    && { pageSize: Math.min(100, Math.max(5, Number(pageSize))) }),
     },
     select: {
       id: true,

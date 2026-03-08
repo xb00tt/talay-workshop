@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useTranslations } from 'next-intl'
 import Pagination from '@/components/Pagination'
 
 // ─── Types ─────────────────────────────────────────────────────────────────────
@@ -83,6 +84,10 @@ function TruckForm({
   onClose: () => void
   onSaved: (truck: Truck) => void
 }) {
+  const t = useTranslations('truck')
+  const tCommon = useTranslations('common')
+  const tErrors = useTranslations('errors')
+
   const isEdit = !!initial
   const [plateNumber,      setPlateNumber]      = useState(initial?.plateNumber      ?? '')
   const [make,             setMake]             = useState(initial?.make             ?? '')
@@ -119,11 +124,11 @@ function TruckForm({
         body: JSON.stringify(body),
       })
       const json = await res.json()
-      if (!res.ok) { setError(json.error ?? 'Грешка.'); return }
+      if (!res.ok) { setError(json.error ?? tErrors('genericShort')); return }
       onSaved(json.truck)
       onClose()
     } catch {
-      setError('Неуспешна връзка.')
+      setError(tErrors('connectionFailed'))
     } finally {
       setLoading(false)
     }
@@ -133,7 +138,7 @@ function TruckForm({
     <form onSubmit={submit} className="space-y-4">
       <div className="grid grid-cols-2 gap-3">
         <div className="col-span-2">
-          <Label>Рег. номер *</Label>
+          <Label>{t('plateNumberRequired')}</Label>
           <Input
             value={plateNumber}
             onChange={(e) => setPlateNumber(e.target.value.toUpperCase())}
@@ -143,15 +148,15 @@ function TruckForm({
           />
         </div>
         <div>
-          <Label>Марка *</Label>
+          <Label>{t('makeRequired')}</Label>
           <Input value={make} onChange={(e) => setMake(e.target.value)} placeholder="Volvo" />
         </div>
         <div>
-          <Label>Модел *</Label>
+          <Label>{t('modelRequired')}</Label>
           <Input value={model} onChange={(e) => setModel(e.target.value)} placeholder="FH 500" />
         </div>
         <div>
-          <Label>Година</Label>
+          <Label>{t('year')}</Label>
           <Input
             type="number"
             value={year}
@@ -162,7 +167,7 @@ function TruckForm({
           />
         </div>
         <div>
-          <Label>Праг (км)</Label>
+          <Label>{t('mileageTriggerShort')}</Label>
           <Input
             type="number"
             value={mileageTriggerKm}
@@ -173,7 +178,7 @@ function TruckForm({
         </div>
         {!isFrotcom && (
           <div className="col-span-2">
-            <Label>Текущ пробег (км)</Label>
+            <Label>{t('currentMileageShort')}</Label>
             <Input
               type="number"
               value={currentMileage}
@@ -192,7 +197,7 @@ function TruckForm({
           onChange={(e) => setIsAdr(e.target.checked)}
           className="w-4 h-4 accent-blue-500"
         />
-        <span className="text-sm text-gray-300">ADR камион</span>
+        <span className="text-sm text-gray-300">{t('adrTruck')}</span>
       </label>
 
       {error && <ErrorBox msg={error} />}
@@ -200,11 +205,11 @@ function TruckForm({
       <div className="flex gap-3 pt-1">
         <button type="button" onClick={onClose}
           className="flex-1 py-2.5 rounded-xl border border-gray-600 text-gray-300 hover:bg-gray-800 transition-colors text-sm">
-          Откажи
+          {tCommon('cancel')}
         </button>
         <button type="submit" disabled={loading}
           className="flex-1 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold text-sm transition-colors disabled:opacity-50">
-          {loading ? 'Запазване...' : isEdit ? 'Запази' : 'Добави'}
+          {loading ? tCommon('saving') : isEdit ? tCommon('save') : tCommon('add')}
         </button>
       </div>
     </form>
@@ -214,13 +219,17 @@ function TruckForm({
 // ─── Update mileage modal (non-Frotcom) ───────────────────────────────────────
 
 function MileageModal({ truck, onClose, onSaved }: { truck: Truck; onClose: () => void; onSaved: (t: Truck) => void }) {
+  const t = useTranslations('truck')
+  const tCommon = useTranslations('common')
+  const tErrors = useTranslations('errors')
+
   const [value,  setValue]   = useState(truck.currentMileage?.toString() ?? '')
   const [error,  setError]   = useState('')
   const [loading, setLoading] = useState(false)
 
   async function submit(e: React.FormEvent) {
     e.preventDefault()
-    if (!value) { setError('Въведете пробег.'); return }
+    if (!value) { setError(t('enterMileage')); return }
     setError('')
     setLoading(true)
     try {
@@ -230,11 +239,11 @@ function MileageModal({ truck, onClose, onSaved }: { truck: Truck; onClose: () =
         body: JSON.stringify({ currentMileage: Number(value) }),
       })
       const json = await res.json()
-      if (!res.ok) { setError(json.error ?? 'Грешка.'); return }
+      if (!res.ok) { setError(json.error ?? tErrors('genericShort')); return }
       onSaved(json.truck)
       onClose()
     } catch {
-      setError('Неуспешна връзка.')
+      setError(tErrors('connectionFailed'))
     } finally {
       setLoading(false)
     }
@@ -243,10 +252,10 @@ function MileageModal({ truck, onClose, onSaved }: { truck: Truck; onClose: () =
   return (
     <form onSubmit={submit} className="space-y-4">
       <p className="text-sm text-gray-400">
-        Актуализиране на пробега за <strong className="text-white">{truck.plateNumber}</strong>
+        {t('updateMileageFor')} <strong className="text-white">{truck.plateNumber}</strong>
       </p>
       <div>
-        <Label>Пробег (км)</Label>
+        <Label>{t('mileageKm')}</Label>
         <Input
           type="number"
           value={value}
@@ -260,11 +269,11 @@ function MileageModal({ truck, onClose, onSaved }: { truck: Truck; onClose: () =
       <div className="flex gap-3">
         <button type="button" onClick={onClose}
           className="flex-1 py-2.5 rounded-xl border border-gray-600 text-gray-300 hover:bg-gray-800 transition-colors text-sm">
-          Откажи
+          {tCommon('cancel')}
         </button>
         <button type="submit" disabled={loading}
           className="flex-1 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold text-sm transition-colors disabled:opacity-50">
-          {loading ? 'Запазване...' : 'Обнови'}
+          {loading ? tCommon('saving') : t('update')}
         </button>
       </div>
     </form>
@@ -274,6 +283,10 @@ function MileageModal({ truck, onClose, onSaved }: { truck: Truck; onClose: () =
 // ─── Toggle active modal ───────────────────────────────────────────────────────
 
 function ToggleModal({ truck, onClose, onSaved }: { truck: Truck; onClose: () => void; onSaved: (t: Truck) => void }) {
+  const t = useTranslations('truck')
+  const tCommon = useTranslations('common')
+  const tErrors = useTranslations('errors')
+
   const [error,   setError]   = useState('')
   const [loading, setLoading] = useState(false)
 
@@ -287,36 +300,36 @@ function ToggleModal({ truck, onClose, onSaved }: { truck: Truck; onClose: () =>
         body: JSON.stringify({ isActive: !truck.isActive }),
       })
       const json = await res.json()
-      if (!res.ok) { setError(json.error ?? 'Грешка.'); return }
+      if (!res.ok) { setError(json.error ?? tErrors('genericShort')); return }
       onSaved(json.truck)
       onClose()
     } catch {
-      setError('Неуспешна връзка.')
+      setError(tErrors('connectionFailed'))
     } finally {
       setLoading(false)
     }
   }
 
-  const action = truck.isActive ? 'деактивиране' : 'активиране'
+  const action = truck.isActive ? t('deactivationAction') : t('activationAction')
 
   return (
     <div className="space-y-5">
       <p className="text-sm text-gray-300">
-        Потвърдете {action} на{' '}
+        {tCommon('confirm')} {action} {' '}
         <strong className="text-white">{truck.plateNumber}</strong> — {truck.make} {truck.model}.
-        {truck.isActive && ' Историята ще бъде запазена.'}
+        {truck.isActive && ` ${t('historyPreserved')}`}
       </p>
       {error && <ErrorBox msg={error} />}
       <div className="flex gap-3">
         <button onClick={onClose}
           className="flex-1 py-2.5 rounded-xl border border-gray-600 text-gray-300 hover:bg-gray-800 transition-colors text-sm">
-          Откажи
+          {tCommon('cancel')}
         </button>
         <button onClick={confirm} disabled={loading}
           className={`flex-1 py-2.5 rounded-xl text-white font-semibold text-sm transition-colors disabled:opacity-50 ${
             truck.isActive ? 'bg-red-600 hover:bg-red-500' : 'bg-green-600 hover:bg-green-500'
           }`}>
-          {loading ? '...' : truck.isActive ? 'Деактивирай' : 'Активирай'}
+          {loading ? '...' : truck.isActive ? tCommon('deactivate') : tCommon('activate')}
         </button>
       </div>
     </div>
@@ -326,17 +339,20 @@ function ToggleModal({ truck, onClose, onSaved }: { truck: Truck; onClose: () =>
 // ─── Import result banner ──────────────────────────────────────────────────────
 
 function ImportResult({ result, onClose }: { result: { imported: number; skipped: number; errors: string[] }; onClose: () => void }) {
+  const t = useTranslations('truck')
+  const tCommon = useTranslations('common')
+
   return (
     <div className="flex items-start gap-3 px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-sm">
       <div className="flex-1">
         <p className="font-medium text-white">
-          Импорт завършен: {result.imported} нови, {result.skipped} пропуснати
+          {t('importComplete', { imported: result.imported, skipped: result.skipped })}
         </p>
         {result.errors.length > 0 && (
           <p className="text-red-400 mt-1 text-xs">{result.errors.slice(0, 3).join('; ')}</p>
         )}
       </div>
-      <button onClick={onClose} className="text-gray-500 hover:text-white text-lg leading-none flex-shrink-0">×</button>
+      <button onClick={onClose} className="text-gray-500 hover:text-white text-lg leading-none flex-shrink-0" aria-label={tCommon('close')}>×</button>
     </div>
   )
 }
@@ -358,6 +374,10 @@ export default function TrucksClient({
   canDeactivate: boolean
   canImport: boolean
 }) {
+  const t = useTranslations('truck')
+  const tCommon = useTranslations('common')
+  const tErrors = useTranslations('errors')
+
   const [trucks,    setTrucks]    = useState<Truck[]>(initialTrucks)
   const [modal,     setModal]     = useState<ModalState>(null)
   const [search,    setSearch]    = useState('')

@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 
 interface EqItem {
   id: number
@@ -45,6 +46,9 @@ function AddModal({
   onClose: () => void
   onAdded: (item: EqItem) => void
 }) {
+  const t       = useTranslations('equipment')
+  const tCommon = useTranslations('common')
+
   const [name, setName] = useState('')
   const [desc, setDesc] = useState('')
   const [err,  setErr]  = useState('')
@@ -52,7 +56,7 @@ function AddModal({
 
   async function submit(e: React.FormEvent) {
     e.preventDefault()
-    if (!name.trim()) { setErr('Въведете наименование.'); return }
+    if (!name.trim()) { setErr(t('nameRequiredError')); return }
     setBusy(true); setErr('')
     try {
       const res  = await fetch('/api/equipment', {
@@ -61,10 +65,10 @@ function AddModal({
         body: JSON.stringify({ name, description: desc || null, isAdr }),
       })
       const json = await res.json()
-      if (!res.ok) { setErr(json.error ?? 'Грешка.'); return }
+      if (!res.ok) { setErr(json.error ?? tCommon('error')); return }
       onAdded(json.item)
       onClose()
-    } catch { setErr('Неуспешна връзка.') }
+    } catch { setErr(tCommon('connectionFailed')) }
     finally { setBusy(false) }
   }
 
@@ -72,31 +76,31 @@ function AddModal({
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
       <div className="bg-gray-900 rounded-2xl w-full max-w-md p-6 space-y-4">
         <h2 className="text-base font-semibold text-white">
-          Добави {isAdr ? 'ADR ' : ''}оборудване
+          {isAdr ? t('addAdrEquipment') : t('addEquipment')}
         </h2>
         <form onSubmit={submit} className="space-y-3">
           <input
             value={name}
             onChange={(e) => setName(e.target.value)}
-            placeholder="Наименование *"
+            placeholder={t('namePlaceholder')}
             className="w-full bg-gray-800 border border-gray-700 rounded-xl px-3 py-2 text-white placeholder-gray-600 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             autoFocus
           />
           <input
             value={desc}
             onChange={(e) => setDesc(e.target.value)}
-            placeholder="Описание (по желание)"
+            placeholder={t('descPlaceholder')}
             className="w-full bg-gray-800 border border-gray-700 rounded-xl px-3 py-2 text-white placeholder-gray-600 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
           {err && <p className="text-red-400 text-xs">{err}</p>}
           <div className="flex gap-2 justify-end">
             <button type="button" onClick={onClose}
               className="px-3 py-1.5 text-sm text-gray-400 hover:text-gray-200 transition-colors">
-              Отказ
+              {tCommon('cancel')}
             </button>
             <button type="submit" disabled={busy || !name.trim()}
               className="px-4 py-1.5 text-sm bg-blue-600 hover:bg-blue-500 text-white rounded-xl transition-colors disabled:opacity-50">
-              {busy ? 'Запазване...' : 'Добави'}
+              {busy ? tCommon('saving') : tCommon('add')}
             </button>
           </div>
         </form>
@@ -118,6 +122,9 @@ function EditModal({
   onClose: () => void
   onSaved: (item: EqItem) => void
 }) {
+  const t       = useTranslations('equipment')
+  const tCommon = useTranslations('common')
+
   const [name, setName] = useState(item.name)
   const [desc, setDesc] = useState(item.description ?? '')
   const [err,  setErr]  = useState('')
@@ -125,22 +132,22 @@ function EditModal({
 
   async function submit(e: React.FormEvent) {
     e.preventDefault()
-    if (!name.trim()) { setErr('Въведете наименование.'); return }
+    if (!name.trim()) { setErr(t('nameRequiredError')); return }
     setBusy(true); setErr('')
     try {
       const res  = await patchItem(isAdr, item.id, { name, description: desc || null })
       const json = await res.json()
-      if (!res.ok) { setErr(json.error ?? 'Грешка.'); return }
+      if (!res.ok) { setErr(json.error ?? tCommon('error')); return }
       onSaved(json.item)
       onClose()
-    } catch { setErr('Неуспешна връзка.') }
+    } catch { setErr(tCommon('connectionFailed')) }
     finally { setBusy(false) }
   }
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
       <div className="bg-gray-900 rounded-2xl w-full max-w-md p-6 space-y-4">
-        <h2 className="text-base font-semibold text-white">Редактирай</h2>
+        <h2 className="text-base font-semibold text-white">{t('editModal')}</h2>
         <form onSubmit={submit} className="space-y-3">
           <input
             value={name}
@@ -151,18 +158,18 @@ function EditModal({
           <input
             value={desc}
             onChange={(e) => setDesc(e.target.value)}
-            placeholder="Описание (по желание)"
+            placeholder={t('descPlaceholder')}
             className="w-full bg-gray-800 border border-gray-700 rounded-xl px-3 py-2 text-white placeholder-gray-600 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
           {err && <p className="text-red-400 text-xs">{err}</p>}
           <div className="flex gap-2 justify-end">
             <button type="button" onClick={onClose}
               className="px-3 py-1.5 text-sm text-gray-400 hover:text-gray-200 transition-colors">
-              Отказ
+              {tCommon('cancel')}
             </button>
             <button type="submit" disabled={busy || !name.trim()}
               className="px-4 py-1.5 text-sm bg-blue-600 hover:bg-blue-500 text-white rounded-xl transition-colors disabled:opacity-50">
-              {busy ? 'Запазване...' : 'Запази'}
+              {busy ? tCommon('saving') : tCommon('save')}
             </button>
           </div>
         </form>
@@ -188,6 +195,9 @@ function ItemList({
   onAdd: () => void
   setItems: React.Dispatch<React.SetStateAction<EqItem[]>>
 }) {
+  const t       = useTranslations('equipment')
+  const tCommon = useTranslations('common')
+
   const [editTarget, setEditTarget] = useState<EqItem | null>(null)
   const [busy, setBusy]             = useState(false)
   const [error, setError]           = useState('')
@@ -201,9 +211,9 @@ function ItemList({
     try {
       const res  = await patchItem(isAdr, item.id, { isActive: !item.isActive })
       const json = await res.json()
-      if (!res.ok) { setError(json.error ?? 'Грешка.'); return }
+      if (!res.ok) { setError(json.error ?? tCommon('error')); return }
       setItems((prev) => prev.map((i) => i.id === item.id ? json.item : i))
-    } catch { setError('Неуспешна връзка.') }
+    } catch { setError(tCommon('connectionFailed')) }
     finally { setBusy(false) }
   }
 
@@ -231,18 +241,18 @@ function ItemList({
         if (i.id === other.id) return { ...i, order: newOrd }
         return i
       }))
-      setError('Грешка при пренареждане.')
+      setError(t('reorderError'))
     }
   }
 
   async function doDelete(item: EqItem) {
-    if (!confirm(`Изтриване на "${item.name}"?`)) return
+    if (!confirm(t('deleteConfirm', { name: item.name }))) return
     setBusy(true); setError('')
     try {
       const res = await deleteItem(isAdr, item.id)
-      if (!res.ok) { const j = await res.json(); setError(j.error ?? 'Грешка.'); return }
+      if (!res.ok) { const j = await res.json(); setError(j.error ?? tCommon('error')); return }
       setItems((prev) => prev.filter((i) => i.id !== item.id))
-    } catch { setError('Неуспешна връзка.') }
+    } catch { setError(tCommon('connectionFailed')) }
     finally { setBusy(false) }
   }
 
@@ -265,7 +275,7 @@ function ItemList({
         {canEdit && (
           <button onClick={onAdd}
             className="text-sm text-blue-400 hover:text-blue-300 transition-colors">
-            + Добави
+            + {tCommon('add')}
           </button>
         )}
       </div>
@@ -277,7 +287,7 @@ function ItemList({
       )}
 
       {active.length === 0 && inactive.length === 0 ? (
-        <p className="px-5 py-10 text-sm text-gray-500 text-center">Няма позиции.</p>
+        <p className="px-5 py-10 text-sm text-gray-500 text-center">{t('noItems')}</p>
       ) : (
         <>
           <ul className="divide-y divide-gray-800">
@@ -302,11 +312,11 @@ function ItemList({
                       className="p-1 text-gray-600 hover:text-gray-300 transition-colors text-xs">✎</button>
                     <button disabled={busy} onClick={() => toggle(item)}
                       className="px-2 py-0.5 text-xs rounded bg-gray-800 hover:bg-gray-700 text-gray-400 transition-colors disabled:opacity-50">
-                      Изкл.
+                      {t('deactivateBtn')}
                     </button>
                     <button disabled={busy} onClick={() => doDelete(item)}
                       className="px-2 py-0.5 text-xs rounded bg-red-500/10 hover:bg-red-500/20 text-red-400 transition-colors disabled:opacity-50">
-                      Изтрий
+                      {tCommon('delete')}
                     </button>
                   </div>
                 )}
@@ -317,7 +327,7 @@ function ItemList({
           {inactive.length > 0 && (
             <div className="border-t border-gray-800">
               <p className="px-5 py-2 text-xs text-gray-600 font-semibold uppercase tracking-wider">
-                Неактивни ({inactive.length})
+                {t('inactiveSection')} ({inactive.length})
               </p>
               <ul className="divide-y divide-gray-800">
                 {inactive.map((item) => (
@@ -327,11 +337,11 @@ function ItemList({
                       <div className="shrink-0 flex gap-1">
                         <button disabled={busy} onClick={() => toggle(item)}
                           className="px-2 py-0.5 text-xs rounded bg-gray-800 hover:bg-gray-700 text-gray-400 transition-colors disabled:opacity-50">
-                          Активирай
+                          {t('activateBtn')}
                         </button>
                         <button disabled={busy} onClick={() => doDelete(item)}
                           className="px-2 py-0.5 text-xs rounded bg-red-500/10 hover:bg-red-500/20 text-red-400 transition-colors disabled:opacity-50">
-                          Изтрий
+                          {tCommon('delete')}
                         </button>
                       </div>
                     )}
@@ -349,6 +359,8 @@ function ItemList({
 // ── EquipmentClient ───────────────────────────────────────────────────────────
 
 export default function EquipmentClient({ initialItems, initialAdrItems, canEdit }: Props) {
+  const t = useTranslations('equipment')
+
   const [items,    setItems]    = useState<EqItem[]>(initialItems)
   const [adrItems, setAdrItems] = useState<EqItem[]>(initialAdrItems)
   const [addFor,   setAddFor]   = useState<'global' | 'adr' | null>(null)
@@ -368,14 +380,14 @@ export default function EquipmentClient({ initialItems, initialAdrItems, canEdit
       )}
 
       <div>
-        <h1 className="text-xl font-bold text-white">Оборудване</h1>
+        <h1 className="text-xl font-bold text-white">{t('title')}</h1>
         <p className="text-sm text-gray-500 mt-0.5">
-          Тези списъци се използват при проверката на оборудването при приемане и предаване на камион.
+          {t('description')}
         </p>
       </div>
 
       <ItemList
-        title="Стандартно оборудване"
+        title={t('globalList')}
         items={items}
         isAdr={false}
         canEdit={canEdit}
@@ -384,7 +396,7 @@ export default function EquipmentClient({ initialItems, initialAdrItems, canEdit
       />
 
       <ItemList
-        title="ADR оборудване"
+        title={t('adrList')}
         items={adrItems}
         isAdr={true}
         canEdit={canEdit}

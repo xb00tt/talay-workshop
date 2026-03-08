@@ -41,7 +41,7 @@ export async function POST(request: Request) {
       model:           model.trim(),
       year:            year ? Number(year) : null,
       isAdr:           Boolean(isAdr),
-      mileageTriggerKm: mileageTriggerKm ? Number(mileageTriggerKm) : 30000,
+      mileageTriggerKm: mileageTriggerKm ? Math.min(999999, Math.max(0, Number(mileageTriggerKm))) : 30000,
       currentMileage:  currentMileage != null ? Number(currentMileage) : null,
     },
   })

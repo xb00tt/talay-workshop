@@ -110,6 +110,9 @@ export async function PATCH(request: Request, { params }: Params) {
 
   // Update driver feedback notes
   if ('driverFeedbackNotes' in body) {
+    if (!hasPermission(session.user.role, session.user.permissions, 'service.create')) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+    }
     const updated = await prisma.serviceOrder.update({
       where: { id: serviceId },
       data:  { driverFeedbackNotes: body.driverFeedbackNotes?.trim() ?? null },

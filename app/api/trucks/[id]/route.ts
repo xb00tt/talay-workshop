@@ -48,7 +48,7 @@ export async function PATCH(request: Request, { params }: Params) {
   if (model           !== undefined) data.model           = model.trim()
   if (year            !== undefined) data.year            = year ? Number(year) : null
   if (isAdr           !== undefined) data.isAdr           = Boolean(isAdr)
-  if (mileageTriggerKm !== undefined) data.mileageTriggerKm = Number(mileageTriggerKm)
+  if (mileageTriggerKm !== undefined) data.mileageTriggerKm = Math.min(999999, Math.max(0, Number(mileageTriggerKm)))
   if (currentMileage  !== undefined) data.currentMileage  = currentMileage != null ? Number(currentMileage) : null
   if (isActive        !== undefined) data.isActive        = Boolean(isActive)
 

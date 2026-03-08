@@ -4,9 +4,11 @@ import { useState } from 'react'
 import { signIn } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import { useTranslations } from 'next-intl'
 
 export default function LoginForm({ companyName }: { companyName: string }) {
   const router = useRouter()
+  const t = useTranslations('auth')
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
@@ -19,7 +21,7 @@ export default function LoginForm({ companyName }: { companyName: string }) {
     const res = await signIn('credentials', { username, password, redirect: false })
     setLoading(false)
     if (res?.error) {
-      setError('Невалидно потребителско име или парола.')
+      setError(t('invalidCredentials'))
     } else {
       router.push('/dashboard')
       router.refresh()
@@ -40,7 +42,7 @@ export default function LoginForm({ companyName }: { companyName: string }) {
           <h1 className="text-xl font-bold text-white">
             {companyName || 'Talay Workshop'}
           </h1>
-          <p className="text-gray-500 text-sm mt-1">Влезте в системата</p>
+          <p className="text-gray-500 text-sm mt-1">{t('subtitle')}</p>
         </div>
 
         {/* Form card */}
@@ -48,7 +50,7 @@ export default function LoginForm({ companyName }: { companyName: string }) {
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-300 mb-1">
-                Потребителско име
+                {t('username')}
               </label>
               <input
                 type="text"
@@ -59,12 +61,11 @@ export default function LoginForm({ companyName }: { companyName: string }) {
                 autoComplete="username"
                 className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2.5 text-white
                   placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="потребителско_име"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-1">Парола</label>
+              <label className="block text-sm font-medium text-gray-300 mb-1">{t('password')}</label>
               <input
                 type="password"
                 value={password}
@@ -89,7 +90,7 @@ export default function LoginForm({ companyName }: { companyName: string }) {
               className="w-full py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold
                 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {loading ? 'Влизане...' : 'Вход'}
+              {loading ? t('signingIn') : t('loginButton')}
             </button>
           </form>
 
@@ -98,7 +99,7 @@ export default function LoginForm({ companyName }: { companyName: string }) {
               href="/login/recover"
               className="text-sm text-gray-500 hover:text-gray-300 transition-colors"
             >
-              Забравена парола?
+              {t('forgotPassword')}
             </Link>
           </div>
         </div>

@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import useSWR from 'swr'
+import { useTranslations } from 'next-intl'
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json())
 
@@ -45,13 +46,6 @@ interface MileageAlert {
 
 // ─── Status config ───────────────────────────────────────────────────────────
 
-const STATUS_LABEL: Record<string, string> = {
-  INTAKE:        'Приемане',
-  IN_PROGRESS:   'В процес',
-  QUALITY_CHECK: 'Контрол',
-  READY:         'Готова',
-}
-
 const STATUS_COLOR: Record<string, string> = {
   INTAKE:        'bg-blue-600/20 text-blue-400 border-blue-500/30',
   IN_PROGRESS:   'bg-indigo-600/20 text-indigo-400 border-indigo-500/30',
@@ -81,19 +75,13 @@ function fmtDate(iso: string) {
   return `${dd}.${mm}.${d.getUTCFullYear()}`
 }
 
-function fmtKm(km: number) {
-  return Math.round(km).toLocaleString('bg-BG') + ' км'
-}
-
-function dayLabel(n: number) {
-  if (n === 0) return 'Днес'
-  return `${n} ${n === 1 ? 'ден' : 'дни'} в сервиз`
+function fmtKm(km: number, kmUnit: string) {
+  return Math.round(km).toLocaleString('bg-BG') + kmUnit
 }
 
 // ─── Sub-components ──────────────────────────────────────────────────────────
 
-function StatusBadge({ status }: { status: string }) {
-  const label = STATUS_LABEL[status] ?? status
+function StatusBadge({ status, label }: { status: string; label: string }) {
   const color = STATUS_COLOR[status] ?? 'bg-gray-600/20 text-gray-400 border-gray-500/30'
   return (
     <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium border ${color}`}>
@@ -102,18 +90,27 @@ function StatusBadge({ status }: { status: string }) {
   )
 }
 
-function BayCard({ bay }: { bay: BayInfo }) {
+function BayCard({
+  bay,
+  statusLabel,
+  dayLabel,
+  freeLabel,
+}: {
+  bay: BayInfo
+  statusLabel: string
+  dayLabel: string
+  freeLabel: string
+}) {
   if (!bay.service) {
     return (
       <div className="bg-gray-900 border border-gray-800 rounded-xl p-4 min-h-[128px] flex flex-col">
         <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-auto">{bay.name}</p>
-        <p className="text-sm text-gray-600 mt-3">Свободен</p>
+        <p className="text-sm text-gray-600 mt-3">{freeLabel}</p>
       </div>
     )
   }
 
   const { service } = bay
-  const days = daysInService(service.startDate, service.createdAt)
   const border = BAY_BORDER[service.status] ?? 'border-gray-700'
 
   return (
@@ -123,11 +120,11 @@ function BayCard({ bay }: { bay: BayInfo }) {
     >
       <div className="flex items-start justify-between mb-2">
         <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">{bay.name}</p>
-        <StatusBadge status={service.status} />
+        <StatusBadge status={service.status} label={statusLabel} />
       </div>
       <p className="font-mono font-bold text-white text-lg leading-tight">{service.truckPlateSnapshot}</p>
       <p className="text-xs text-gray-500 mt-0.5">{service.truckMake} {service.truckModel}</p>
-      <p className="text-xs text-gray-600 mt-auto pt-2">{dayLabel(days)}</p>
+      <p className="text-xs text-gray-600 mt-auto pt-2">{dayLabel}</p>
     </Link>
   )
 }
@@ -145,6 +142,9 @@ export default function DashboardClient({
   mileageAlerts: MileageAlert[]
   unbayedServices: ActiveService[]
 }) {
+  const t = useTranslations('dashboard')
+  const tService = useTranslations('service')
+
   const { data } = useSWR('/api/dashboard', fetcher, {
     refreshInterval:    30_000,
     fallbackData:       { bays: initialBays, upcoming: initialUpcoming, mileageAlerts: initialMileageAlerts, unbayedServices: initialUnbayed },
@@ -158,23 +158,32 @@ export default function DashboardClient({
 
   const occupiedCount = bays.filter((b) => b.service).length
 
+  const kmUnit = t('kmUnit')
+
+  function getDayLabel(n: number): string {
+    if (n === 0) return t('today')
+    if (n === 1) return t('dayInService', { days: n })
+    return t('daysInServiceLabel', { days: n })
+  }
+
   return (
     <div className="p-6 lg:p-8 space-y-8">
 
       {/* Header */}
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-white">Табло</h1>
+          <h1 className="text-2xl font-bold text-white">{t('title')}</h1>
           <p className="text-sm text-gray-500 mt-0.5">
-            {occupiedCount} от {bays.length} бокса заети
+            {t('baysOccupied', { occupied: occupiedCount, total: bays.length })}
           </p>
         </div>
         {mileageAlerts.length > 0 && (
           <div className="flex items-center gap-2 px-3 py-1.5 bg-amber-500/10 border border-amber-500/30 rounded-full">
             <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse shrink-0" />
             <span className="text-sm text-amber-400 font-medium">
-              {mileageAlerts.length}{' '}
-              {mileageAlerts.length === 1 ? 'камион изисква' : 'камиона изискват'} сервиз
+              {mileageAlerts.length === 1
+                ? t('truckRequiresService', { count: mileageAlerts.length })
+                : t('trucksRequireService', { count: mileageAlerts.length })}
             </span>
           </div>
         )}
@@ -182,14 +191,23 @@ export default function DashboardClient({
 
       {/* Bay grid */}
       <section>
-        <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Боксове</h2>
+        <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">{t('bays')}</h2>
         {bays.length === 0 ? (
-          <p className="text-sm text-gray-500">Няма конфигурирани боксове.</p>
+          <p className="text-sm text-gray-500">{t('noBaysConfigured')}</p>
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
-            {bays.map((bay) => (
-              <BayCard key={bay.id} bay={bay} />
-            ))}
+            {bays.map((bay) => {
+              const days = bay.service ? daysInService(bay.service.startDate, bay.service.createdAt) : 0
+              return (
+                <BayCard
+                  key={bay.id}
+                  bay={bay}
+                  statusLabel={bay.service ? (tService(`status.${bay.service.status}`) ?? bay.service.status) : ''}
+                  dayLabel={getDayLabel(days)}
+                  freeLabel={t('bayFree')}
+                />
+              )
+            })}
           </div>
         )}
       </section>
@@ -198,7 +216,7 @@ export default function DashboardClient({
       {unbayedServices.length > 0 && (
         <section>
           <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">
-            Активни без бокс
+            {t('activeNoBay')}
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
             {unbayedServices.map((s) => (
@@ -209,10 +227,10 @@ export default function DashboardClient({
               >
                 <div className="flex items-start justify-between mb-1">
                   <p className="font-mono font-semibold text-white">{s.truckPlateSnapshot}</p>
-                  <StatusBadge status={s.status} />
+                  <StatusBadge status={s.status} label={tService(`status.${s.status}`) ?? s.status} />
                 </div>
                 <p className="text-xs text-gray-500">{s.truckMake} {s.truckModel}</p>
-                <p className="text-xs text-gray-600 mt-2">{dayLabel(daysInService(s.startDate, s.createdAt))}</p>
+                <p className="text-xs text-gray-600 mt-2">{getDayLabel(daysInService(s.startDate, s.createdAt))}</p>
               </Link>
             ))}
           </div>
@@ -225,11 +243,11 @@ export default function DashboardClient({
         {/* Upcoming scheduled */}
         <section>
           <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">
-            Предстоящи планирани
+            {t('upcomingScheduled')}
           </h2>
           <div className="bg-gray-900 rounded-2xl overflow-hidden">
             {upcoming.length === 0 ? (
-              <p className="px-5 py-10 text-sm text-gray-500 text-center">Няма планирани поръчки.</p>
+              <p className="px-5 py-10 text-sm text-gray-500 text-center">{t('noUpcomingScheduled')}</p>
             ) : (
               <ul className="divide-y divide-gray-800">
                 {upcoming.map((s) => (
@@ -254,31 +272,31 @@ export default function DashboardClient({
         {/* Mileage alerts */}
         <section>
           <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">
-            Сигнали за пробег
+            {t('mileageAlerts')}
           </h2>
           <div className="bg-gray-900 rounded-2xl overflow-hidden">
             {mileageAlerts.length === 0 ? (
-              <p className="px-5 py-10 text-sm text-gray-500 text-center">Няма сигнали за пробег.</p>
+              <p className="px-5 py-10 text-sm text-gray-500 text-center">{t('noMileageAlerts')}</p>
             ) : (
               <ul className="divide-y divide-gray-800">
-                {mileageAlerts.map((t) => {
-                  const kmSince = t.lastServiceMileage !== null
-                    ? t.currentMileage - t.lastServiceMileage
-                    : t.currentMileage
-                  const overBy = kmSince - t.mileageTriggerKm
+                {mileageAlerts.map((truck) => {
+                  const kmSince = truck.lastServiceMileage !== null
+                    ? truck.currentMileage - truck.lastServiceMileage
+                    : truck.currentMileage
+                  const overBy = kmSince - truck.mileageTriggerKm
                   return (
-                    <li key={t.id}>
+                    <li key={truck.id}>
                       <Link
-                        href={`/trucks/${t.id}`}
+                        href={`/trucks/${truck.id}`}
                         className="flex items-center justify-between px-5 py-3.5 hover:bg-gray-800/50 transition-colors"
                       >
                         <div>
-                          <p className="font-mono font-semibold text-white text-sm">{t.plateNumber}</p>
-                          <p className="text-xs text-gray-500">{t.make} {t.model}</p>
+                          <p className="font-mono font-semibold text-white text-sm">{truck.plateNumber}</p>
+                          <p className="text-xs text-gray-500">{truck.make} {truck.model}</p>
                         </div>
                         <div className="text-right">
-                          <p className="text-sm text-amber-400 font-medium">{fmtKm(kmSince)}</p>
-                          <p className="text-xs text-gray-500">+{fmtKm(overBy)} над лимита</p>
+                          <p className="text-sm text-amber-400 font-medium">{fmtKm(kmSince, kmUnit)}</p>
+                          <p className="text-xs text-gray-500">{t('overLimit', { km: fmtKm(overBy, kmUnit).trimStart() })}</p>
                         </div>
                       </Link>
                     </li>

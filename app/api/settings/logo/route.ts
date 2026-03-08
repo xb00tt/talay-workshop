@@ -7,6 +7,7 @@ import { writeFile, mkdir } from 'fs/promises'
 import path from 'path'
 
 const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/gif', 'image/webp']
+const MAX_LOGO_SIZE = 2 * 1024 * 1024  // 2 MB
 const EXT_MAP: Record<string, string> = {
   'image/jpeg': '.jpg',
   'image/png':  '.png',
@@ -29,6 +30,9 @@ export async function POST(request: Request) {
   }
   if (!ALLOWED_TYPES.includes(file.type)) {
     return NextResponse.json({ error: 'Само JPG, PNG, GIF или WebP.' }, { status: 422 })
+  }
+  if (file.size > MAX_LOGO_SIZE) {
+    return NextResponse.json({ error: 'Логото е прекалено голямо. Максимум 2 MB.' }, { status: 413 })
   }
 
   const ext = EXT_MAP[file.type] ?? '.jpg'

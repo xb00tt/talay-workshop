@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useRef } from 'react'
+import { useTranslations } from 'next-intl'
 
 // ─── Types ─────────────────────────────────────────────────────────────────────
 
@@ -95,7 +96,7 @@ function Section({
   )
 }
 
-function SaveBtn({ loading, label = 'Запази' }: { loading: boolean; label?: string }) {
+function SaveBtn({ loading, label }: { loading: boolean; label: string }) {
   return (
     <button
       type="submit"
@@ -103,7 +104,7 @@ function SaveBtn({ loading, label = 'Запази' }: { loading: boolean; label?
       className="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-sm font-semibold
         transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
     >
-      {loading ? 'Запазване...' : label}
+      {loading ? label : label}
     </button>
   )
 }
@@ -111,6 +112,8 @@ function SaveBtn({ loading, label = 'Запази' }: { loading: boolean; label?
 // ─── Company info section ──────────────────────────────────────────────────────
 
 function CompanySection({ initial }: { initial: CompanySettings }) {
+  const t      = useTranslations('settings')
+  const tCommon = useTranslations('common')
   const [companyName,    setCompanyName]    = useState(initial.companyName)
   const [companyAddress, setCompanyAddress] = useState(initial.companyAddress)
   const [logoPath,       setLogoPath]       = useState(initial.logoPath)
@@ -130,10 +133,10 @@ function CompanySection({ initial }: { initial: CompanySettings }) {
         body: JSON.stringify({ companyName, companyAddress }),
       })
       const json = await res.json()
-      if (!res.ok) { setStatus({ type: 'error', msg: json.error ?? 'Грешка.' }); return }
-      setStatus({ type: 'success', msg: 'Запазено успешно.' })
+      if (!res.ok) { setStatus({ type: 'error', msg: json.error ?? tCommon('error') }); return }
+      setStatus({ type: 'success', msg: t('savedSuccess') })
     } catch {
-      setStatus({ type: 'error', msg: 'Неуспешна връзка.' })
+      setStatus({ type: 'error', msg: tCommon('connectionFailed') })
     } finally {
       setLoading(false)
     }
@@ -149,11 +152,11 @@ function CompanySection({ initial }: { initial: CompanySettings }) {
       fd.append('logo', file)
       const res = await fetch('/api/settings/logo', { method: 'POST', body: fd })
       const json = await res.json()
-      if (!res.ok) { setStatus({ type: 'error', msg: json.error ?? 'Грешка при качване.' }); return }
+      if (!res.ok) { setStatus({ type: 'error', msg: json.error ?? t('uploadError') }); return }
       setLogoPath(json.logoPath)
-      setStatus({ type: 'success', msg: 'Логото е качено успешно.' })
+      setStatus({ type: 'success', msg: t('uploadSuccess') })
     } catch {
-      setStatus({ type: 'error', msg: 'Неуспешна връзка.' })
+      setStatus({ type: 'error', msg: tCommon('connectionFailed') })
     } finally {
       setUploading(false)
       if (fileRef.current) fileRef.current.value = ''
@@ -161,10 +164,10 @@ function CompanySection({ initial }: { initial: CompanySettings }) {
   }
 
   return (
-    <Section title="Фирмени данни" description="Показва се на разпечатките.">
+    <Section title={t('companySectionTitle')} description={t('companyDescription')}>
       <form onSubmit={save} className="space-y-4">
         <div>
-          <Label>Наименование на компанията</Label>
+          <Label>{t('companyNameLabel')}</Label>
           <Input
             value={companyName}
             onChange={(e) => setCompanyName(e.target.value)}
@@ -172,7 +175,7 @@ function CompanySection({ initial }: { initial: CompanySettings }) {
           />
         </div>
         <div>
-          <Label>Адрес</Label>
+          <Label>{t('companyAddressLabel')}</Label>
           <Textarea
             value={companyAddress}
             onChange={(e) => setCompanyAddress(e.target.value)}
@@ -183,18 +186,18 @@ function CompanySection({ initial }: { initial: CompanySettings }) {
 
         {/* Logo */}
         <div>
-          <Label>Лого</Label>
+          <Label>{t('logoSection')}</Label>
           <div className="flex items-center gap-4">
             {logoPath ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img
                 src={`/api/uploads/${logoPath}`}
-                alt="Лого"
+                alt="Logo"
                 className="h-14 w-auto rounded-lg border border-gray-700 object-contain bg-gray-800 p-1"
               />
             ) : (
               <div className="h-14 w-24 rounded-lg border border-dashed border-gray-600 flex items-center justify-center text-xs text-gray-600">
-                Няма лого
+                {t('noLogo')}
               </div>
             )}
             <div>
@@ -211,7 +214,7 @@ function CompanySection({ initial }: { initial: CompanySettings }) {
                 className={`inline-flex items-center px-3 py-1.5 rounded-lg border border-gray-600 text-sm
                   text-gray-300 hover:bg-gray-800 cursor-pointer transition-colors ${uploading ? 'opacity-50 pointer-events-none' : ''}`}
               >
-                {uploading ? 'Качване...' : 'Качи лого'}
+                {uploading ? t('uploading') : t('uploadLogo')}
               </label>
               <p className="text-xs text-gray-600 mt-1">JPG, PNG, GIF, WebP</p>
             </div>
@@ -220,7 +223,7 @@ function CompanySection({ initial }: { initial: CompanySettings }) {
 
         {status && <StatusMsg type={status.type} msg={status.msg} />}
         <div className="flex justify-end pt-1">
-          <SaveBtn loading={loading} />
+          <SaveBtn loading={loading} label={loading ? tCommon('saving') : tCommon('save')} />
         </div>
       </form>
     </Section>
@@ -230,6 +233,8 @@ function CompanySection({ initial }: { initial: CompanySettings }) {
 // ─── Frotcom credentials section ───────────────────────────────────────────────
 
 function FrotcomSection({ initial }: { initial: { frotcomUsername: string; frotcomPassword: string } }) {
+  const t      = useTranslations('settings')
+  const tCommon = useTranslations('common')
   const [username, setUsername] = useState(initial.frotcomUsername)
   const [password, setPassword] = useState(initial.frotcomPassword)
   const [showPw,   setShowPw]   = useState(false)
@@ -247,23 +252,20 @@ function FrotcomSection({ initial }: { initial: { frotcomUsername: string; frotc
         body: JSON.stringify({ frotcomUsername: username, frotcomPassword: password }),
       })
       const json = await res.json()
-      if (!res.ok) { setStatus({ type: 'error', msg: json.error ?? 'Грешка.' }); return }
-      setStatus({ type: 'success', msg: 'Запазено успешно.' })
+      if (!res.ok) { setStatus({ type: 'error', msg: json.error ?? tCommon('error') }); return }
+      setStatus({ type: 'success', msg: t('savedSuccess') })
     } catch {
-      setStatus({ type: 'error', msg: 'Неуспешна връзка.' })
+      setStatus({ type: 'error', msg: tCommon('connectionFailed') })
     } finally {
       setLoading(false)
     }
   }
 
   return (
-    <Section
-      title="Frotcom интеграция"
-      description="Данни за достъп до Frotcom API."
-    >
+    <Section title={t('frotcom')} description={t('frotcomDescription')}>
       <form onSubmit={save} className="space-y-4">
         <div>
-          <Label>Потребителско име</Label>
+          <Label>{t('frotcomUsername')}</Label>
           <Input
             value={username}
             onChange={(e) => setUsername(e.target.value)}
@@ -271,7 +273,7 @@ function FrotcomSection({ initial }: { initial: { frotcomUsername: string; frotc
           />
         </div>
         <div>
-          <Label>Парола</Label>
+          <Label>{t('frotcomPassword')}</Label>
           <div className="relative">
             <Input
               type={showPw ? 'text' : 'password'}
@@ -285,14 +287,14 @@ function FrotcomSection({ initial }: { initial: { frotcomUsername: string; frotc
               onClick={() => setShowPw((v) => !v)}
               className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300 text-xs"
             >
-              {showPw ? 'Скрий' : 'Покажи'}
+              {showPw ? t('hidePassword') : t('showPassword')}
             </button>
           </div>
         </div>
 
         {status && <StatusMsg type={status.type} msg={status.msg} />}
         <div className="flex justify-end pt-1">
-          <SaveBtn loading={loading} />
+          <SaveBtn loading={loading} label={loading ? tCommon('saving') : tCommon('save')} />
         </div>
       </form>
     </Section>
@@ -302,6 +304,8 @@ function FrotcomSection({ initial }: { initial: { frotcomUsername: string; frotc
 // ─── Personal preferences section ─────────────────────────────────────────────
 
 function PersonalSection({ initial }: { initial: PersonalPrefs }) {
+  const t      = useTranslations('settings')
+  const tCommon = useTranslations('common')
   const [locale,   setLocale]   = useState(initial.preferredLocale)
   const [darkMode, setDarkMode] = useState(initial.darkMode)
   const [pageSize, setPageSize] = useState(String(initial.pageSize))
@@ -319,31 +323,28 @@ function PersonalSection({ initial }: { initial: PersonalPrefs }) {
         body: JSON.stringify({ preferredLocale: locale, darkMode, pageSize: Number(pageSize) }),
       })
       const json = await res.json()
-      if (!res.ok) { setStatus({ type: 'error', msg: json.error ?? 'Грешка.' }); return }
-      setStatus({ type: 'success', msg: 'Запазено. Промените влизат в сила след повторен вход.' })
+      if (!res.ok) { setStatus({ type: 'error', msg: json.error ?? tCommon('error') }); return }
+      setStatus({ type: 'success', msg: t('savedReloginRequired') })
     } catch {
-      setStatus({ type: 'error', msg: 'Неуспешна връзка.' })
+      setStatus({ type: 'error', msg: tCommon('connectionFailed') })
     } finally {
       setLoading(false)
     }
   }
 
   return (
-    <Section
-      title="Мои предпочитания"
-      description="Личните настройки влизат в сила след повторен вход."
-    >
+    <Section title={t('personalPreferences')} description={t('changesMayRequireRelogin')}>
       <form onSubmit={save} className="space-y-4">
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <Label>Език</Label>
+            <Label>{t('language')}</Label>
             <Select value={locale} onChange={(e) => setLocale(e.target.value)}>
               <option value="bg">Български</option>
               <option value="en">English</option>
             </Select>
           </div>
           <div>
-            <Label>Редове на страница</Label>
+            <Label>{t('rowsPerPage')}</Label>
             <Select value={pageSize} onChange={(e) => setPageSize(e.target.value)}>
               <option value="10">10</option>
               <option value="20">20</option>
@@ -359,12 +360,12 @@ function PersonalSection({ initial }: { initial: PersonalPrefs }) {
             onChange={(e) => setDarkMode(e.target.checked)}
             className="w-4 h-4 accent-blue-500"
           />
-          <span className="text-sm text-gray-300">Тъмен режим</span>
+          <span className="text-sm text-gray-300">{t('darkMode')}</span>
         </label>
 
         {status && <StatusMsg type={status.type} msg={status.msg} />}
         <div className="flex justify-end pt-1">
-          <SaveBtn loading={loading} />
+          <SaveBtn loading={loading} label={loading ? tCommon('saving') : tCommon('save')} />
         </div>
       </form>
     </Section>
@@ -382,9 +383,10 @@ export default function SettingsClient({
   canEdit: boolean
   currentUser: PersonalPrefs
 }) {
+  const t = useTranslations('settings')
   return (
     <div className="p-6 lg:p-8 max-w-2xl">
-      <h1 className="text-2xl font-bold text-white mb-6">Настройки</h1>
+      <h1 className="text-2xl font-bold text-white mb-6">{t('title')}</h1>
       <div className="space-y-5">
         {canEdit && <CompanySection initial={settings} />}
         {canEdit && settings.frotcomUsername !== undefined && (

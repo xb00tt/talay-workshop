@@ -15,15 +15,26 @@ function requireEdit(session: any) {
   return null
 }
 
+function parseEquipmentId(id: string): { type: 'global' | 'adr'; itemId: number } | null {
+  const dashIdx = id.indexOf('-')
+  if (dashIdx === -1) return null
+  const type  = id.slice(0, dashIdx)
+  const rawId = id.slice(dashIdx + 1)
+  if (type !== 'global' && type !== 'adr') return null
+  const itemId = Number(rawId)
+  if (!Number.isInteger(itemId) || itemId <= 0) return null
+  return { type, itemId }
+}
+
 export async function PATCH(request: Request, { params }: Params) {
   const session = await getServerSession(authOptions)
   const deny = requireEdit(session)
   if (deny) return deny
 
   const { id } = await params
-  // id format: "global-{n}" or "adr-{n}"
-  const [type, rawId] = id.split('-')
-  const itemId = Number(rawId)
+  const parsed = parseEquipmentId(id)
+  if (!parsed) return NextResponse.json({ error: 'Invalid equipment ID' }, { status: 400 })
+  const { type, itemId } = parsed
 
   const body = await request.json()
   const data: Record<string, unknown> = {}
@@ -50,8 +61,9 @@ export async function DELETE(_request: Request, { params }: Params) {
   if (deny) return deny
 
   const { id } = await params
-  const [type, rawId] = id.split('-')
-  const itemId = Number(rawId)
+  const parsed = parseEquipmentId(id)
+  if (!parsed) return NextResponse.json({ error: 'Invalid equipment ID' }, { status: 400 })
+  const { type, itemId } = parsed
 
   if (type === 'adr') {
     await prisma.adrEquipmentItem.delete({ where: { id: itemId } })

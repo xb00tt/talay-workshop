@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useTranslations } from 'next-intl'
 import Pagination from '@/components/Pagination'
 
 // ─── Types ─────────────────────────────────────────────────────────────────────
@@ -157,27 +158,28 @@ function RecoveryDisplay({
   username: string
   onClose: () => void
 }) {
+  const t = useTranslations('user')
   const [confirmed, setConfirmed] = useState(false)
   return (
     <div className="space-y-5">
       <div className="bg-yellow-500/10 border border-yellow-500/40 rounded-xl p-4">
-        <p className="text-yellow-300 text-sm font-semibold mb-3">⚠ Запазете тази информация</p>
+        <p className="text-yellow-300 text-sm font-semibold mb-3">⚠ {t('saveCodeWarning')}</p>
         {tempPassword && (
           <div className="mb-3">
-            <p className="text-xs text-gray-400 mb-1">Временна парола за <strong className="text-white">{username}</strong>:</p>
+            <p className="text-xs text-gray-400 mb-1">{t('tempPasswordFor')} <strong className="text-white">{username}</strong>:</p>
             <div className="bg-gray-900 rounded-lg p-2 text-center">
               <span className="font-mono text-lg font-bold text-white tracking-widest">{tempPassword}</span>
             </div>
           </div>
         )}
         <div>
-          <p className="text-xs text-gray-400 mb-1">Код за възстановяване:</p>
+          <p className="text-xs text-gray-400 mb-1">{t('recoveryCodeLabel')}</p>
           <div className="bg-gray-900 rounded-lg p-2 text-center">
             <span className="font-mono text-lg font-bold text-white tracking-widest">{code}</span>
           </div>
         </div>
         <p className="text-yellow-200/70 text-xs mt-3">
-          Това се показва само веднъж. Предайте на потребителя и му кажете да смени паролата.
+          {t('showOnce')}
         </p>
       </div>
 
@@ -188,7 +190,7 @@ function RecoveryDisplay({
           onChange={(e) => setConfirmed(e.target.checked)}
           className="mt-1 w-4 h-4 accent-blue-500 flex-shrink-0"
         />
-        <span className="text-sm text-gray-300">Записал/а съм информацията на сигурно място.</span>
+        <span className="text-sm text-gray-300">{t('saveCodeConfirm')}</span>
       </label>
 
       <button
@@ -197,7 +199,7 @@ function RecoveryDisplay({
         className="w-full py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold
           transition-colors disabled:bg-gray-700 disabled:text-gray-500 disabled:cursor-not-allowed"
       >
-        Готово
+        {t('done')}
       </button>
     </div>
   )
@@ -212,6 +214,7 @@ function PermissionsEditor({
   selected: string[]
   onChange: (perms: string[]) => void
 }) {
+  const t = useTranslations('user')
   const toggle = (perm: string) => {
     onChange(selected.includes(perm) ? selected.filter((p) => p !== perm) : [...selected, perm])
   }
@@ -222,13 +225,13 @@ function PermissionsEditor({
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <p className="text-sm font-medium text-gray-300">Права за достъп</p>
+        <p className="text-sm font-medium text-gray-300">{t('permissionsTitle')}</p>
         <button
           type="button"
           onClick={toggleAll}
           className="text-xs text-blue-400 hover:text-blue-300"
         >
-          {allSelected ? 'Премахни всички' : 'Избери всички'}
+          {allSelected ? t('deselectAll') : t('selectAll')}
         </button>
       </div>
       {PERMISSION_GROUPS.map((group) => (
@@ -266,6 +269,8 @@ function AddUserModal({
   onClose: () => void
   onCreated: (user: UserRow) => void
 }) {
+  const t = useTranslations('user')
+  const tCommon = useTranslations('common')
   const [username, setUsername]         = useState('')
   const [name, setName]                 = useState('')
   const [role, setRole]                 = useState<'MANAGER' | 'ASSISTANT'>('ASSISTANT')
@@ -278,8 +283,8 @@ function AddUserModal({
   async function submit(e: React.FormEvent) {
     e.preventDefault()
     setError('')
-    if (password.length < 8) { setError('Паролата трябва да е поне 8 символа.'); return }
-    if (password !== confirmPw) { setError('Паролите не съвпадат.'); return }
+    if (password.length < 8) { setError(t('passwordTooShort')); return }
+    if (password !== confirmPw) { setError(t('passwordMismatch')); return }
     setSubmitting(true)
     try {
       const res = await fetch('/api/users', {
@@ -288,11 +293,11 @@ function AddUserModal({
         body: JSON.stringify({ username, name, role, password }),
       })
       const json = await res.json()
-      if (!res.ok) { setError(json.error ?? 'Грешка.'); return }
+      if (!res.ok) { setError(json.error ?? tCommon('error')); return }
       onCreated(json.user)
       setCreated(json)
     } catch {
-      setError('Неуспешна връзка.')
+      setError(tCommon('connectionFailed'))
     } finally {
       setSubmitting(false)
     }
@@ -300,7 +305,7 @@ function AddUserModal({
 
   if (created) {
     return (
-      <Modal title="Нов потребител — запазете кода" onClose={onClose}>
+      <Modal title={t('newUserSaveCode')} onClose={onClose}>
         <RecoveryDisplay
           code={created.recoveryCode}
           username={created.user.username}
@@ -311,10 +316,10 @@ function AddUserModal({
   }
 
   return (
-    <Modal title="Нов потребител" onClose={onClose}>
+    <Modal title={t('new')} onClose={onClose}>
       <form onSubmit={submit} className="space-y-4">
         <div>
-          <Label>Потребителско име *</Label>
+          <Label>{t('usernameLabel')}</Label>
           <Input
             value={username}
             onChange={(e) => setUsername(e.target.value.toLowerCase().replace(/\s/g, ''))}
@@ -322,10 +327,10 @@ function AddUserModal({
             autoFocus
             autoComplete="off"
           />
-          <p className="text-xs text-gray-500 mt-1">Само малки букви, цифри, _ . -</p>
+          <p className="text-xs text-gray-500 mt-1">{t('usernameHint')}</p>
         </div>
         <div>
-          <Label>Пълно име *</Label>
+          <Label>{t('fullNameLabel')}</Label>
           <Input
             value={name}
             onChange={(e) => setName(e.target.value)}
@@ -333,29 +338,29 @@ function AddUserModal({
           />
         </div>
         <div>
-          <Label>Роля *</Label>
+          <Label>{t('roleLabel')}</Label>
           <Select value={role} onChange={(e) => setRole(e.target.value as 'MANAGER' | 'ASSISTANT')}>
-            <option value="ASSISTANT">Асистент</option>
-            <option value="MANAGER">Мениджър</option>
+            <option value="ASSISTANT">{t('role.ASSISTANT')}</option>
+            <option value="MANAGER">{t('role.MANAGER')}</option>
           </Select>
         </div>
         <div>
-          <Label>Парола *</Label>
+          <Label>{t('passwordLabel')}</Label>
           <Input
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            placeholder="Минимум 8 символа"
+            placeholder={t('passwordMinHint')}
             autoComplete="new-password"
           />
         </div>
         <div>
-          <Label>Потвърди паролата *</Label>
+          <Label>{t('confirmPasswordLabel')}</Label>
           <Input
             type="password"
             value={confirmPw}
             onChange={(e) => setConfirmPw(e.target.value)}
-            placeholder="Повтори паролата"
+            placeholder={t('repeatPasswordPlaceholder')}
             autoComplete="new-password"
           />
         </div>
@@ -365,11 +370,11 @@ function AddUserModal({
         <div className="flex gap-3 pt-2">
           <button type="button" onClick={onClose}
             className="flex-1 py-2.5 rounded-xl border border-gray-600 text-gray-300 hover:bg-gray-800 transition-colors">
-            Откажи
+            {tCommon('cancel')}
           </button>
           <button type="submit" disabled={submitting}
             className="flex-1 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold transition-colors disabled:opacity-50">
-            {submitting ? 'Запазване...' : 'Създай'}
+            {submitting ? tCommon('saving') : t('createUser')}
           </button>
         </div>
       </form>
@@ -388,6 +393,8 @@ function EditUserModal({
   onClose: () => void
   onUpdated: (user: UserRow) => void
 }) {
+  const t = useTranslations('user')
+  const tCommon = useTranslations('common')
   const [name, setName]                 = useState(user.name)
   const [role, setRole]                 = useState(user.role)
   const [perms, setPerms]               = useState<string[]>(parsePerms(user.permissions))
@@ -415,28 +422,28 @@ function EditUserModal({
         }),
       })
       const json = await res.json()
-      if (!res.ok) { setError(json.error ?? 'Грешка.'); return }
+      if (!res.ok) { setError(json.error ?? tCommon('error')); return }
       onUpdated(json.user)
       onClose()
     } catch {
-      setError('Неуспешна връзка.')
+      setError(tCommon('connectionFailed'))
     } finally {
       setSubmitting(false)
     }
   }
 
   return (
-    <Modal title={`Редактиране — ${user.username}`} onClose={onClose}>
+    <Modal title={`${t('editTitle')} — ${user.username}`} onClose={onClose}>
       <form onSubmit={submit} className="space-y-4">
         <div>
-          <Label>Пълно име *</Label>
+          <Label>{t('fullNameLabel')}</Label>
           <Input value={name} onChange={(e) => setName(e.target.value)} autoFocus />
         </div>
         <div>
-          <Label>Роля</Label>
+          <Label>{t('roleLabel')}</Label>
           <Select value={role} onChange={(e) => setRole(e.target.value as 'MANAGER' | 'ASSISTANT')}>
-            <option value="ASSISTANT">Асистент</option>
-            <option value="MANAGER">Мениджър</option>
+            <option value="ASSISTANT">{t('role.ASSISTANT')}</option>
+            <option value="MANAGER">{t('role.MANAGER')}</option>
           </Select>
         </div>
 
@@ -446,19 +453,19 @@ function EditUserModal({
           </div>
         )}
         {role === 'MANAGER' && (
-          <p className="text-xs text-gray-500">Мениджърите имат пълен достъп до всички функции.</p>
+          <p className="text-xs text-gray-500">{t('managersFullAccess')}</p>
         )}
 
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <Label>Език</Label>
+            <Label>{t('preferredLocale')}</Label>
             <Select value={locale} onChange={(e) => setLocale(e.target.value)}>
               <option value="bg">Български</option>
               <option value="en">English</option>
             </Select>
           </div>
           <div>
-            <Label>Редове на страница</Label>
+            <Label>{t('pageSize')}</Label>
             <Select value={pageSize} onChange={(e) => setPageSize(e.target.value)}>
               <option value="10">10</option>
               <option value="20">20</option>
@@ -474,7 +481,7 @@ function EditUserModal({
             onChange={(e) => setDarkMode(e.target.checked)}
             className="w-4 h-4 accent-blue-500"
           />
-          <span className="text-sm text-gray-300">Тъмен режим</span>
+          <span className="text-sm text-gray-300">{t('darkMode')}</span>
         </label>
 
         {error && <ErrorBox msg={error} />}
@@ -482,11 +489,11 @@ function EditUserModal({
         <div className="flex gap-3 pt-2">
           <button type="button" onClick={onClose}
             className="flex-1 py-2.5 rounded-xl border border-gray-600 text-gray-300 hover:bg-gray-800 transition-colors">
-            Откажи
+            {tCommon('cancel')}
           </button>
           <button type="submit" disabled={submitting}
             className="flex-1 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold transition-colors disabled:opacity-50">
-            {submitting ? 'Запазване...' : 'Запази'}
+            {submitting ? tCommon('saving') : tCommon('save')}
           </button>
         </div>
       </form>
@@ -503,6 +510,8 @@ function ResetPasswordModal({
   user: UserRow
   onClose: () => void
 }) {
+  const t = useTranslations('user')
+  const tCommon = useTranslations('common')
   const [error, setError]           = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [result, setResult]         = useState<{ tempPassword: string; recoveryCode: string } | null>(null)
@@ -513,10 +522,10 @@ function ResetPasswordModal({
     try {
       const res = await fetch(`/api/users/${user.id}/reset-password`, { method: 'POST' })
       const json = await res.json()
-      if (!res.ok) { setError(json.error ?? 'Грешка.'); return }
+      if (!res.ok) { setError(json.error ?? tCommon('error')); return }
       setResult(json)
     } catch {
-      setError('Неуспешна връзка.')
+      setError(tCommon('connectionFailed'))
     } finally {
       setSubmitting(false)
     }
@@ -524,7 +533,7 @@ function ResetPasswordModal({
 
   if (result) {
     return (
-      <Modal title="Паролата е нулирана" onClose={onClose}>
+      <Modal title={t('resetDone')} onClose={onClose}>
         <RecoveryDisplay
           code={result.recoveryCode}
           tempPassword={result.tempPassword}
@@ -536,22 +545,20 @@ function ResetPasswordModal({
   }
 
   return (
-    <Modal title="Нулиране на парола" onClose={onClose}>
+    <Modal title={t('resetTitle')} onClose={onClose}>
       <div className="space-y-5">
         <p className="text-sm text-gray-300">
-          Ще се генерира временна парола за <strong className="text-white">{user.name}</strong>{' '}
-          (<span className="font-mono text-gray-400">{user.username}</span>).
-          Покажете я на потребителя — той ще трябва да я смени при следващ вход.
+          {t('resetDesc', { name: user.name, username: user.username })}
         </p>
         {error && <ErrorBox msg={error} />}
         <div className="flex gap-3">
           <button onClick={onClose}
             className="flex-1 py-2.5 rounded-xl border border-gray-600 text-gray-300 hover:bg-gray-800 transition-colors">
-            Откажи
+            {tCommon('cancel')}
           </button>
           <button onClick={confirm} disabled={submitting}
             className="flex-1 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-500 text-white font-semibold transition-colors disabled:opacity-50">
-            {submitting ? 'Генериране...' : 'Нулирай паролата'}
+            {submitting ? t('generating') : t('resetButton')}
           </button>
         </div>
       </div>
@@ -570,6 +577,8 @@ function DeleteModal({
   onClose: () => void
   onDeleted: (id: number) => void
 }) {
+  const t = useTranslations('user')
+  const tCommon = useTranslations('common')
   const [error, setError]           = useState('')
   const [submitting, setSubmitting] = useState(false)
 
@@ -579,34 +588,31 @@ function DeleteModal({
     try {
       const res = await fetch(`/api/users/${user.id}`, { method: 'DELETE' })
       const json = await res.json()
-      if (!res.ok) { setError(json.error ?? 'Грешка.'); return }
+      if (!res.ok) { setError(json.error ?? tCommon('error')); return }
       onDeleted(user.id)
       onClose()
     } catch {
-      setError('Неуспешна връзка.')
+      setError(tCommon('connectionFailed'))
     } finally {
       setSubmitting(false)
     }
   }
 
   return (
-    <Modal title="Изтриване на потребител" onClose={onClose}>
+    <Modal title={t('deleteTitle')} onClose={onClose}>
       <div className="space-y-5">
         <p className="text-sm text-gray-300">
-          Сигурни ли сте, че искате да изтриете{' '}
-          <strong className="text-white">{user.name}</strong>{' '}
-          (<span className="font-mono text-gray-400">{user.username}</span>)?
-          Това действие не може да бъде отменено.
+          {t('deleteDesc', { name: user.name, username: user.username })}
         </p>
         {error && <ErrorBox msg={error} />}
         <div className="flex gap-3">
           <button onClick={onClose}
             className="flex-1 py-2.5 rounded-xl border border-gray-600 text-gray-300 hover:bg-gray-800 transition-colors">
-            Откажи
+            {tCommon('cancel')}
           </button>
           <button onClick={confirm} disabled={submitting}
             className="flex-1 py-2.5 rounded-xl bg-red-600 hover:bg-red-500 text-white font-semibold transition-colors disabled:opacity-50">
-            {submitting ? 'Изтриване...' : 'Изтрий'}
+            {submitting ? t('deleting') : tCommon('delete')}
           </button>
         </div>
       </div>
@@ -617,13 +623,14 @@ function DeleteModal({
 // ─── Role badge ────────────────────────────────────────────────────────────────
 
 function RoleBadge({ role }: { role: 'MANAGER' | 'ASSISTANT' }) {
+  const t = useTranslations('user')
   return (
     <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
       role === 'MANAGER'
         ? 'bg-blue-600/20 text-blue-400'
         : 'bg-gray-700 text-gray-300'
     }`}>
-      {role === 'MANAGER' ? 'Мениджър' : 'Асистент'}
+      {role === 'MANAGER' ? t('role.MANAGER') : t('role.ASSISTANT')}
     </span>
   )
 }
@@ -646,6 +653,8 @@ export default function UsersClient({
   currentUserId: number
   pageSize: number
 }) {
+  const t = useTranslations('user')
+  const tCommon = useTranslations('common')
   const [users, setUsers]     = useState<UserRow[]>(initialUsers)
   const [modal, setModal]     = useState<ModalState>(null)
   const [search, setSearch]   = useState('')
@@ -686,15 +695,15 @@ export default function UsersClient({
         {/* Header */}
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h1 className="text-2xl font-bold text-white">Потребители</h1>
-            <p className="text-sm text-gray-500 mt-0.5">{users.length} потребител{users.length !== 1 ? 'и' : ''}</p>
+            <h1 className="text-2xl font-bold text-white">{t('list')}</h1>
+            <p className="text-sm text-gray-500 mt-0.5">{t('countLabel', { count: users.length })}</p>
           </div>
           <button
             onClick={() => setModal({ type: 'add' })}
             className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white text-sm font-semibold rounded-xl transition-colors"
           >
             <span className="text-lg leading-none">+</span>
-            Нов потребител
+            {t('new')}
           </button>
         </div>
 
@@ -704,7 +713,7 @@ export default function UsersClient({
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Търси по потребителско или пълно име..."
+            placeholder={t('searchPlaceholder')}
             className="w-full max-w-sm bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
@@ -716,13 +725,13 @@ export default function UsersClient({
               <thead>
                 <tr className="border-b border-gray-800">
                   <th className="text-left px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                    Потребител
+                    {t('title')}
                   </th>
                   <th className="text-left px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                    Роля
+                    {t('permissions')}
                   </th>
                   <th className="text-left px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider hidden sm:table-cell">
-                    Добавен
+                    {tCommon('date')}
                   </th>
                   <th className="px-5 py-3" />
                 </tr>
@@ -738,7 +747,7 @@ export default function UsersClient({
                       <RoleBadge role={user.role} />
                       {user.role === 'ASSISTANT' && (
                         <p className="text-xs text-gray-600 mt-1">
-                          {parsePerms(user.permissions).length} права
+                          {t('permCount', { count: parsePerms(user.permissions).length })}
                         </p>
                       )}
                     </td>
@@ -748,19 +757,19 @@ export default function UsersClient({
                     <td className="px-5 py-4">
                       <div className="flex items-center justify-end gap-1">
                         <ActionBtn
-                          label="Редактирай"
+                          label={tCommon('edit')}
                           onClick={() => setModal({ type: 'edit', user })}
                         >
                           <PencilIcon />
                         </ActionBtn>
                         <ActionBtn
-                          label="Нулирай парола"
+                          label={t('resetPassword')}
                           onClick={() => setModal({ type: 'reset', user })}
                         >
                           <KeyIcon />
                         </ActionBtn>
                         <ActionBtn
-                          label="Изтрий"
+                          label={tCommon('delete')}
                           danger
                           onClick={() => setModal({ type: 'delete', user })}
                         >
@@ -774,7 +783,7 @@ export default function UsersClient({
                 {users.length === 0 && (
                   <tr>
                     <td colSpan={4} className="px-5 py-12 text-center text-gray-500">
-                      Няма потребители.
+                      {tCommon('noResults')}
                     </td>
                   </tr>
                 )}

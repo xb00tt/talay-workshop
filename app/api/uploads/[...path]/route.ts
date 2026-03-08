@@ -1,4 +1,6 @@
 import { NextResponse } from 'next/server'
+import { getServerSession } from 'next-auth'
+import { authOptions } from '@/lib/auth'
 import { readFile } from 'fs/promises'
 import path from 'path'
 
@@ -15,6 +17,8 @@ export async function GET(
   _req: Request,
   { params }: { params: Promise<{ path: string[] }> },
 ) {
+  const session = await getServerSession(authOptions)
+  if (!session) return new NextResponse('Unauthorized', { status: 401 })
   const { path: segments } = await params
   const uploadsDir = path.resolve(process.env.UPLOADS_DIR ?? './uploads')
   const filePath   = path.resolve(path.join(uploadsDir, ...segments))

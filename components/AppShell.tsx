@@ -1,9 +1,10 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { signOut } from 'next-auth/react'
+import { useTranslations } from 'next-intl'
 
 // ─── Icon helper ───────────────────────────────────────────────────────────────
 
@@ -38,52 +39,52 @@ function Ico({ name, className = 'w-5 h-5' }: { name: IconName; className?: stri
 
 // ─── Nav structure ─────────────────────────────────────────────────────────────
 
-interface NavItem  { href: string; label: string; icon: IconName }
-interface NavGroup { label?: string; items: NavItem[] }
+interface NavItem  { href: string; labelKey: string; icon: IconName }
+interface NavGroup { groupKey?: string; items: NavItem[] }
 
 const NAV: NavGroup[] = [
   {
     items: [
-      { href: '/dashboard',  label: 'Табло',    icon: 'home'      },
-      { href: '/calendar',   label: 'Календар', icon: 'calendar'  },
-      { href: '/services',   label: 'Услуги',   icon: 'clipboard' },
+      { href: '/dashboard',  labelKey: 'dashboard',       icon: 'home'      },
+      { href: '/calendar',   labelKey: 'calendar',        icon: 'calendar'  },
+      { href: '/services',   labelKey: 'services',        icon: 'clipboard' },
     ],
   },
   {
-    label: 'Флота',
+    groupKey: 'groupFleet',
     items: [
-      { href: '/trucks',  label: 'Камиони',  icon: 'truck'  },
-      { href: '/drivers', label: 'Шофьори',  icon: 'person' },
+      { href: '/trucks',  labelKey: 'trucks',   icon: 'truck'  },
+      { href: '/drivers', labelKey: 'drivers',  icon: 'person' },
     ],
   },
   {
-    label: 'Работилница',
+    groupKey: 'groupWorkshop',
     items: [
-      { href: '/bays',      label: 'Сервизни места', icon: 'building' },
-      { href: '/mechanics', label: 'Механици',       icon: 'wrench'   },
+      { href: '/bays',      labelKey: 'bays',      icon: 'building' },
+      { href: '/mechanics', labelKey: 'mechanics', icon: 'wrench'   },
     ],
   },
   {
-    label: 'Конфигурация',
+    groupKey: 'groupConfiguration',
     items: [
-      { href: '/checklist', label: 'Шаблон чеклист', icon: 'check' },
-      { href: '/equipment',          label: 'Оборудване',     icon: 'box'   },
+      { href: '/checklist', labelKey: 'checklistTemplate', icon: 'check' },
+      { href: '/equipment', labelKey: 'equipment',         icon: 'box'   },
     ],
   },
   {
-    label: 'Управление',
+    groupKey: 'groupManagement',
     items: [
-      { href: '/users',     label: 'Потребители', icon: 'users' },
-      { href: '/reports',   label: 'Отчети',      icon: 'chart' },
-      { href: '/audit-log', label: 'Журнал',      icon: 'book'  },
-      { href: '/settings',  label: 'Настройки',   icon: 'cog'   },
+      { href: '/users',     labelKey: 'users',    icon: 'users' },
+      { href: '/reports',   labelKey: 'reports',  icon: 'chart' },
+      { href: '/audit-log', labelKey: 'auditLog', icon: 'book'  },
+      { href: '/settings',  labelKey: 'settings', icon: 'cog'   },
     ],
   },
 ]
 
 // ─── Nav link ──────────────────────────────────────────────────────────────────
 
-function NavLink({ item, active, onClick }: { item: NavItem; active: boolean; onClick?: () => void }) {
+function NavLink({ item, label, active, onClick }: { item: NavItem; label: string; active: boolean; onClick?: () => void }) {
   return (
     <Link
       href={item.href}
@@ -95,12 +96,73 @@ function NavLink({ item, active, onClick }: { item: NavItem; active: boolean; on
       }`}
     >
       <Ico name={item.icon} />
-      {item.label}
+      {label}
     </Link>
   )
 }
 
 // ─── Sidebar content ───────────────────────────────────────────────────────────
+
+function UserMenu({ userName, userRole }: { userName: string; userRole: string }) {
+  const t     = useTranslations('nav')
+  const tAuth = useTranslations('auth')
+  const [open, setOpen] = useState(false)
+  const ref = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false)
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
+
+  return (
+    <div ref={ref} className="relative border-t border-gray-800 px-3 py-2">
+      <button
+        onClick={() => setOpen((v) => !v)}
+        className="w-full flex items-center gap-3 px-2 py-2 rounded-lg hover:bg-gray-800 transition-colors"
+      >
+        <div className="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center flex-shrink-0">
+          <span className="text-xs font-bold text-gray-300">
+            {userName.charAt(0).toUpperCase()}
+          </span>
+        </div>
+        <div className="flex-1 min-w-0 text-left">
+          <p className="text-sm font-medium text-white truncate">{userName}</p>
+          <p className="text-xs text-gray-500">{userRole === 'MANAGER' ? t('manager') : t('assistant')}</p>
+        </div>
+        <svg className={`w-4 h-4 text-gray-500 flex-shrink-0 transition-transform ${open ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+        </svg>
+      </button>
+
+      {open && (
+        <div className="absolute bottom-full left-3 right-3 mb-1 bg-gray-800 border border-gray-700 rounded-xl shadow-xl overflow-hidden z-50">
+          <div className="px-4 py-3 border-b border-gray-700">
+            <p className="text-xs font-semibold text-white truncate">{userName}</p>
+            <p className="text-xs text-gray-500 mt-0.5">{userRole === 'MANAGER' ? t('manager') : t('assistant')}</p>
+          </div>
+          <Link
+            href="/settings"
+            onClick={() => setOpen(false)}
+            className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-300 hover:bg-gray-700 hover:text-white transition-colors"
+          >
+            <Ico name="cog" className="w-4 h-4" />
+            {tAuth('preferences')}
+          </Link>
+          <button
+            onClick={() => signOut({ callbackUrl: '/login' })}
+            className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-400 hover:bg-gray-700 hover:text-red-300 transition-colors"
+          >
+            <Ico name="logout" className="w-4 h-4" />
+            {tAuth('logout')}
+          </button>
+        </div>
+      )}
+    </div>
+  )
+}
 
 function SidebarContent({
   pathname,
@@ -113,6 +175,8 @@ function SidebarContent({
   userRole: string
   onNav?: () => void
 }) {
+  const t = useTranslations('nav')
+
   return (
     <div className="flex flex-col h-full">
       {/* Logo */}
@@ -132,15 +196,16 @@ function SidebarContent({
       <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-5">
         {NAV.map((group, gi) => (
           <div key={gi} className="space-y-0.5">
-            {group.label && (
+            {group.groupKey && (
               <p className="px-3 pb-1 text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                {group.label}
+                {t(group.groupKey as Parameters<typeof t>[0])}
               </p>
             )}
             {group.items.map((item) => (
               <NavLink
                 key={item.href}
                 item={item}
+                label={t(item.labelKey as Parameters<typeof t>[0])}
                 active={pathname === item.href || pathname.startsWith(item.href + '/')}
                 onClick={onNav}
               />
@@ -149,27 +214,8 @@ function SidebarContent({
         ))}
       </nav>
 
-      {/* User footer */}
-      <div className="border-t border-gray-800 px-4 py-3 flex items-center gap-3">
-        <div className="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center flex-shrink-0">
-          <span className="text-xs font-bold text-gray-300">
-            {userName.charAt(0).toUpperCase()}
-          </span>
-        </div>
-        <div className="flex-1 min-w-0">
-          <p className="text-sm font-medium text-white truncate">{userName}</p>
-          <p className="text-xs text-gray-500">
-            {userRole === 'MANAGER' ? 'Мениджър' : 'Асистент'}
-          </p>
-        </div>
-        <button
-          onClick={() => signOut({ callbackUrl: '/login' })}
-          className="text-gray-500 hover:text-red-400 transition-colors flex-shrink-0"
-          title="Изход"
-        >
-          <Ico name="logout" />
-        </button>
-      </div>
+      {/* User menu */}
+      <UserMenu userName={userName} userRole={userRole} />
     </div>
   )
 }

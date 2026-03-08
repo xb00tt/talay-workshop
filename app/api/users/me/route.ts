@@ -12,9 +12,14 @@ export async function PATCH(request: Request) {
   const { preferredLocale, darkMode, pageSize } = body
 
   const data: Record<string, unknown> = {}
-  if (preferredLocale !== undefined) data.preferredLocale = preferredLocale
-  if (darkMode        !== undefined) data.darkMode        = Boolean(darkMode)
-  if (pageSize        !== undefined) data.pageSize        = Number(pageSize)
+  if (preferredLocale !== undefined) {
+    if (!['bg', 'en'].includes(preferredLocale)) {
+      return NextResponse.json({ error: 'Invalid locale' }, { status: 422 })
+    }
+    data.preferredLocale = preferredLocale
+  }
+  if (darkMode !== undefined) data.darkMode = Boolean(darkMode)
+  if (pageSize !== undefined) data.pageSize = Math.min(100, Math.max(5, Number(pageSize)))
 
   await prisma.user.update({ where: { id: Number(session.user.id) }, data })
 

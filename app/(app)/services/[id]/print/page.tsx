@@ -112,7 +112,7 @@ export default async function ServiceOrderPrintPage({
         `}</style>
       </head>
       <body>
-        <button className="print-btn no-print" onClick={() => window.print()}>Печат</button>
+        <button className="print-btn no-print">Печат</button>
 
         <div className="page">
           {/* Company header */}
