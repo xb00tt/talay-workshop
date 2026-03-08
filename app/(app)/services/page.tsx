@@ -19,7 +19,10 @@ export default async function ServicesPage() {
       where:   activeWhere,
       orderBy: [{ scheduledDate: 'desc' }, { createdAt: 'desc' }],
       take:    pageSize,
-      include: { truck: { select: { make: true, model: true } } },
+      include: {
+        truck:    { select: { make: true, model: true, isAdr: true } },
+        sections: { select: { workCards: { select: { status: true } } } },
+      },
     }),
     prisma.serviceOrder.count({ where: activeWhere }),
     prisma.truck.findMany({ orderBy: { plateNumber: 'asc' } }),
@@ -30,6 +33,8 @@ export default async function ServicesPage() {
       initialServices={services.map((s) => ({
         ...s,
         scheduledDate: s.scheduledDate.toISOString(),
+        startDate:     s.startDate?.toISOString() ?? null,
+        endDate:       s.endDate?.toISOString()   ?? null,
         createdAt:     s.createdAt.toISOString(),
       }))}
       initialTotal={total}

@@ -19,9 +19,13 @@ interface ServiceRow {
   truckPlateSnapshot: string
   status: ServiceStatus
   scheduledDate: string
+  startDate: string | null
+  endDate: string | null
   bayNameSnapshot: string | null
+  driverNameSnapshot: string | null
   createdAt: string
-  truck: { make: string; model: string }
+  truck: { make: string; model: string; isAdr: boolean }
+  sections: { workCards: { status: string }[] }[]
 }
 
 interface Truck {
@@ -32,9 +36,9 @@ interface Truck {
   isActive: boolean
 }
 
-// ─── Status colors ──────────────────────────────────────────────────────────────
+// ─── Status colours ─────────────────────────────────────────────────────────────
 
-const STATUS_COLOR: Record<ServiceStatus, string> = {
+const STATUS_BADGE: Record<ServiceStatus, string> = {
   SCHEDULED:     'bg-amber-600/20 text-amber-400',
   INTAKE:        'bg-blue-600/20 text-blue-400',
   IN_PROGRESS:   'bg-indigo-600/20 text-indigo-400',
@@ -42,6 +46,26 @@ const STATUS_COLOR: Record<ServiceStatus, string> = {
   READY:         'bg-green-600/20 text-green-400',
   COMPLETED:     'bg-gray-600/20 text-gray-400',
   CANCELLED:     'bg-red-600/20 text-red-400',
+}
+
+const STATUS_STRIPE: Record<ServiceStatus, string> = {
+  SCHEDULED:     'bg-amber-500',
+  INTAKE:        'bg-blue-500',
+  IN_PROGRESS:   'bg-indigo-500',
+  QUALITY_CHECK: 'bg-purple-500',
+  READY:         'bg-green-500',
+  COMPLETED:     'bg-gray-600',
+  CANCELLED:     'bg-red-700',
+}
+
+const OPEN_BTN: Record<ServiceStatus, string> = {
+  SCHEDULED:     'bg-gray-700 hover:bg-gray-600 text-white',
+  INTAKE:        'bg-blue-600 hover:bg-blue-500 text-white',
+  IN_PROGRESS:   'bg-blue-600 hover:bg-blue-500 text-white',
+  QUALITY_CHECK: 'bg-purple-600 hover:bg-purple-500 text-white',
+  READY:         'bg-green-600 hover:bg-green-500 text-white',
+  COMPLETED:     'bg-gray-800 hover:bg-gray-700 text-gray-300',
+  CANCELLED:     'bg-gray-800 hover:bg-gray-700 text-gray-400',
 }
 
 const ALL_STATUSES: ServiceStatus[] = [
@@ -55,6 +79,12 @@ function fmtDate(iso: string) {
   const dd = String(d.getUTCDate()).padStart(2, '0')
   const mm = String(d.getUTCMonth() + 1).padStart(2, '0')
   return `${dd}.${mm}.${d.getUTCFullYear()}`
+}
+
+function daysInShop(startIso: string, endIso: string | null): number {
+  const start = new Date(startIso).getTime()
+  const end   = endIso ? new Date(endIso).getTime() : Date.now()
+  return Math.max(0, Math.floor((end - start) / 86_400_000))
 }
 
 // ─── Shared UI ─────────────────────────────────────────────────────────────────
@@ -114,7 +144,7 @@ function Modal({ title, onClose, children }: { title: string; onClose: () => voi
 
 function StatusBadge({ status, label }: { status: ServiceStatus; label: string }) {
   return (
-    <span className={`inline-flex items-center px-2 py-0.5 rounded-sm text-xs font-medium ${STATUS_COLOR[status]}`}>
+    <span className={`inline-flex items-center px-2 py-0.5 rounded-sm text-xs font-medium ${STATUS_BADGE[status]}`}>
       {label}
     </span>
   )
@@ -137,7 +167,7 @@ function CreateModal({
   const tCommon = useTranslations('common')
   const tErrors = useTranslations('errors')
 
-  const [truckId, setTruckId]           = useState('')
+  const [truckId, setTruckId]             = useState('')
   const [scheduledDate, setScheduledDate] = useState(preselectedDate ?? '')
   const [error,   setError]   = useState('')
   const [loading, setLoading] = useState(false)
@@ -270,6 +300,149 @@ function RescheduleModal({
   )
 }
 
+// ─── Service card ──────────────────────────────────────────────────────────────
+
+function ServiceCard({
+  s,
+  t,
+  tCommon,
+  canReschedule,
+  onReschedule,
+}: {
+  s: ServiceRow
+  t: ReturnType<typeof useTranslations>
+  tCommon: ReturnType<typeof useTranslations>
+  canReschedule: boolean
+  onReschedule: (s: ServiceRow) => void
+}) {
+  const isTerminal = s.status === 'COMPLETED' || s.status === 'CANCELLED'
+
+  // Work card counts (exclude CANCELLED cards and system sections with no cards)
+  const allWc   = (s.sections ?? []).flatMap((sec) => sec.workCards).filter((wc) => wc.status !== 'CANCELLED')
+  const doneWc  = allWc.filter((wc) => wc.status === 'COMPLETED').length
+  const totalWc = allWc.length
+  const progress = totalWc > 0 ? doneWc / totalWc : 0
+
+  // Days in shop
+  let daysLabel: string | null = null
+  if (s.startDate) {
+    const days = daysInShop(s.startDate, s.endDate)
+    daysLabel = isTerminal
+      ? `${days} дни в сервиз`
+      : days === 0 ? 'Влязъл днес' : `${days} дни в сервиз`
+  }
+
+  return (
+    <div className="flex bg-gray-900 rounded-xl border border-gray-800 overflow-hidden hover:border-gray-700 transition-colors group">
+      {/* Status stripe */}
+      <div className={`w-1 shrink-0 ${STATUS_STRIPE[s.status]}`} />
+
+      {/* Main content */}
+      <div className="flex-1 flex flex-wrap gap-x-6 gap-y-3 px-5 py-4 items-center min-w-0">
+
+        {/* Truck identity */}
+        <div className="min-w-37.5 flex-2">
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className="font-mono font-bold text-white text-base leading-tight">
+              {s.truckPlateSnapshot}
+            </span>
+            {s.truck.isAdr && (
+              <span className="px-1.5 py-0.5 text-[10px] font-bold bg-orange-500/20 text-orange-400 rounded leading-tight">
+                ADR
+              </span>
+            )}
+          </div>
+          <p className="text-xs text-gray-500 mt-0.5">{s.truck.make} {s.truck.model}</p>
+          {s.driverNameSnapshot && (
+            <p className="text-xs text-gray-600 mt-0.5 truncate">{s.driverNameSnapshot}</p>
+          )}
+        </div>
+
+        {/* Dates */}
+        <div className="min-w-27.5 flex-1">
+          <p className="text-[10px] text-gray-600 uppercase tracking-wider font-medium">
+            {t('scheduledDate')}
+          </p>
+          <p className="text-sm text-white mt-0.5">{fmtDate(s.scheduledDate)}</p>
+          {daysLabel && (
+            <p className={`text-xs mt-0.5 ${isTerminal ? 'text-gray-600' : 'text-amber-400'}`}>
+              {daysLabel}
+            </p>
+          )}
+        </div>
+
+        {/* Status + Bay */}
+        <div className="min-w-32.5 flex-1">
+          <StatusBadge status={s.status} label={t(`status.${s.status}`)} />
+          {s.bayNameSnapshot && (
+            <p className="text-xs text-gray-500 mt-1.5">
+              <span className="text-gray-600">{t('bay')}: </span>{s.bayNameSnapshot}
+            </p>
+          )}
+        </div>
+
+        {/* Work card progress — only when there are cards */}
+        {totalWc > 0 && (
+          <div className="min-w-27.5 flex-1 hidden md:block">
+            <p className="text-xs text-gray-500 mb-1.5">
+              {doneWc}/{totalWc} {tCommon('workCards')}
+            </p>
+            <div className="h-1.5 bg-gray-800 rounded-full overflow-hidden">
+              <div
+                className={`h-full rounded-full transition-all ${doneWc === totalWc ? 'bg-green-500' : 'bg-blue-500'}`}
+                style={{ width: `${progress * 100}%` }}
+              />
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Actions */}
+      <div className="flex items-center gap-2 px-4 py-4 border-l border-gray-800 shrink-0">
+        {/* Reschedule icon button — SCHEDULED only */}
+        {canReschedule && s.status === 'SCHEDULED' && (
+          <button
+            onClick={() => onReschedule(s)}
+            title={t('reschedule')}
+            className="p-2 rounded-lg border border-gray-700 text-gray-400 hover:text-white hover:border-gray-500 transition-colors"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+          </button>
+        )}
+
+        {/* Intake protocol print — SCHEDULED and INTAKE */}
+        {(s.status === 'SCHEDULED' || s.status === 'INTAKE') && (
+          <Link
+            href={`/services/${s.id}/intake-protocol`}
+            target="_blank"
+            title={t('intakeProtocol')}
+            className="p-2 rounded-lg border border-gray-700 text-gray-400 hover:text-white hover:border-gray-500 transition-colors"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+          </Link>
+        )}
+
+        {/* Open / view button */}
+        <Link
+          href={`/services/${s.id}`}
+          className={`px-3 py-2 text-sm font-semibold rounded-lg transition-colors flex items-center gap-1.5 ${OPEN_BTN[s.status]}`}
+        >
+          {t('open')}
+          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+          </svg>
+        </Link>
+      </div>
+    </div>
+  )
+}
+
 // ─── Main component ────────────────────────────────────────────────────────────
 
 type ModalState =
@@ -292,9 +465,8 @@ export default function ServicesClient({
   canCreate: boolean
   canReschedule: boolean
 }) {
-  const t = useTranslations('service')
+  const t      = useTranslations('service')
   const tCommon = useTranslations('common')
-  const tTruck = useTranslations('truck')
 
   const [modal,        setModal]        = useState<ModalState>(null)
   const [statusFilter, setStatusFilter] = useState<string>('active')
@@ -302,7 +474,6 @@ export default function ServicesClient({
   const [page,         setPage]         = useState(1)
   const pageSize = initialPageSize
 
-  // Reset to page 1 when filters change
   useEffect(() => { setPage(1) }, [statusFilter, search])
 
   const params = new URLSearchParams({
@@ -323,10 +494,7 @@ export default function ServicesClient({
   const total:      number       = data?.total       ?? initialTotal
   const totalPages: number       = data?.totalPages  ?? Math.ceil(initialTotal / pageSize)
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  function upsert(_?: ServiceRow) {
-    mutate()
-  }
+  function upsert() { mutate() }
 
   return (
     <>
@@ -362,69 +530,30 @@ export default function ServicesClient({
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder={t('searchPlaceholder')}
-            className="flex-1 min-w-[200px] bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-hidden focus:ring-2 focus:ring-blue-500"
+            className="flex-1 min-w-50 bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-hidden focus:ring-2 focus:ring-blue-500"
           />
         </div>
 
-        {/* Table */}
-        <div className="bg-gray-900 rounded-2xl overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-gray-800">
-                  <th className="text-left px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">{tTruck('title')}</th>
-                  <th className="text-left px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider hidden sm:table-cell">{tCommon('date')}</th>
-                  <th className="text-left px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">{tCommon('status')}</th>
-                  <th className="text-left px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider hidden lg:table-cell">{t('bay')}</th>
-                  <th className="px-5 py-3" />
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-800">
-                {services.map((s) => (
-                  <tr key={s.id} className="hover:bg-gray-800/50 transition-colors">
-                    <td className="px-5 py-4">
-                      <p className="font-mono font-semibold text-white">{s.truckPlateSnapshot}</p>
-                      <p className="text-xs text-gray-500">{s.truck.make} {s.truck.model}</p>
-                    </td>
-                    <td className="px-5 py-4 text-gray-300 hidden sm:table-cell">
-                      {fmtDate(s.scheduledDate)}
-                    </td>
-                    <td className="px-5 py-4">
-                      <StatusBadge status={s.status} label={t(`status.${s.status}`)} />
-                    </td>
-                    <td className="px-5 py-4 text-gray-400 hidden lg:table-cell">
-                      {s.bayNameSnapshot ?? '—'}
-                    </td>
-                    <td className="px-5 py-4">
-                      <div className="flex items-center justify-end gap-2">
-                        {canReschedule && s.status === 'SCHEDULED' && (
-                          <button
-                            onClick={() => setModal({ type: 'reschedule', service: s })}
-                            className="px-2.5 py-1.5 text-xs rounded-lg border border-gray-700 text-gray-400 hover:text-white hover:border-gray-500 transition-colors"
-                          >
-                            {t('reschedule')}
-                          </button>
-                        )}
-                        <Link
-                          href={`/services/${s.id}`}
-                          className="px-2.5 py-1.5 text-xs rounded-lg bg-gray-800 hover:bg-gray-700 text-gray-300 hover:text-white transition-colors"
-                        >
-                          {t('open')}
-                        </Link>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-                {services.length === 0 && (
-                  <tr>
-                    <td colSpan={5} className="px-5 py-12 text-center text-gray-500">
-                      {t('noResults')}
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
+        {/* List */}
+        <div className="space-y-2">
+          {services.map((s) => (
+            <ServiceCard
+              key={s.id}
+              s={s}
+              t={t}
+              tCommon={tCommon}
+              canReschedule={canReschedule}
+              onReschedule={(svc) => setModal({ type: 'reschedule', service: svc })}
+            />
+          ))}
+          {services.length === 0 && (
+            <div className="bg-gray-900 rounded-xl border border-gray-800 px-5 py-12 text-center text-gray-500">
+              {t('noResults')}
+            </div>
+          )}
+        </div>
+
+        <div className="mt-2">
           <Pagination
             page={page}
             totalPages={totalPages}

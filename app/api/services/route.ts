@@ -38,7 +38,10 @@ export async function GET(request: Request) {
       orderBy: [{ scheduledDate: 'desc' }, { createdAt: 'desc' }],
       skip:    (page - 1) * pageSize,
       take:    pageSize,
-      include: { truck: { select: { make: true, model: true } } },
+      include: {
+        truck:    { select: { make: true, model: true, isAdr: true } },
+        sections: { select: { workCards: { select: { status: true } } } },
+      },
     }),
     prisma.serviceOrder.count({ where }),
   ])
