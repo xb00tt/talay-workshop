@@ -2,22 +2,11 @@
 
 import { useState, useEffect } from 'react'
 import { useTranslations } from 'next-intl'
+import Link from 'next/link'
 import Pagination from '@/components/Pagination'
+import type { EnrichedTruck } from '@/lib/truck-enrichment'
 
-// ─── Types ─────────────────────────────────────────────────────────────────────
-
-interface Truck {
-  id: number
-  plateNumber: string
-  make: string
-  model: string
-  year: number | null
-  frotcomVehicleId: string | null
-  currentMileage: number | null
-  mileageTriggerKm: number
-  isAdr: boolean
-  isActive: boolean
-}
+type Truck = EnrichedTruck
 
 type ModalState =
   | 'add'
@@ -73,6 +62,24 @@ function fmtMileage(km: number | null) {
   return `${Math.round(km).toLocaleString('bg-BG')} км`
 }
 
+function fmtDate(iso: string | null) {
+  if (!iso) return '—'
+  const d = new Date(iso)
+  return `${String(d.getUTCDate()).padStart(2, '0')}.${String(d.getUTCMonth() + 1).padStart(2, '0')}.${d.getUTCFullYear()}`
+}
+
+const STATUS_LABEL: Record<string, string> = {
+  SCHEDULED: 'Планирана', INTAKE: 'Приемане', IN_PROGRESS: 'В процес',
+  QUALITY_CHECK: 'Контрол', READY: 'Готова', COMPLETED: 'Завършена', CANCELLED: 'Отменена',
+}
+const STATUS_COLOR: Record<string, string> = {
+  SCHEDULED:     'bg-amber-600/20 text-amber-400',
+  INTAKE:        'bg-blue-600/20 text-blue-400',
+  IN_PROGRESS:   'bg-indigo-600/20 text-indigo-400',
+  QUALITY_CHECK: 'bg-purple-600/20 text-purple-400',
+  READY:         'bg-green-600/20 text-green-400',
+}
+
 // ─── Truck form (add + edit) ───────────────────────────────────────────────────
 
 function TruckForm({
@@ -89,17 +96,16 @@ function TruckForm({
   const tErrors = useTranslations('errors')
 
   const isEdit = !!initial
-  const [plateNumber,      setPlateNumber]      = useState(initial?.plateNumber      ?? '')
-  const [make,             setMake]             = useState(initial?.make             ?? '')
-  const [model,            setModel]            = useState(initial?.model            ?? '')
-  const [year,             setYear]             = useState(initial?.year?.toString() ?? '')
-  const [isAdr,            setIsAdr]            = useState(initial?.isAdr            ?? false)
-  const [mileageTriggerKm, setMileageTrigger]   = useState(initial?.mileageTriggerKm?.toString() ?? '30000')
-  const [currentMileage,   setCurrentMileage]   = useState(initial?.currentMileage?.toString() ?? '')
-  const [error,  setError]   = useState('')
+  const [plateNumber,      setPlateNumber]    = useState(initial?.plateNumber      ?? '')
+  const [make,             setMake]           = useState(initial?.make             ?? '')
+  const [model,            setModel]          = useState(initial?.model            ?? '')
+  const [year,             setYear]           = useState(initial?.year?.toString() ?? '')
+  const [isAdr,            setIsAdr]          = useState(initial?.isAdr            ?? false)
+  const [mileageTriggerKm, setMileageTrigger] = useState(initial?.mileageTriggerKm?.toString() ?? '30000')
+  const [currentMileage,   setCurrentMileage] = useState(initial?.currentMileage?.toString() ?? '')
+  const [error,   setError]   = useState('')
   const [loading, setLoading] = useState(false)
 
-  // Manual mileage only editable for non-Frotcom trucks
   const isFrotcom = !!initial?.frotcomVehicleId
 
   async function submit(e: React.FormEvent) {
@@ -111,7 +117,7 @@ function TruckForm({
         plateNumber,
         make,
         model,
-        year:            year ? Number(year) : null,
+        year:             year ? Number(year) : null,
         isAdr,
         mileageTriggerKm: Number(mileageTriggerKm) || 30000,
         ...((!isFrotcom && currentMileage) && { currentMileage: Number(currentMileage) }),
@@ -223,8 +229,8 @@ function MileageModal({ truck, onClose, onSaved }: { truck: Truck; onClose: () =
   const tCommon = useTranslations('common')
   const tErrors = useTranslations('errors')
 
-  const [value,  setValue]   = useState(truck.currentMileage?.toString() ?? '')
-  const [error,  setError]   = useState('')
+  const [value,   setValue]  = useState(truck.currentMileage?.toString() ?? '')
+  const [error,   setError]  = useState('')
   const [loading, setLoading] = useState(false)
 
   async function submit(e: React.FormEvent) {
@@ -315,7 +321,7 @@ function ToggleModal({ truck, onClose, onSaved }: { truck: Truck; onClose: () =>
   return (
     <div className="space-y-5">
       <p className="text-sm text-gray-300">
-        {tCommon('confirm')} {action} {' '}
+        {tCommon('confirm')} {action}{' '}
         <strong className="text-white">{truck.plateNumber}</strong> — {truck.make} {truck.model}.
         {truck.isActive && ` ${t('historyPreserved')}`}
       </p>
@@ -383,8 +389,8 @@ export default function TrucksClient({
   const [search,    setSearch]    = useState('')
   const [page,      setPage]      = useState(1)
 
-  // Reset page when search changes
   useEffect(() => { setPage(1) }, [search])
+
   const [importing,    setImporting]    = useState(false)
   const [importResult, setImportResult] = useState<{ imported: number; skipped: number; errors: string[] } | null>(null)
   const [importError,  setImportError]  = useState('')
@@ -400,19 +406,20 @@ export default function TrucksClient({
     })
   }
 
+  async function refreshList() {
+    const res  = await fetch('/api/trucks')
+    const json = await res.json()
+    if (res.ok) setTrucks(json.trucks)
+  }
+
   async function runImport() {
-    setImporting(true)
-    setImportError('')
-    setImportResult(null)
+    setImporting(true); setImportError(''); setImportResult(null)
     try {
       const res  = await fetch('/api/trucks/import', { method: 'POST' })
       const json = await res.json()
       if (!res.ok) { setImportError(json.error ?? 'Грешка при импорт.'); return }
       setImportResult(json)
-      // Refresh list
-      const listRes  = await fetch('/api/trucks')
-      const listJson = await listRes.json()
-      if (listRes.ok) setTrucks(listJson.trucks)
+      await refreshList()
     } catch {
       setImportError('Неуспешна връзка с Frotcom.')
     } finally {
@@ -427,16 +434,14 @@ export default function TrucksClient({
       const json = await res.json()
       if (!res.ok) { setSyncError(json.error ?? 'Грешка при синхрон.'); return }
       setSyncResult(json)
-      // Refresh list to show new mileage values
-      const listRes  = await fetch('/api/trucks')
-      const listJson = await listRes.json()
-      if (listRes.ok) setTrucks(listJson.trucks)
+      await refreshList()
     } catch { setSyncError('Неуспешна връзка с Frotcom.') }
     finally { setSyncing(false) }
   }
 
   const active   = trucks.filter((t) => t.isActive).length
   const inactive = trucks.filter((t) => !t.isActive).length
+  const alerts   = trucks.filter((t) => t.mileageAlert && t.isActive).length
 
   const q = search.trim().toLowerCase()
   const visible = q
@@ -458,7 +463,11 @@ export default function TrucksClient({
           <div>
             <h1 className="text-2xl font-bold text-white">Камиони</h1>
             <p className="text-sm text-gray-500 mt-0.5">
-              {active} активни{inactive > 0 ? `, ${inactive} неактивни` : ''}
+              {active} активни
+              {inactive > 0 ? `, ${inactive} неактивни` : ''}
+              {alerts > 0 && (
+                <span className="ml-2 text-amber-400 font-medium">⚠ {alerts} за сервиз</span>
+              )}
             </p>
           </div>
           <div className="flex items-center gap-2">
@@ -469,14 +478,14 @@ export default function TrucksClient({
                   disabled={syncing}
                   className="flex items-center gap-2 px-4 py-2 border border-gray-600 text-gray-300 hover:text-white hover:border-gray-400 text-sm font-medium rounded-xl transition-colors disabled:opacity-50"
                 >
-                  {syncing ? 'Синхрон...' : 'Синх. пробег'}
+                  {syncing ? 'Синхрон...' : t('syncMileage')}
                 </button>
                 <button
                   onClick={runImport}
                   disabled={importing}
                   className="flex items-center gap-2 px-4 py-2 border border-gray-600 text-gray-300 hover:text-white hover:border-gray-400 text-sm font-medium rounded-xl transition-colors disabled:opacity-50"
                 >
-                  {importing ? 'Импортиране...' : 'Импорт от Frotcom'}
+                  {importing ? 'Импортиране...' : t('frotcomImport')}
                 </button>
               </>
             )}
@@ -486,7 +495,7 @@ export default function TrucksClient({
                 className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white text-sm font-semibold rounded-xl transition-colors"
               >
                 <span className="text-lg leading-none">+</span>
-                Нов камион
+                {t('new')}
               </button>
             )}
           </div>
@@ -498,33 +507,25 @@ export default function TrucksClient({
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Търси по рег. номер, марка, модел..."
+            placeholder={t('searchPlaceholder')}
             className="w-full max-w-sm bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-hidden focus:ring-2 focus:ring-blue-500"
           />
         </div>
 
-        {/* Sync feedback */}
+        {/* Feedback banners */}
         {syncError && (
-          <div className="mb-4 px-4 py-3 bg-red-500/10 border border-red-500/30 rounded-xl text-red-400 text-sm">
-            {syncError}
-          </div>
+          <div className="mb-4 px-4 py-3 bg-red-500/10 border border-red-500/30 rounded-xl text-red-400 text-sm">{syncError}</div>
         )}
         {syncResult && (
           <div className="mb-4 px-4 py-3 bg-green-500/10 border border-green-500/30 rounded-xl text-green-400 text-sm">
-            Пробег синхронизиран: {syncResult.updated} камиона обновени.
+            {t('syncComplete', { updated: syncResult.updated })}
             {syncResult.errors.length > 0 && (
-              <ul className="mt-1 text-xs text-gray-500">
-                {syncResult.errors.map((e, i) => <li key={i}>{e}</li>)}
-              </ul>
+              <ul className="mt-1 text-xs text-gray-500">{syncResult.errors.map((e, i) => <li key={i}>{e}</li>)}</ul>
             )}
           </div>
         )}
-
-        {/* Import feedback */}
         {importError && (
-          <div className="mb-4 px-4 py-3 bg-red-500/10 border border-red-500/30 rounded-xl text-red-400 text-sm">
-            {importError}
-          </div>
+          <div className="mb-4 px-4 py-3 bg-red-500/10 border border-red-500/30 rounded-xl text-red-400 text-sm">{importError}</div>
         )}
         {importResult && (
           <div className="mb-4">
@@ -541,48 +542,87 @@ export default function TrucksClient({
                   <th className="text-left px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Рег. номер</th>
                   <th className="text-left px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider hidden sm:table-cell">Марка / Модел</th>
                   <th className="text-left px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider hidden md:table-cell">Пробег</th>
-                  <th className="text-left px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider hidden lg:table-cell">Статус</th>
+                  <th className="text-left px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider hidden lg:table-cell">Последен сервиз</th>
                   <th className="px-5 py-3" />
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-800">
                 {paginated.map((truck) => (
-                  <tr key={truck.id} className={`hover:bg-gray-800/50 transition-colors ${!truck.isActive ? 'opacity-60' : ''}`}>
+                  <tr key={truck.id} className={`hover:bg-gray-800/50 transition-colors ${!truck.isActive ? 'opacity-50' : ''}`}>
+
+                    {/* Plate + badges + active service chip */}
                     <td className="px-5 py-4">
-                      <p className="font-mono font-semibold text-white">{truck.plateNumber}</p>
-                      <div className="flex items-center gap-1.5 mt-0.5">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <Link
+                          href={`/trucks/${truck.id}`}
+                          className="font-mono font-semibold text-white hover:text-blue-400 transition-colors underline-offset-2 hover:underline"
+                        >
+                          {truck.plateNumber}
+                        </Link>
+                        {truck.mileageAlert && (
+                          <span title="Нуждае се от сервиз" className="text-amber-400 text-sm leading-none">⚠</span>
+                        )}
                         {truck.isAdr && (
-                          <span className="inline-flex items-center px-1.5 py-0 rounded-sm text-xs font-bold bg-orange-600/20 text-orange-400">
-                            ADR
-                          </span>
+                          <span className="inline-flex items-center px-1.5 py-0 rounded-sm text-xs font-bold bg-orange-600/20 text-orange-400">ADR</span>
+                        )}
+                        {!truck.isActive && (
+                          <span className="inline-flex items-center px-1.5 py-0 rounded-sm text-xs font-medium bg-gray-700 text-gray-500">Неактивен</span>
                         )}
                         {truck.frotcomVehicleId && (
                           <span className="text-xs text-gray-600">Frotcom</span>
                         )}
                       </div>
+                      {/* Active service chip */}
+                      {truck.activeService && (
+                        <Link
+                          href={`/services/${truck.activeService.id}`}
+                          className={`mt-1.5 inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-xs font-medium transition-opacity hover:opacity-80 ${STATUS_COLOR[truck.activeService.status] ?? 'bg-gray-700 text-gray-400'}`}
+                        >
+                          {STATUS_LABEL[truck.activeService.status] ?? truck.activeService.status}
+                          {truck.activeService.bayNameSnapshot && ` · ${truck.activeService.bayNameSnapshot}`}
+                          <span className="opacity-60">→</span>
+                        </Link>
+                      )}
                     </td>
+
+                    {/* Make / Model */}
                     <td className="px-5 py-4 hidden sm:table-cell">
                       <p className="text-white">{truck.make} {truck.model}</p>
                       {truck.year && <p className="text-xs text-gray-500">{truck.year}</p>}
                     </td>
-                    <td className="px-5 py-4 text-gray-300 hidden md:table-cell">
-                      {fmtMileage(truck.currentMileage)}
+
+                    {/* Mileage + km since last service */}
+                    <td className="px-5 py-4 hidden md:table-cell">
+                      <p className={truck.mileageAlert ? 'text-amber-400 font-medium' : 'text-gray-300'}>
+                        {fmtMileage(truck.currentMileage)}
+                      </p>
+                      {truck.kmSinceService != null && (
+                        <p className={`text-xs mt-0.5 ${truck.mileageAlert ? 'text-amber-500' : 'text-gray-600'}`}>
+                          +{Math.round(truck.kmSinceService).toLocaleString('bg-BG')} км от сервиз
+                        </p>
+                      )}
                     </td>
-                    <td className="px-5 py-4 hidden lg:table-cell">
-                      <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
-                        truck.isActive ? 'bg-green-600/20 text-green-400' : 'bg-gray-700 text-gray-500'
-                      }`}>
-                        {truck.isActive ? 'Активен' : 'Неактивен'}
-                      </span>
+
+                    {/* Last service date */}
+                    <td className="px-5 py-4 text-gray-400 hidden lg:table-cell">
+                      {fmtDate(truck.lastServiceDate)}
                     </td>
+
+                    {/* Actions */}
                     <td className="px-5 py-4">
                       <div className="flex items-center justify-end gap-1 flex-wrap">
+                        <Link
+                          href={`/trucks/${truck.id}`}
+                          className="px-2.5 py-1.5 text-xs rounded-lg border border-gray-700 text-gray-400 hover:text-white hover:border-gray-500 transition-colors"
+                        >
+                          Профил
+                        </Link>
                         {canEdit && (
                           <button
                             onClick={() => setModal({ type: 'edit', truck })}
                             className="px-2.5 py-1.5 text-xs rounded-lg border border-gray-700 text-gray-400 hover:text-white hover:border-gray-500 transition-colors"
                           >
-                            Редактирай
+                            {tCommon('edit')}
                           </button>
                         )}
                         {canEdit && !truck.frotcomVehicleId && (
@@ -602,7 +642,7 @@ export default function TrucksClient({
                                 : 'border-green-800/50 text-green-400 hover:bg-green-400/10'
                             }`}
                           >
-                            {truck.isActive ? 'Деактивирай' : 'Активирай'}
+                            {truck.isActive ? tCommon('deactivate') : tCommon('activate')}
                           </button>
                         )}
                       </div>
@@ -612,7 +652,7 @@ export default function TrucksClient({
                 {trucks.length === 0 && (
                   <tr>
                     <td colSpan={5} className="px-5 py-12 text-center text-gray-500">
-                      Няма камиони. Добавете ръчно или импортирайте от Frotcom.
+                      {t('noTrucks')}
                     </td>
                   </tr>
                 )}
@@ -631,23 +671,23 @@ export default function TrucksClient({
 
       {/* Modals */}
       {modal === 'add' && (
-        <Modal title="Нов камион" onClose={() => setModal(null)}>
+        <Modal title={t('new')} onClose={() => setModal(null)}>
           <TruckForm onClose={() => setModal(null)} onSaved={upsert} />
         </Modal>
       )}
       {modal !== null && modal !== 'add' && modal.type === 'edit' && (
-        <Modal title="Редактиране на камион" onClose={() => setModal(null)}>
+        <Modal title={t('editTruck')} onClose={() => setModal(null)}>
           <TruckForm initial={modal.truck} onClose={() => setModal(null)} onSaved={upsert} />
         </Modal>
       )}
       {modal !== null && modal !== 'add' && modal.type === 'mileage' && (
-        <Modal title="Обнови пробег" onClose={() => setModal(null)}>
+        <Modal title={t('updateMileage')} onClose={() => setModal(null)}>
           <MileageModal truck={modal.truck} onClose={() => setModal(null)} onSaved={upsert} />
         </Modal>
       )}
       {modal !== null && modal !== 'add' && modal.type === 'toggle' && (
         <Modal
-          title={modal.truck.isActive ? 'Деактивиране на камион' : 'Активиране на камион'}
+          title={modal.truck.isActive ? t('deactivate') : t('activateTruck')}
           onClose={() => setModal(null)}
         >
           <ToggleModal truck={modal.truck} onClose={() => setModal(null)} onSaved={upsert} />

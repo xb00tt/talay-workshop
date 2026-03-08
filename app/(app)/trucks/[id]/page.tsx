@@ -4,6 +4,7 @@ import { authOptions } from '@/lib/auth'
 import { hasPermission } from '@/lib/permissions'
 import { prisma } from '@/lib/prisma'
 import Link from 'next/link'
+import EditTruckButton from './EditTruckButton'
 
 const STATUS_LABEL: Record<string, string> = {
   SCHEDULED: 'Планирана', INTAKE: 'Приемане', IN_PROGRESS: 'В процес',
@@ -29,11 +30,12 @@ function fmtKm(km: number | null) {
   return `${Math.round(km).toLocaleString('bg-BG')} км`
 }
 
-function StatCard({ label, value }: { label: string; value: string }) {
+function StatCard({ label, value, sub, alert }: { label: string; value: string; sub?: string; alert?: boolean }) {
   return (
-    <div className="bg-gray-800/60 rounded-xl p-3">
+    <div className={`rounded-xl p-3 ${alert ? 'bg-amber-500/10 border border-amber-500/20' : 'bg-gray-800/60'}`}>
       <p className="text-xs text-gray-500 mb-1">{label}</p>
-      <p className="text-sm font-semibold text-white">{value}</p>
+      <p className={`text-sm font-semibold ${alert ? 'text-amber-400' : 'text-white'}`}>{value}</p>
+      {sub && <p className="text-xs text-gray-500 mt-0.5">{sub}</p>}
     </div>
   )
 }
@@ -52,8 +54,6 @@ export default async function TruckProfilePage({ params }: { params: Promise<{ i
       serviceOrders: {
         orderBy: [{ scheduledDate: 'desc' }, { createdAt: 'desc' }],
         include: {
-          bay:    { select: { name: true } },
-          driver: { select: { name: true } },
           sections: {
             include: {
               workCards: {
@@ -77,12 +77,18 @@ export default async function TruckProfilePage({ params }: { params: Promise<{ i
     (s) => !['COMPLETED', 'CANCELLED'].includes(s.status),
   )
 
+  const lastCompleted = completedServices[0] ?? null
+  const lastServiceMileage = lastCompleted?.mileageAtService ?? null
+  const kmSinceService = truck.currentMileage != null && lastServiceMileage != null
+    ? truck.currentMileage - lastServiceMileage
+    : null
+  const mileageAlert = kmSinceService != null && kmSinceService >= truck.mileageTriggerKm
+
   const totalPartsCost = completedServices.reduce((sum, svc) => {
-    const cost = svc.sections
+    return sum + svc.sections
       .flatMap((s) => s.workCards)
       .flatMap((wc) => wc.parts)
       .reduce((s2, p) => s2 + (p.unitCost ?? 0) * p.quantity, 0)
-    return sum + cost
   }, 0)
 
   return (
@@ -96,8 +102,13 @@ export default async function TruckProfilePage({ params }: { params: Promise<{ i
       <div className="bg-gray-900 rounded-2xl p-5">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
-            <div className="flex items-center gap-2 mb-1">
+            <div className="flex items-center gap-2 mb-1 flex-wrap">
               <h1 className="font-mono text-2xl font-bold text-white">{truck.plateNumber}</h1>
+              {mileageAlert && (
+                <span className="px-2 py-0.5 rounded-md text-xs font-bold bg-amber-500/20 text-amber-400 border border-amber-500/30">
+                  ⚠ За сервиз
+                </span>
+              )}
               {truck.isAdr && (
                 <span className="px-1.5 py-0.5 rounded-sm text-xs font-bold bg-orange-500/20 text-orange-400 border border-orange-500/30">ADR</span>
               )}
@@ -112,22 +123,24 @@ export default async function TruckProfilePage({ params }: { params: Promise<{ i
               {truck.make} {truck.model}{truck.year ? ` · ${truck.year}` : ''}
             </p>
           </div>
-          {canEdit && (
-            <Link
-              href="/trucks"
-              className="px-3 py-1.5 text-sm bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-xl transition-colors"
-            >
-              Редактирай
-            </Link>
-          )}
+          <EditTruckButton truck={truck} canEdit={canEdit} />
         </div>
 
-        {/* Stats grid */}
+        {/* Stats */}
         <div className="mt-5 grid grid-cols-2 sm:grid-cols-4 gap-3">
-          <StatCard label="Текущ пробег"      value={fmtKm(truck.currentMileage)} />
+          <StatCard label="Текущ пробег" value={fmtKm(truck.currentMileage)} />
+          <StatCard
+            label="От последен сервиз"
+            value={kmSinceService != null ? fmtKm(kmSinceService) : '—'}
+            sub={lastCompleted ? `(сервиз: ${fmtKm(lastServiceMileage)})` : undefined}
+            alert={mileageAlert}
+          />
           <StatCard label="Лимит за сервиз"   value={fmtKm(truck.mileageTriggerKm)} />
           <StatCard label="Завършени сервизи" value={String(completedServices.length)} />
-          <StatCard label="Разходи за части"  value={totalPartsCost > 0 ? `${totalPartsCost.toFixed(2)} €` : '—'} />
+        </div>
+        <div className="mt-3 grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <StatCard label="Последен сервиз"  value={fmtDate(lastCompleted?.endDate ?? lastCompleted?.scheduledDate ?? null)} />
+          <StatCard label="Разходи за части" value={totalPartsCost > 0 ? `${totalPartsCost.toFixed(2)} €` : '—'} />
         </div>
 
         {/* Active service banner */}
@@ -140,7 +153,7 @@ export default async function TruckProfilePage({ params }: { params: Promise<{ i
               <p className="text-xs text-blue-400 font-medium mb-0.5">Активна поръчка</p>
               <p className="text-sm text-white">
                 {STATUS_LABEL[activeService.status]} · {fmtDate(activeService.scheduledDate)}
-                {activeService.bayNameSnapshot ? ` · Бокс: ${activeService.bayNameSnapshot}` : ''}
+                {activeService.bayNameSnapshot ? ` · ${activeService.bayNameSnapshot}` : ''}
               </p>
             </div>
             <span className="text-blue-400 text-lg">→</span>
@@ -161,8 +174,8 @@ export default async function TruckProfilePage({ params }: { params: Promise<{ i
         ) : (
           <ul className="divide-y divide-gray-800">
             {truck.serviceOrders.map((svc) => {
-              const workDone   = svc.sections.flatMap((s) => s.workCards)
-              const partsCost  = workDone.flatMap((wc) => wc.parts)
+              const workDone  = svc.sections.flatMap((s) => s.workCards)
+              const partsCost = workDone.flatMap((wc) => wc.parts)
                 .reduce((sum, p) => sum + (p.unitCost ?? 0) * p.quantity, 0)
               return (
                 <li key={svc.id}>
@@ -171,7 +184,7 @@ export default async function TruckProfilePage({ params }: { params: Promise<{ i
                     className="flex items-start justify-between px-5 py-4 hover:bg-gray-800/50 transition-colors gap-4"
                   >
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-1.5">
+                      <div className="flex items-center gap-2 mb-1.5 flex-wrap">
                         <span className={`inline-flex items-center px-2 py-0.5 rounded-sm text-xs font-medium ${STATUS_COLOR[svc.status]}`}>
                           {STATUS_LABEL[svc.status]}
                         </span>
@@ -184,14 +197,10 @@ export default async function TruckProfilePage({ params }: { params: Promise<{ i
                         <p className="text-xs text-gray-500">Шофьор: {svc.driverNameSnapshot}</p>
                       )}
                       {workDone.length > 0 && (
-                        <p className="text-xs text-gray-600 mt-1">
-                          {workDone.length} завършени работни карти
-                        </p>
+                        <p className="text-xs text-gray-600 mt-1">{workDone.length} завършени работни карти</p>
                       )}
                       {svc.cancellationReason && (
-                        <p className="text-xs text-red-500 mt-1">
-                          Отменена: {svc.cancellationReason}
-                        </p>
+                        <p className="text-xs text-red-500 mt-1">Отменена: {svc.cancellationReason}</p>
                       )}
                     </div>
                     <div className="text-right shrink-0">

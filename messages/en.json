@@ -148,6 +148,7 @@
     "cancelOrder": "Cancel Order",
     "reschedule": "Reschedule",
     "moveToIntake": "Accept Order",
+    "moveToIntakeDesc": "You will assign a bay, record the driver and mileage, and perform the intake equipment check.",
     "moveToInProgress": "Start Work",
     "moveToQualityCheck": "Quality Check",
     "moveToReady": "Mark Ready",

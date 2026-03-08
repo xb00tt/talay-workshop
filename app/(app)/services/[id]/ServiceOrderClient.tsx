@@ -1679,7 +1679,7 @@ export default function ServiceOrderClient({
                 </div>
                 <div className="bg-blue-900/20 border border-blue-800/40 rounded-xl px-5 py-4">
                   <p className="text-sm font-semibold text-blue-300 mb-1">↓ {tService('status.INTAKE')}</p>
-                  <p className="text-sm text-gray-400">You will assign a bay, record the driver and mileage, and perform the intake equipment check.</p>
+                  <p className="text-sm text-gray-400">{tService('moveToIntakeDesc')}</p>
                 </div>
               </>
             )}

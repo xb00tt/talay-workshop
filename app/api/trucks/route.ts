@@ -10,9 +10,9 @@ export async function GET() {
   const session = await getServerSession(authOptions)
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-  const trucks = await prisma.truck.findMany({
-    orderBy: { plateNumber: 'asc' },
-  })
+  const { enrichTrucks } = await import('@/lib/truck-enrichment')
+  const base = await prisma.truck.findMany({ orderBy: { plateNumber: 'asc' } })
+  const trucks = await enrichTrucks(base)
   return NextResponse.json({ trucks })
 }
 

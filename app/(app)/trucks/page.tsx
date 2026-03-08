@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { hasPermission } from '@/lib/permissions'
 import { prisma } from '@/lib/prisma'
+import { enrichTrucks } from '@/lib/truck-enrichment'
 import TrucksClient from './TrucksClient'
 
 export default async function TrucksPage() {
@@ -11,10 +12,11 @@ export default async function TrucksPage() {
 
   const { role, permissions } = session.user
   const trucks = await prisma.truck.findMany({ orderBy: { plateNumber: 'asc' } })
+  const enriched = await enrichTrucks(trucks)
 
   return (
     <TrucksClient
-      initialTrucks={trucks}
+      initialTrucks={enriched}
       pageSize={session.user.pageSize ?? 10}
       canCreate={hasPermission(role, permissions, 'truck.create')}
       canEdit={hasPermission(role, permissions, 'truck.edit')}
