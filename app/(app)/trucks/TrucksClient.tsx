@@ -34,7 +34,7 @@ function Input(props: React.InputHTMLAttributes<HTMLInputElement>) {
       {...props}
       className={
         'w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-white ' +
-        'placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 ' +
+        'placeholder-gray-500 focus:outline-hidden focus:ring-2 focus:ring-blue-500 ' +
         (props.className ?? '')
       }
     />
@@ -352,7 +352,7 @@ function ImportResult({ result, onClose }: { result: { imported: number; skipped
           <p className="text-red-400 mt-1 text-xs">{result.errors.slice(0, 3).join('; ')}</p>
         )}
       </div>
-      <button onClick={onClose} className="text-gray-500 hover:text-white text-lg leading-none flex-shrink-0" aria-label={tCommon('close')}>×</button>
+      <button onClick={onClose} className="text-gray-500 hover:text-white text-lg leading-none shrink-0" aria-label={tCommon('close')}>×</button>
     </div>
   )
 }
@@ -499,7 +499,7 @@ export default function TrucksClient({
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Търси по рег. номер, марка, модел..."
-            className="w-full max-w-sm bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full max-w-sm bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-hidden focus:ring-2 focus:ring-blue-500"
           />
         </div>
 
@@ -552,7 +552,7 @@ export default function TrucksClient({
                       <p className="font-mono font-semibold text-white">{truck.plateNumber}</p>
                       <div className="flex items-center gap-1.5 mt-0.5">
                         {truck.isAdr && (
-                          <span className="inline-flex items-center px-1.5 py-0 rounded text-xs font-bold bg-orange-600/20 text-orange-400">
+                          <span className="inline-flex items-center px-1.5 py-0 rounded-sm text-xs font-bold bg-orange-600/20 text-orange-400">
                             ADR
                           </span>
                         )}

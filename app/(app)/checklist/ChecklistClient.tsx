@@ -60,7 +60,7 @@ export default function ChecklistClient({ initialItems, canEdit }: Props) {
               onChange={(e) => setDesc(e.target.value)}
               rows={3}
               placeholder={tM('enterDesc')}
-              className="w-full bg-gray-800 border border-gray-700 rounded-xl px-3 py-2 text-white placeholder-gray-600 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+              className="w-full bg-gray-800 border border-gray-700 rounded-xl px-3 py-2 text-white placeholder-gray-600 text-sm focus:outline-hidden focus:ring-2 focus:ring-blue-500 resize-none"
               autoFocus
             />
             {err && <p className="text-red-400 text-xs">{err}</p>}
@@ -115,7 +115,7 @@ export default function ChecklistClient({ initialItems, canEdit }: Props) {
               value={desc}
               onChange={(e) => setDesc(e.target.value)}
               rows={3}
-              className="w-full bg-gray-800 border border-gray-700 rounded-xl px-3 py-2 text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+              className="w-full bg-gray-800 border border-gray-700 rounded-xl px-3 py-2 text-white text-sm focus:outline-hidden focus:ring-2 focus:ring-blue-500 resize-none"
               autoFocus
             />
             {err && <p className="text-red-400 text-xs">{err}</p>}
@@ -284,14 +284,14 @@ export default function ChecklistClient({ initialItems, canEdit }: Props) {
                     <button
                       disabled={saving}
                       onClick={() => toggleActive(item)}
-                      className="px-2 py-0.5 text-xs rounded bg-gray-800 hover:bg-gray-700 text-gray-400 transition-colors disabled:opacity-50"
+                      className="px-2 py-0.5 text-xs rounded-sm bg-gray-800 hover:bg-gray-700 text-gray-400 transition-colors disabled:opacity-50"
                     >
                       {t('disable')}
                     </button>
                     <button
                       disabled={saving}
                       onClick={() => deleteItem(item)}
-                      className="px-2 py-0.5 text-xs rounded bg-red-500/10 hover:bg-red-500/20 text-red-400 transition-colors disabled:opacity-50"
+                      className="px-2 py-0.5 text-xs rounded-sm bg-red-500/10 hover:bg-red-500/20 text-red-400 transition-colors disabled:opacity-50"
                     >
                       {tCommon('delete')}
                     </button>
@@ -322,14 +322,14 @@ export default function ChecklistClient({ initialItems, canEdit }: Props) {
                     <button
                       disabled={saving}
                       onClick={() => toggleActive(item)}
-                      className="px-2 py-0.5 text-xs rounded bg-gray-800 hover:bg-gray-700 text-gray-400 transition-colors disabled:opacity-50"
+                      className="px-2 py-0.5 text-xs rounded-sm bg-gray-800 hover:bg-gray-700 text-gray-400 transition-colors disabled:opacity-50"
                     >
                       {tCommon('activate')}
                     </button>
                     <button
                       disabled={saving}
                       onClick={() => deleteItem(item)}
-                      className="px-2 py-0.5 text-xs rounded bg-red-500/10 hover:bg-red-500/20 text-red-400 transition-colors disabled:opacity-50"
+                      className="px-2 py-0.5 text-xs rounded-sm bg-red-500/10 hover:bg-red-500/20 text-red-400 transition-colors disabled:opacity-50"
                     >
                       {tCommon('delete')}
                     </button>

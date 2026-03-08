@@ -37,6 +37,7 @@ next-env.d.ts
 # prisma
 *.db
 *.db-journal
+/lib/generated/
 
 # uploads
 /uploads/*

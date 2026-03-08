@@ -130,21 +130,21 @@ export default function ReportsClient({ trucks, canExport }: { trucks: TruckOpti
             <label className="block text-xs text-gray-500 mb-1">{t('dateFrom')}</label>
             <input
               type="date" value={from} onChange={(e) => setFrom(e.target.value)}
-              className="bg-gray-800 border border-gray-700 rounded-xl px-3 py-2 text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="bg-gray-800 border border-gray-700 rounded-xl px-3 py-2 text-white text-sm focus:outline-hidden focus:ring-2 focus:ring-blue-500"
             />
           </div>
           <div>
             <label className="block text-xs text-gray-500 mb-1">{t('dateTo')}</label>
             <input
               type="date" value={to} onChange={(e) => setTo(e.target.value)}
-              className="bg-gray-800 border border-gray-700 rounded-xl px-3 py-2 text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="bg-gray-800 border border-gray-700 rounded-xl px-3 py-2 text-white text-sm focus:outline-hidden focus:ring-2 focus:ring-blue-500"
             />
           </div>
           <div>
             <label className="block text-xs text-gray-500 mb-1">{t('truckOptional')}</label>
             <select
               value={truckId} onChange={(e) => setTruckId(e.target.value)}
-              className="bg-gray-800 border border-gray-700 rounded-xl px-3 py-2 text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="bg-gray-800 border border-gray-700 rounded-xl px-3 py-2 text-white text-sm focus:outline-hidden focus:ring-2 focus:ring-blue-500"
             >
               <option value="">{t('selectAllTrucks')}</option>
               {trucks.map((tr) => (

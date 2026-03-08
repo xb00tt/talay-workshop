@@ -83,14 +83,14 @@ function AddModal({
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder={t('namePlaceholder')}
-            className="w-full bg-gray-800 border border-gray-700 rounded-xl px-3 py-2 text-white placeholder-gray-600 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full bg-gray-800 border border-gray-700 rounded-xl px-3 py-2 text-white placeholder-gray-600 text-sm focus:outline-hidden focus:ring-2 focus:ring-blue-500"
             autoFocus
           />
           <input
             value={desc}
             onChange={(e) => setDesc(e.target.value)}
             placeholder={t('descPlaceholder')}
-            className="w-full bg-gray-800 border border-gray-700 rounded-xl px-3 py-2 text-white placeholder-gray-600 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full bg-gray-800 border border-gray-700 rounded-xl px-3 py-2 text-white placeholder-gray-600 text-sm focus:outline-hidden focus:ring-2 focus:ring-blue-500"
           />
           {err && <p className="text-red-400 text-xs">{err}</p>}
           <div className="flex gap-2 justify-end">
@@ -152,14 +152,14 @@ function EditModal({
           <input
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="w-full bg-gray-800 border border-gray-700 rounded-xl px-3 py-2 text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full bg-gray-800 border border-gray-700 rounded-xl px-3 py-2 text-white text-sm focus:outline-hidden focus:ring-2 focus:ring-blue-500"
             autoFocus
           />
           <input
             value={desc}
             onChange={(e) => setDesc(e.target.value)}
             placeholder={t('descPlaceholder')}
-            className="w-full bg-gray-800 border border-gray-700 rounded-xl px-3 py-2 text-white placeholder-gray-600 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full bg-gray-800 border border-gray-700 rounded-xl px-3 py-2 text-white placeholder-gray-600 text-sm focus:outline-hidden focus:ring-2 focus:ring-blue-500"
           />
           {err && <p className="text-red-400 text-xs">{err}</p>}
           <div className="flex gap-2 justify-end">
@@ -311,11 +311,11 @@ function ItemList({
                     <button onClick={() => setEditTarget(item)}
                       className="p-1 text-gray-600 hover:text-gray-300 transition-colors text-xs">✎</button>
                     <button disabled={busy} onClick={() => toggle(item)}
-                      className="px-2 py-0.5 text-xs rounded bg-gray-800 hover:bg-gray-700 text-gray-400 transition-colors disabled:opacity-50">
+                      className="px-2 py-0.5 text-xs rounded-sm bg-gray-800 hover:bg-gray-700 text-gray-400 transition-colors disabled:opacity-50">
                       {t('deactivateBtn')}
                     </button>
                     <button disabled={busy} onClick={() => doDelete(item)}
-                      className="px-2 py-0.5 text-xs rounded bg-red-500/10 hover:bg-red-500/20 text-red-400 transition-colors disabled:opacity-50">
+                      className="px-2 py-0.5 text-xs rounded-sm bg-red-500/10 hover:bg-red-500/20 text-red-400 transition-colors disabled:opacity-50">
                       {tCommon('delete')}
                     </button>
                   </div>
@@ -336,11 +336,11 @@ function ItemList({
                     {canEdit && (
                       <div className="shrink-0 flex gap-1">
                         <button disabled={busy} onClick={() => toggle(item)}
-                          className="px-2 py-0.5 text-xs rounded bg-gray-800 hover:bg-gray-700 text-gray-400 transition-colors disabled:opacity-50">
+                          className="px-2 py-0.5 text-xs rounded-sm bg-gray-800 hover:bg-gray-700 text-gray-400 transition-colors disabled:opacity-50">
                           {t('activateBtn')}
                         </button>
                         <button disabled={busy} onClick={() => doDelete(item)}
-                          className="px-2 py-0.5 text-xs rounded bg-red-500/10 hover:bg-red-500/20 text-red-400 transition-colors disabled:opacity-50">
+                          className="px-2 py-0.5 text-xs rounded-sm bg-red-500/10 hover:bg-red-500/20 text-red-400 transition-colors disabled:opacity-50">
                           {tCommon('delete')}
                         </button>
                       </div>

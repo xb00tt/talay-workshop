@@ -102,7 +102,7 @@ function Input(props: React.InputHTMLAttributes<HTMLInputElement>) {
       {...props}
       className={
         'w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-white ' +
-        'placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 ' +
+        'placeholder-gray-500 focus:outline-hidden focus:ring-2 focus:ring-blue-500 ' +
         (props.className ?? '')
       }
     />
@@ -114,7 +114,7 @@ function Textarea(props: React.TextareaHTMLAttributes<HTMLTextAreaElement>) {
       {...props}
       className={
         'w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-white ' +
-        'placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none ' +
+        'placeholder-gray-500 focus:outline-hidden focus:ring-2 focus:ring-blue-500 resize-none ' +
         (props.className ?? '')
       }
     />
@@ -126,7 +126,7 @@ function Select(props: React.SelectHTMLAttributes<HTMLSelectElement>) {
       {...props}
       className={
         'bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-white ' +
-        'focus:outline-none focus:ring-2 focus:ring-blue-500 ' +
+        'focus:outline-hidden focus:ring-2 focus:ring-blue-500 ' +
         (props.className ?? '')
       }
     />
@@ -672,7 +672,7 @@ function WorkCardRow({
             <p className="text-xs text-gray-600 mt-1">{wc.parts.length} {tWorkCard('partsCount')}</p>
           )}
         </div>
-        <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${WC_COLOR[wc.status]} shrink-0`}>
+        <span className={`inline-flex items-center px-2 py-0.5 rounded-sm text-xs font-medium ${WC_COLOR[wc.status]} shrink-0`}>
           {tWorkCard(`status.${wc.status}`)}
         </span>
       </div>
@@ -872,7 +872,7 @@ function EquipmentCheckPanel({
                     value={row.explanation}
                     onChange={(e) => setRow(def.name, { explanation: e.target.value })}
                     placeholder={tEquipment('notePlaceholder')}
-                    className="mt-1.5 w-full bg-gray-700 border border-gray-600 rounded px-2 py-1 text-xs text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    className="mt-1.5 w-full bg-gray-700 border border-gray-600 rounded-sm px-2 py-1 text-xs text-white placeholder-gray-500 focus:outline-hidden focus:ring-1 focus:ring-blue-500"
                   />
                 )}
               </div>
@@ -907,7 +907,7 @@ function EquipmentCheckPanel({
             value={skipInput}
             onChange={(e) => setSkipInput(e.target.value)}
             placeholder={tEquipment('skipNote')}
-            className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-1.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-1.5 text-sm text-white placeholder-gray-500 focus:outline-hidden focus:ring-2 focus:ring-blue-500"
           />
           <div className="flex gap-2">
             <button onClick={() => setShowSkip(false)}
@@ -978,7 +978,7 @@ function SectionCard({
       <div className="flex items-center justify-between px-4 py-3 border-b border-gray-800">
         <div className="flex items-center gap-2">
           <h3 className="text-sm font-semibold text-white">{sec.title}</h3>
-          <span className="text-xs px-1.5 py-0.5 rounded bg-gray-800 text-gray-500">
+          <span className="text-xs px-1.5 py-0.5 rounded-sm bg-gray-800 text-gray-500">
             {tSection(`type.${sec.type}`)}
           </span>
           {sec.type === 'CHECKLIST' && (
@@ -1169,7 +1169,7 @@ function CollapsiblePanel({
         className="w-full flex items-center justify-between px-5 py-4 hover:bg-gray-800/50 transition-colors cursor-pointer"
       >
         <div className="flex items-center gap-3 min-w-0">
-          <div className={`w-8 h-8 ${PANEL_ICON_BG[kind] ?? 'bg-gray-700/60'} rounded-lg flex items-center justify-center flex-shrink-0`}>
+          <div className={`w-8 h-8 ${PANEL_ICON_BG[kind] ?? 'bg-gray-700/60'} rounded-lg flex items-center justify-center shrink-0`}>
             <PanelIcon kind={kind} />
           </div>
           <div className="min-w-0">
@@ -1192,7 +1192,7 @@ function CollapsiblePanel({
             )}
           </div>
         </div>
-        <div className="flex items-center gap-2 flex-shrink-0" onClick={(e) => e.stopPropagation()}>
+        <div className="flex items-center gap-2 shrink-0" onClick={(e) => e.stopPropagation()}>
           {headerRight}
           <svg
             className={`w-4 h-4 text-gray-500 transition-transform ${open ? 'rotate-180' : ''}`}
@@ -1463,7 +1463,7 @@ export default function ServiceOrderClient({
           className={`flex items-center gap-3 w-full py-1 ${railState === 'done' && summaryLine[stage] ? 'cursor-pointer' : ''}`}
           onClick={railState === 'done' && summaryLine[stage] ? () => setExpandedRailStage(expanded ? null : stage) : undefined}
         >
-          <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 border-2 transition-all ${dotCls}`}>
+          <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 border-2 transition-all ${dotCls}`}>
             {railState === 'done'   && <svg className="w-4 h-4 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" /></svg>}
             {railState === 'active' && <div className="w-2.5 h-2.5 rounded-full bg-white" />}
             {railState === 'locked' && <div className="w-2 h-2 rounded-full bg-gray-600" />}
@@ -1477,7 +1477,7 @@ export default function ServiceOrderClient({
             )}
           </div>
           {railState === 'done' && summaryLine[stage] && (
-            <svg className={`w-3.5 h-3.5 text-gray-600 flex-shrink-0 transition-transform ${expanded ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className={`w-3.5 h-3.5 text-gray-600 shrink-0 transition-transform ${expanded ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
             </svg>
           )}
@@ -1498,18 +1498,18 @@ export default function ServiceOrderClient({
     <div className="flex overflow-hidden" style={{ height: '100dvh' }}>
 
       {/* ═══ Stage Rail (desktop) ═══ */}
-      <div className="hidden lg:flex flex-col w-56 flex-shrink-0 bg-gray-900 border-r border-gray-800 overflow-y-auto">
+      <div className="hidden lg:flex flex-col w-56 shrink-0 bg-gray-900 border-r border-gray-800 overflow-y-auto">
         {/* Truck mini-card */}
-        <div className="p-4 border-b border-gray-800 flex-shrink-0">
+        <div className="p-4 border-b border-gray-800 shrink-0">
           <div className="text-xs text-gray-500 mb-1">#{service.id}</div>
           <div className="font-mono text-sm font-bold text-white">{service.truckPlateSnapshot}</div>
           <div className="text-xs text-gray-400">{service.truck.make} {service.truck.model}{service.truck.year ? ` · ${service.truck.year}` : ''}</div>
           <div className="mt-2 flex flex-wrap items-center gap-1.5">
             {service.truck.isAdr && (
-              <span className="text-xs bg-orange-900/50 text-orange-400 border border-orange-800/50 px-1.5 py-0.5 rounded font-medium">ADR</span>
+              <span className="text-xs bg-orange-900/50 text-orange-400 border border-orange-800/50 px-1.5 py-0.5 rounded-sm font-medium">ADR</span>
             )}
             {service.truck.frotcomVehicleId && (
-              <span className="text-xs bg-sky-900/40 text-sky-400 border border-sky-800/40 px-1.5 py-0.5 rounded">Frotcom</span>
+              <span className="text-xs bg-sky-900/40 text-sky-400 border border-sky-800/40 px-1.5 py-0.5 rounded-sm">Frotcom</span>
             )}
             {service.bayNameSnapshot && (
               <span className="text-xs text-gray-500">{tService('bay')}: {service.bayNameSnapshot}</span>
@@ -1524,7 +1524,7 @@ export default function ServiceOrderClient({
           ))}
           {isCancelled && (
             <div className="mt-2 flex items-center gap-3">
-              <div className="w-8 h-8 rounded-full bg-red-900/30 border-2 border-red-700 flex items-center justify-center flex-shrink-0">
+              <div className="w-8 h-8 rounded-full bg-red-900/30 border-2 border-red-700 flex items-center justify-center shrink-0">
                 <svg className="w-4 h-4 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 </svg>
@@ -1539,7 +1539,7 @@ export default function ServiceOrderClient({
       <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
 
         {/* ── Top bar (breadcrumb + actions) ── */}
-        <div className="flex-shrink-0 bg-gray-900/95 border-b border-gray-800 px-4 lg:px-6 py-3 flex items-center justify-between gap-3">
+        <div className="shrink-0 bg-gray-900/95 border-b border-gray-800 px-4 lg:px-6 py-3 flex items-center justify-between gap-3">
           <nav className="flex items-center gap-2 text-sm min-w-0">
             <Link href="/services" className="text-gray-400 hover:text-white transition-colors hidden sm:inline">
               {tService('backToOrders').replace('←', '').trim()}
@@ -1554,7 +1554,7 @@ export default function ServiceOrderClient({
               {tService(`status.${service.status}`)}
             </span>
           </nav>
-          <div className="flex items-center gap-2 flex-shrink-0">
+          <div className="flex items-center gap-2 shrink-0">
             <Link
               href={`/services/${service.id}/print`}
               target="_blank"
@@ -1577,7 +1577,7 @@ export default function ServiceOrderClient({
         </div>
 
         {/* ── Mobile progress bar ── */}
-        <div className="lg:hidden flex-shrink-0 bg-gray-900 border-b border-gray-800 px-4 py-2.5">
+        <div className="lg:hidden shrink-0 bg-gray-900 border-b border-gray-800 px-4 py-2.5">
           <div className="flex gap-1 mb-1.5">
             {STAGE_ORDER.map((stage) => {
               const s = resolvedStageState(stage, service.status)
@@ -1608,7 +1608,7 @@ export default function ServiceOrderClient({
               </div>
               {/* Mini counters */}
               {(checklistItems.length > 0 || activeWorkCards.length > 0) && !isCancelled && (
-                <div className="flex gap-2 flex-shrink-0">
+                <div className="flex gap-2 shrink-0">
                   {checklistItems.length > 0 && showChecklist && (
                     <div className="bg-gray-800 rounded-lg px-3 py-2 border border-gray-700 text-center min-w-[56px]">
                       <div className="text-sm font-bold text-white leading-tight">
@@ -1650,7 +1650,7 @@ export default function ServiceOrderClient({
                       <div className="flex items-center gap-2 mb-1">
                         <span className="font-mono text-xl font-bold text-white">{service.truckPlateSnapshot}</span>
                         {service.truck.isAdr && (
-                          <span className="px-1.5 py-0.5 rounded text-xs font-bold bg-orange-500/20 text-orange-400 border border-orange-500/30">ADR</span>
+                          <span className="px-1.5 py-0.5 rounded-sm text-xs font-bold bg-orange-500/20 text-orange-400 border border-orange-500/30">ADR</span>
                         )}
                       </div>
                       <p className="text-sm text-gray-400">{service.truck.make} {service.truck.model}{service.truck.year ? ` · ${service.truck.year}` : ''}</p>
@@ -1740,7 +1740,7 @@ export default function ServiceOrderClient({
                     <button
                       type="button"
                       onClick={(e) => { e.stopPropagation(); setModal('addFeedback') }}
-                      className="text-xs px-2 py-1 bg-blue-600 hover:bg-blue-500 text-white rounded transition-colors"
+                      className="text-xs px-2 py-1 bg-blue-600 hover:bg-blue-500 text-white rounded-sm transition-colors"
                     >
                       + {tCommon('add')}
                     </button>
@@ -1883,11 +1883,11 @@ export default function ServiceOrderClient({
 
         {/* ── Bottom Action Bar ── */}
         {!isTerminal && (
-          <div className="flex-shrink-0 bg-gray-900/95 backdrop-blur border-t border-gray-800 px-4 lg:px-6 py-4">
+          <div className="shrink-0 bg-gray-900/95 backdrop-blur-sm border-t border-gray-800 px-4 lg:px-6 py-4">
             {/* Warnings */}
             {stageWarnings.length > 0 && (
               <div className="flex items-start gap-3 mb-4 p-3 bg-amber-900/20 border border-amber-800/40 rounded-lg">
-                <svg className="w-4 h-4 text-amber-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                 </svg>
                 <div className="flex-1 min-w-0">

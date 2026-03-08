@@ -1,16 +1,15 @@
 import { getServerSession } from 'next-auth'
 import { redirect } from 'next/navigation'
 import { NextIntlClientProvider } from 'next-intl'
-import { getMessages, getLocale } from 'next-intl/server'
 import { authOptions } from '@/lib/auth'
 import AppShell from '@/components/AppShell'
+import getRequestConfig from '@/i18n/request'
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const session = await getServerSession(authOptions)
   if (!session) redirect('/login')
 
-  const locale = await getLocale()
-  const messages = await getMessages()
+  const { locale, messages } = await (getRequestConfig as Function)()
 
   const darkMode = session.user.darkMode !== false
 

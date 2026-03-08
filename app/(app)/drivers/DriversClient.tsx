@@ -75,7 +75,7 @@ export default function DriversClient({
                       <button
                         onClick={() => toggleActive(d)}
                         disabled={toggling === d.id}
-                        className="flex-shrink-0 px-3 py-1.5 text-xs rounded-lg border border-red-800/50 text-red-400 hover:bg-red-400/10 transition-colors disabled:opacity-50"
+                        className="shrink-0 px-3 py-1.5 text-xs rounded-lg border border-red-800/50 text-red-400 hover:bg-red-400/10 transition-colors disabled:opacity-50"
                       >
                         {toggling === d.id ? '...' : tCommon('deactivate')}
                       </button>
@@ -100,7 +100,7 @@ export default function DriversClient({
                       <button
                         onClick={() => toggleActive(d)}
                         disabled={toggling === d.id}
-                        className="flex-shrink-0 px-3 py-1.5 text-xs rounded-lg border border-green-800/50 text-green-400 hover:bg-green-400/10 transition-colors disabled:opacity-50"
+                        className="shrink-0 px-3 py-1.5 text-xs rounded-lg border border-green-800/50 text-green-400 hover:bg-green-400/10 transition-colors disabled:opacity-50"
                       >
                         {toggling === d.id ? '...' : tCommon('activate')}
                       </button>

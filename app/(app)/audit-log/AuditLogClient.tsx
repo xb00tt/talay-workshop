@@ -97,7 +97,7 @@ export default function AuditLogClient() {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder={t('searchPlaceholder')}
-          className="flex-1 bg-gray-800 border border-gray-700 rounded-xl px-4 py-2 text-white placeholder-gray-600 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="flex-1 bg-gray-800 border border-gray-700 rounded-xl px-4 py-2 text-white placeholder-gray-600 text-sm focus:outline-hidden focus:ring-2 focus:ring-blue-500"
         />
         <button
           type="submit"
@@ -139,7 +139,7 @@ export default function AuditLogClient() {
                       </td>
                       <td className="px-4 py-3 text-gray-300">{entry.userNameSnapshot}</td>
                       <td className="px-4 py-3">
-                        <span className="font-mono text-xs bg-gray-800 px-1.5 py-0.5 rounded text-blue-300">
+                        <span className="font-mono text-xs bg-gray-800 px-1.5 py-0.5 rounded-sm text-blue-300">
                           {entry.action}
                         </span>
                       </td>
@@ -165,7 +165,7 @@ export default function AuditLogClient() {
                             {entry.oldValue && (
                               <div>
                                 <p className="text-gray-500 font-semibold mb-1">{t('before')}</p>
-                                <pre className="text-gray-400 whitespace-pre-wrap font-mono bg-gray-900 p-2 rounded overflow-auto max-h-40">
+                                <pre className="text-gray-400 whitespace-pre-wrap font-mono bg-gray-900 p-2 rounded-sm overflow-auto max-h-40">
                                   {(() => { try { return JSON.stringify(JSON.parse(entry.oldValue), null, 2) } catch { return entry.oldValue } })()}
                                 </pre>
                               </div>
@@ -173,7 +173,7 @@ export default function AuditLogClient() {
                             {entry.newValue && (
                               <div>
                                 <p className="text-gray-500 font-semibold mb-1">{t('after')}</p>
-                                <pre className="text-gray-400 whitespace-pre-wrap font-mono bg-gray-900 p-2 rounded overflow-auto max-h-40">
+                                <pre className="text-gray-400 whitespace-pre-wrap font-mono bg-gray-900 p-2 rounded-sm overflow-auto max-h-40">
                                   {(() => { try { return JSON.stringify(JSON.parse(entry.newValue), null, 2) } catch { return entry.newValue } })()}
                                 </pre>
                               </div>

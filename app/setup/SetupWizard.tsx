@@ -50,7 +50,7 @@ function Input(props: React.InputHTMLAttributes<HTMLInputElement>) {
       {...props}
       className={
         'w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-white ' +
-        'placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ' +
+        'placeholder-gray-500 focus:outline-hidden focus:ring-2 focus:ring-blue-500 focus:border-transparent ' +
         (props.className ?? '')
       }
     />
@@ -63,7 +63,7 @@ function Textarea(props: React.TextareaHTMLAttributes<HTMLTextAreaElement>) {
       {...props}
       className={
         'w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-white ' +
-        'placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none ' +
+        'placeholder-gray-500 focus:outline-hidden focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none ' +
         (props.className ?? '')
       }
     />
@@ -87,7 +87,7 @@ function RemoveButton({ onClick }: { onClick: () => void }) {
     <button
       type="button"
       onClick={onClick}
-      className="ml-2 text-gray-500 hover:text-red-400 text-lg leading-none flex-shrink-0"
+      className="ml-2 text-gray-500 hover:text-red-400 text-lg leading-none shrink-0"
       title="Премахни"
     >
       ×
@@ -408,7 +408,7 @@ function RecoveryCodeScreen({ code, onDone }: { code: string; onDone: () => void
           type="checkbox"
           checked={confirmed}
           onChange={(e) => setConfirmed(e.target.checked)}
-          className="mt-1 w-4 h-4 accent-blue-500 flex-shrink-0"
+          className="mt-1 w-4 h-4 accent-blue-500 shrink-0"
         />
         <span className="text-sm text-gray-300">
           Записал/а съм кода за възстановяване на сигурно място.

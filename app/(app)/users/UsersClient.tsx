@@ -96,7 +96,7 @@ function Input(props: React.InputHTMLAttributes<HTMLInputElement>) {
       {...props}
       className={
         'w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-white ' +
-        'placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 ' +
+        'placeholder-gray-500 focus:outline-hidden focus:ring-2 focus:ring-blue-500 ' +
         (props.className ?? '')
       }
     />
@@ -109,7 +109,7 @@ function Select(props: React.SelectHTMLAttributes<HTMLSelectElement>) {
       {...props}
       className={
         'w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-white ' +
-        'focus:outline-none focus:ring-2 focus:ring-blue-500 ' +
+        'focus:outline-hidden focus:ring-2 focus:ring-blue-500 ' +
         (props.className ?? '')
       }
     />
@@ -135,7 +135,7 @@ function Modal({ title, onClose, children }: { title: string; onClose: () => voi
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/60" onClick={onClose} />
       <div className="relative w-full max-w-lg bg-gray-900 rounded-2xl shadow-2xl flex flex-col max-h-[90vh]">
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-800 flex-shrink-0">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-800 shrink-0">
           <h2 className="text-base font-semibold text-white">{title}</h2>
           <button onClick={onClose} className="text-gray-500 hover:text-white text-xl leading-none">×</button>
         </div>
@@ -188,7 +188,7 @@ function RecoveryDisplay({
           type="checkbox"
           checked={confirmed}
           onChange={(e) => setConfirmed(e.target.checked)}
-          className="mt-1 w-4 h-4 accent-blue-500 flex-shrink-0"
+          className="mt-1 w-4 h-4 accent-blue-500 shrink-0"
         />
         <span className="text-sm text-gray-300">{t('saveCodeConfirm')}</span>
       </label>
@@ -246,7 +246,7 @@ function PermissionsEditor({
                   type="checkbox"
                   checked={selected.includes(perm)}
                   onChange={() => toggle(perm)}
-                  className="w-4 h-4 accent-blue-500 flex-shrink-0"
+                  className="w-4 h-4 accent-blue-500 shrink-0"
                 />
                 <span className="text-xs text-gray-400 group-hover:text-gray-200 transition-colors">
                   {PERMISSION_LABELS[perm]}
@@ -714,7 +714,7 @@ export default function UsersClient({
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder={t('searchPlaceholder')}
-            className="w-full max-w-sm bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full max-w-sm bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-hidden focus:ring-2 focus:ring-blue-500"
           />
         </div>
 

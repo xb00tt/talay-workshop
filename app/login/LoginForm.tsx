@@ -60,7 +60,7 @@ export default function LoginForm({ companyName }: { companyName: string }) {
                 autoFocus
                 autoComplete="username"
                 className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2.5 text-white
-                  placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder-gray-500 focus:outline-hidden focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
 
@@ -73,7 +73,7 @@ export default function LoginForm({ companyName }: { companyName: string }) {
                 required
                 autoComplete="current-password"
                 className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2.5 text-white
-                  placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder-gray-500 focus:outline-hidden focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="••••••••"
               />
             </div>

@@ -84,7 +84,7 @@ function fmtKm(km: number, kmUnit: string) {
 function StatusBadge({ status, label }: { status: string; label: string }) {
   const color = STATUS_COLOR[status] ?? 'bg-gray-600/20 text-gray-400 border-gray-500/30'
   return (
-    <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium border ${color}`}>
+    <span className={`inline-flex items-center px-2 py-0.5 rounded-sm text-xs font-medium border ${color}`}>
       {label}
     </span>
   )

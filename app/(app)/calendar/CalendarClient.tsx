@@ -90,7 +90,7 @@ function CreateServiceModal({
             <label className="block text-sm font-medium text-gray-300 mb-1">{t('selectTruckLabel')}</label>
             <select
               value={truckId} onChange={(e) => setTruckId(e.target.value)}
-              className="w-full bg-gray-800 border border-gray-700 rounded-xl px-3 py-2 text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full bg-gray-800 border border-gray-700 rounded-xl px-3 py-2 text-white text-sm focus:outline-hidden focus:ring-2 focus:ring-blue-500"
               autoFocus
             >
               <option value="">{t('selectTruckPlaceholder')}</option>
@@ -181,7 +181,7 @@ function MonthView({
                     key={svc.id}
                     href={`/services/${svc.id}`}
                     onClick={(e) => e.stopPropagation()}
-                    className={`block px-1 py-0.5 rounded text-xs truncate leading-tight ${STATUS_COLOR[svc.status]}`}
+                    className={`block px-1 py-0.5 rounded-sm text-xs truncate leading-tight ${STATUS_COLOR[svc.status]}`}
                   >
                     {svc.truckPlateSnapshot}
                   </Link>
@@ -382,7 +382,7 @@ export default function CalendarClient({
       {/* Legend */}
       <div className="flex flex-wrap gap-3">
         {(Object.entries(STATUS_COLOR) as [ServiceStatus, string][]).map(([status, color]) => (
-          <span key={status} className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-xs ${color}`}>
+          <span key={status} className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-sm text-xs ${color}`}>
             {tService(`status.${status}`)}
           </span>
         ))}

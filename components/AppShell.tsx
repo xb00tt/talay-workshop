@@ -123,7 +123,7 @@ function UserMenu({ userName, userRole }: { userName: string; userRole: string }
         onClick={() => setOpen((v) => !v)}
         className="w-full flex items-center gap-3 px-2 py-2 rounded-lg hover:bg-gray-800 transition-colors"
       >
-        <div className="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center flex-shrink-0">
+        <div className="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center shrink-0">
           <span className="text-xs font-bold text-gray-300">
             {userName.charAt(0).toUpperCase()}
           </span>
@@ -132,7 +132,7 @@ function UserMenu({ userName, userRole }: { userName: string; userRole: string }
           <p className="text-sm font-medium text-white truncate">{userName}</p>
           <p className="text-xs text-gray-500">{userRole === 'MANAGER' ? t('manager') : t('assistant')}</p>
         </div>
-        <svg className={`w-4 h-4 text-gray-500 flex-shrink-0 transition-transform ${open ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <svg className={`w-4 h-4 text-gray-500 shrink-0 transition-transform ${open ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
         </svg>
       </button>
@@ -182,7 +182,7 @@ function SidebarContent({
       {/* Logo */}
       <div className="px-4 py-5 border-b border-gray-800">
         <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center flex-shrink-0">
+          <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center shrink-0">
             <Ico name="wrench" className="w-4 h-4 text-white" />
           </div>
           <div>
@@ -272,7 +272,7 @@ export default function AppShell({
       {/* Main content */}
       <div className="flex-1 lg:ml-60 flex flex-col min-h-screen">
         {/* Mobile top bar */}
-        <header className="lg:hidden sticky top-0 z-20 bg-gray-950/80 backdrop-blur-sm border-b border-gray-800 px-4 py-3 flex items-center justify-between">
+        <header className="lg:hidden sticky top-0 z-20 bg-gray-950/80 backdrop-blur-xs border-b border-gray-800 px-4 py-3 flex items-center justify-between">
           <button onClick={() => setOpen(true)} className="text-gray-400 hover:text-white">
             <Ico name="bars" />
           </button>

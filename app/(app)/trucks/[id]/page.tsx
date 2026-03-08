@@ -99,13 +99,13 @@ export default async function TruckProfilePage({ params }: { params: Promise<{ i
             <div className="flex items-center gap-2 mb-1">
               <h1 className="font-mono text-2xl font-bold text-white">{truck.plateNumber}</h1>
               {truck.isAdr && (
-                <span className="px-1.5 py-0.5 rounded text-xs font-bold bg-orange-500/20 text-orange-400 border border-orange-500/30">ADR</span>
+                <span className="px-1.5 py-0.5 rounded-sm text-xs font-bold bg-orange-500/20 text-orange-400 border border-orange-500/30">ADR</span>
               )}
               {truck.frotcomVehicleId && (
-                <span className="px-1.5 py-0.5 rounded text-xs font-medium bg-sky-500/10 text-sky-400 border border-sky-500/20">Frotcom</span>
+                <span className="px-1.5 py-0.5 rounded-sm text-xs font-medium bg-sky-500/10 text-sky-400 border border-sky-500/20">Frotcom</span>
               )}
               {!truck.isActive && (
-                <span className="px-1.5 py-0.5 rounded text-xs font-medium bg-gray-700/50 text-gray-500">Неактивен</span>
+                <span className="px-1.5 py-0.5 rounded-sm text-xs font-medium bg-gray-700/50 text-gray-500">Неактивен</span>
               )}
             </div>
             <p className="text-gray-400">
@@ -172,7 +172,7 @@ export default async function TruckProfilePage({ params }: { params: Promise<{ i
                   >
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1.5">
-                        <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${STATUS_COLOR[svc.status]}`}>
+                        <span className={`inline-flex items-center px-2 py-0.5 rounded-sm text-xs font-medium ${STATUS_COLOR[svc.status]}`}>
                           {STATUS_LABEL[svc.status]}
                         </span>
                         <span className="text-sm text-gray-300">{fmtDate(svc.scheduledDate)}</span>

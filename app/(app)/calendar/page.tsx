@@ -35,7 +35,7 @@ export default async function CalendarPage() {
 
   return (
     <CalendarClient
-      initialServices={services.map((s) => ({
+      initialServices={services.map((s: (typeof services)[number]) => ({
         ...s,
         scheduledDate: s.scheduledDate.toISOString().slice(0, 10),
         startDate:     s.startDate?.toISOString().slice(0, 10) ?? null,
