@@ -24,6 +24,7 @@ yarn-debug.log*
 yarn-error.log*
 
 # local env files
+.env
 .env*.local
 
 # vercel
@@ -40,3 +41,13 @@ next-env.d.ts
 # uploads
 /uploads/*
 !/uploads/.gitkeep
+
+# Claude Code
+.claude/
+
+# Workspace / generated docs
+*.code-workspace
+service-ux-preview.html
+APP-WRITEUP.md
+SECURITY-AUDIT.md
+SERVICE-UX-REDESIGN.md
