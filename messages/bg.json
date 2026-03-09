@@ -360,7 +360,19 @@
     "inactiveCount": "{count} неактивни",
     "searchPlaceholder": "Търси по рег. номер, марка, модел...",
     "noTrucks": "Няма камиони. Добавете ръчно или импортирайте от Frotcom.",
-    "update": "Обнови"
+    "update": "Обнови",
+    "kmSinceService": "От последен сервиз",
+    "serviceLimitKm": "Лимит за сервиз",
+    "completedServicesCount": "Завършени сервизи",
+    "totalPartsCostLabel": "Разходи за части",
+    "activeService": "Активна поръчка",
+    "noServiceOrders": "Няма сервизни поръчки.",
+    "completedWorkCards": "{count} завършени работни карти",
+    "needsService": "За сервиз",
+    "backToList": "Назад към камионите",
+    "cancelledNote": "Отменена:",
+    "plateNumberShort": "Рег. номер",
+    "lastService": "Последен сервиз"
   },
   "mechanic": {
     "title": "Механик",

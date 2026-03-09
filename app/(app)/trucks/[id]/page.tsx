@@ -1,15 +1,12 @@
 import { notFound, redirect } from 'next/navigation'
 import { getServerSession } from 'next-auth'
+import { getTranslations } from 'next-intl/server'
 import { authOptions } from '@/lib/auth'
 import { hasPermission } from '@/lib/permissions'
 import { prisma } from '@/lib/prisma'
 import Link from 'next/link'
 import EditTruckButton from './EditTruckButton'
 
-const STATUS_LABEL: Record<string, string> = {
-  SCHEDULED: 'Планирана', INTAKE: 'Приемане', IN_PROGRESS: 'В процес',
-  QUALITY_CHECK: 'Контрол', READY: 'Готова', COMPLETED: 'Завършена', CANCELLED: 'Отменена',
-}
 const STATUS_COLOR: Record<string, string> = {
   SCHEDULED:     'bg-amber-600/20 text-amber-400',
   INTAKE:        'bg-blue-600/20 text-blue-400',
@@ -47,6 +44,12 @@ export default async function TruckProfilePage({ params }: { params: Promise<{ i
   const { id } = await params
   const truckId = Number(id)
   if (isNaN(truckId)) notFound()
+
+  const [t, tCommon, tService] = await Promise.all([
+    getTranslations('truck'),
+    getTranslations('common'),
+    getTranslations('service'),
+  ])
 
   const truck = await prisma.truck.findUnique({
     where: { id: truckId },
@@ -95,7 +98,7 @@ export default async function TruckProfilePage({ params }: { params: Promise<{ i
     <div className="p-6 lg:p-8 max-w-4xl mx-auto space-y-6">
 
       <Link href="/trucks" className="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors">
-        ← Назад към камионите
+        ← {t('backToList')}
       </Link>
 
       {/* Header */}
@@ -106,7 +109,7 @@ export default async function TruckProfilePage({ params }: { params: Promise<{ i
               <h1 className="font-mono text-2xl font-bold text-gray-900 dark:text-white">{truck.plateNumber}</h1>
               {mileageAlert && (
                 <span className="px-2 py-0.5 rounded-md text-xs font-bold bg-amber-500/20 text-amber-400 border border-amber-500/30">
-                  ⚠ За сервиз
+                  ⚠ {t('needsService')}
                 </span>
               )}
               {truck.isAdr && (
@@ -116,7 +119,7 @@ export default async function TruckProfilePage({ params }: { params: Promise<{ i
                 <span className="px-1.5 py-0.5 rounded-sm text-xs font-medium bg-sky-500/10 text-sky-400 border border-sky-500/20">Frotcom</span>
               )}
               {!truck.isActive && (
-                <span className="px-1.5 py-0.5 rounded-sm text-xs font-medium bg-gray-200 dark:bg-gray-700/50 text-gray-500">Неактивен</span>
+                <span className="px-1.5 py-0.5 rounded-sm text-xs font-medium bg-gray-200 dark:bg-gray-700/50 text-gray-500">{tCommon('inactive')}</span>
               )}
             </div>
             <p className="text-gray-500 dark:text-gray-400">
@@ -128,19 +131,19 @@ export default async function TruckProfilePage({ params }: { params: Promise<{ i
 
         {/* Stats */}
         <div className="mt-5 grid grid-cols-2 sm:grid-cols-4 gap-3">
-          <StatCard label="Текущ пробег" value={fmtKm(truck.currentMileage)} />
+          <StatCard label={t('currentMileage')} value={fmtKm(truck.currentMileage)} />
           <StatCard
-            label="От последен сервиз"
+            label={t('kmSinceService')}
             value={kmSinceService != null ? fmtKm(kmSinceService) : '—'}
-            sub={lastCompleted ? `(сервиз: ${fmtKm(lastServiceMileage)})` : undefined}
+            sub={lastCompleted ? `(${tService('mileageAtService').toLowerCase()}: ${fmtKm(lastServiceMileage)})` : undefined}
             alert={mileageAlert}
           />
-          <StatCard label="Лимит за сервиз"   value={fmtKm(truck.mileageTriggerKm)} />
-          <StatCard label="Завършени сервизи" value={String(completedServices.length)} />
+          <StatCard label={t('serviceLimitKm')}         value={fmtKm(truck.mileageTriggerKm)} />
+          <StatCard label={t('completedServicesCount')} value={String(completedServices.length)} />
         </div>
         <div className="mt-3 grid grid-cols-2 sm:grid-cols-4 gap-3">
-          <StatCard label="Последен сервиз"  value={fmtDate(lastCompleted?.endDate ?? lastCompleted?.scheduledDate ?? null)} />
-          <StatCard label="Разходи за части" value={totalPartsCost > 0 ? `${totalPartsCost.toFixed(2)} €` : '—'} />
+          <StatCard label={t('lastService') as string}     value={fmtDate(lastCompleted?.endDate ?? lastCompleted?.scheduledDate ?? null)} />
+          <StatCard label={t('totalPartsCostLabel')} value={totalPartsCost > 0 ? `${totalPartsCost.toFixed(2)} €` : '—'} />
         </div>
 
         {/* Active service banner */}
@@ -150,9 +153,9 @@ export default async function TruckProfilePage({ params }: { params: Promise<{ i
             className="mt-4 flex items-center justify-between px-4 py-3 bg-blue-600/10 border border-blue-500/30 rounded-xl hover:bg-blue-600/20 transition-colors"
           >
             <div>
-              <p className="text-xs text-blue-400 font-medium mb-0.5">Активна поръчка</p>
+              <p className="text-xs text-blue-400 font-medium mb-0.5">{t('activeService')}</p>
               <p className="text-sm text-gray-900 dark:text-white">
-                {STATUS_LABEL[activeService.status]} · {fmtDate(activeService.scheduledDate)}
+                {tService(`status.${activeService.status}` as any)} · {fmtDate(activeService.scheduledDate)}
                 {activeService.bayNameSnapshot ? ` · ${activeService.bayNameSnapshot}` : ''}
               </p>
             </div>
@@ -165,12 +168,12 @@ export default async function TruckProfilePage({ params }: { params: Promise<{ i
       <div className="bg-white dark:bg-gray-900 rounded-2xl overflow-hidden">
         <div className="px-5 py-3 border-b border-gray-200 dark:border-gray-800">
           <h2 className="text-sm font-semibold text-gray-900 dark:text-white">
-            История на сервизите ({truck.serviceOrders.length})
+            {t('serviceHistory')} ({truck.serviceOrders.length})
           </h2>
         </div>
 
         {truck.serviceOrders.length === 0 ? (
-          <p className="px-5 py-10 text-sm text-gray-500 text-center">Няма сервизни поръчки.</p>
+          <p className="px-5 py-10 text-sm text-gray-500 text-center">{t('noServiceOrders')}</p>
         ) : (
           <ul className="divide-y divide-gray-200 dark:divide-gray-800">
             {truck.serviceOrders.map((svc) => {
@@ -186,21 +189,21 @@ export default async function TruckProfilePage({ params }: { params: Promise<{ i
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1.5 flex-wrap">
                         <span className={`inline-flex items-center px-2 py-0.5 rounded-sm text-xs font-medium ${STATUS_COLOR[svc.status]}`}>
-                          {STATUS_LABEL[svc.status]}
+                          {tService(`status.${svc.status}` as any)}
                         </span>
                         <span className="text-sm text-gray-600 dark:text-gray-300">{fmtDate(svc.scheduledDate)}</span>
                       </div>
                       {svc.bayNameSnapshot && (
-                        <p className="text-xs text-gray-500">Бокс: {svc.bayNameSnapshot}</p>
+                        <p className="text-xs text-gray-500">{tService('bay')}: {svc.bayNameSnapshot}</p>
                       )}
                       {svc.driverNameSnapshot && (
-                        <p className="text-xs text-gray-500">Шофьор: {svc.driverNameSnapshot}</p>
+                        <p className="text-xs text-gray-500">{tService('driver')}: {svc.driverNameSnapshot}</p>
                       )}
                       {workDone.length > 0 && (
-                        <p className="text-xs text-gray-400 dark:text-gray-600 mt-1">{workDone.length} завършени работни карти</p>
+                        <p className="text-xs text-gray-400 dark:text-gray-600 mt-1">{t('completedWorkCards', { count: workDone.length })}</p>
                       )}
                       {svc.cancellationReason && (
-                        <p className="text-xs text-red-500 mt-1">Отменена: {svc.cancellationReason}</p>
+                        <p className="text-xs text-red-500 mt-1">{t('cancelledNote')} {svc.cancellationReason}</p>
                       )}
                     </div>
                     <div className="text-right shrink-0">

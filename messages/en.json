@@ -360,7 +360,19 @@
     "inactiveCount": "{count} inactive",
     "searchPlaceholder": "Search by plate, make, model...",
     "noTrucks": "No trucks. Add manually or import from Frotcom.",
-    "update": "Update"
+    "update": "Update",
+    "kmSinceService": "Since Last Service",
+    "serviceLimitKm": "Service Limit",
+    "completedServicesCount": "Completed Services",
+    "totalPartsCostLabel": "Parts Cost",
+    "activeService": "Active Service Order",
+    "noServiceOrders": "No service orders.",
+    "completedWorkCards": "{count} completed work cards",
+    "needsService": "Needs Service",
+    "backToList": "Back to trucks",
+    "cancelledNote": "Cancelled:",
+    "plateNumberShort": "Plate No.",
+    "lastService": "Last Service"
   },
   "mechanic": {
     "title": "Mechanic",
