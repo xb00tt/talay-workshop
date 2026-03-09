@@ -54,7 +54,8 @@ export default function ReportsClient({ trucks, canExport }: { trucks: TruckOpti
   const [loading,  setLoading]  = useState(false)
   const [error,    setError]    = useState('')
   const [tab,      setTab]      = useState<'services' | 'trucks' | 'parts'>('services')
-  const [exporting, setExporting] = useState(false)
+  const [exporting,    setExporting]    = useState(false)
+  const [exportingPdf, setExportingPdf] = useState(false)
 
   const runReport = useCallback(async () => {
     if (from > to) { setError(t('dateRangeError')); return }
@@ -111,6 +112,94 @@ export default function ReportsClient({ trucks, canExport }: { trucks: TruckOpti
       XLSX.writeFile(wb, `report_${data.from}_${data.to}.xlsx`)
     } catch { alert(t('exportError')) }
     finally { setExporting(false) }
+  }
+
+  async function exportPdf() {
+    if (!data) return
+    setExportingPdf(true)
+    try {
+      const [{ default: jsPDF }, { default: autoTable }] = await Promise.all([
+        import('jspdf'),
+        import('jspdf-autotable'),
+      ])
+      const doc = new jsPDF({ orientation: 'landscape' })
+      const period = `${fmtDate(data.from)} – ${fmtDate(data.to)}`
+
+      // Title
+      doc.setFontSize(14)
+      doc.text(t('title'), 14, 16)
+      doc.setFontSize(10)
+      doc.setTextColor(120)
+      doc.text(period, 14, 23)
+      doc.setTextColor(0)
+
+      // Summary row
+      doc.setFontSize(10)
+      doc.text(`${t('completedServices')}: ${data.totals.services}   ${t('totalPartsCost')}: ${fmt(data.totals.partsCost)} €   ${t('avgDaysInWorkshop')}: ${fmt(data.totals.avgDays, 1)}`, 14, 31)
+
+      let y = 38
+
+      // Services table
+      doc.setFontSize(11)
+      doc.text(t('tabServices'), 14, y)
+      y += 3
+      autoTable(doc, {
+        startY: y,
+        head: [[t('colPlate'), t('colMakeModel'), t('colDate'), t('colDays'), t('colMileage'), t('colWorkCards'), t('colPartsCost')]],
+        body: data.rows.map((r) => [
+          r.plate,
+          `${r.make} ${r.model}`,
+          fmtDate(r.endDate),
+          r.daysInWorkshop !== null ? fmt(r.daysInWorkshop, 1) : '—',
+          r.mileageAtService !== null ? Math.round(r.mileageAtService).toLocaleString('bg-BG') : '—',
+          r.workCardCount,
+          r.partsCost > 0 ? `${fmt(r.partsCost)} €` : '—',
+        ]),
+        styles: { fontSize: 8 },
+        headStyles: { fillColor: [59, 130, 246] },
+      })
+
+      // Per-truck table
+      y = (doc as any).lastAutoTable.finalY + 10
+      if (y > 170) { doc.addPage(); y = 14 }
+      doc.setFontSize(11)
+      doc.text(t('tabTrucks'), 14, y)
+      y += 3
+      autoTable(doc, {
+        startY: y,
+        head: [[t('colPlate'), t('colMakeModel'), t('colServices'), t('colTotalDays'), t('colPartsCost')]],
+        body: data.truckSummary.map((tr) => [
+          tr.plate,
+          `${tr.make} ${tr.model}`,
+          tr.serviceCount,
+          fmt(tr.totalDays, 1),
+          tr.totalPartsCost > 0 ? `${fmt(tr.totalPartsCost)} €` : '—',
+        ]),
+        styles: { fontSize: 8 },
+        headStyles: { fillColor: [59, 130, 246] },
+      })
+
+      // Parts table
+      y = (doc as any).lastAutoTable.finalY + 10
+      if (y > 170) { doc.addPage(); y = 14 }
+      doc.setFontSize(11)
+      doc.text(t('tabParts'), 14, y)
+      y += 3
+      autoTable(doc, {
+        startY: y,
+        head: [[t('colParts'), t('colTotalQty'), t('colExpense')]],
+        body: data.partsSummary.map((p) => [
+          p.name,
+          fmt(p.totalQty, 3),
+          p.totalCost > 0 ? `${fmt(p.totalCost)} €` : '—',
+        ]),
+        styles: { fontSize: 8 },
+        headStyles: { fillColor: [59, 130, 246] },
+      })
+
+      doc.save(`report_${data.from}_${data.to}.pdf`)
+    } catch { alert(t('exportError')) }
+    finally { setExportingPdf(false) }
   }
 
   function printReport() {
@@ -182,13 +271,22 @@ export default function ReportsClient({ trucks, canExport }: { trucks: TruckOpti
           {/* Export actions */}
           <div className="flex gap-2">
             {canExport && (
-              <button
-                onClick={exportExcel}
-                disabled={exporting}
-                className="px-4 py-2 text-sm border border-green-700 text-green-400 hover:bg-green-700/20 rounded-xl transition-colors disabled:opacity-50"
-              >
-                {exporting ? t('exporting') : t('downloadExcel')}
-              </button>
+              <>
+                <button
+                  onClick={exportPdf}
+                  disabled={exportingPdf}
+                  className="px-4 py-2 text-sm border border-red-700 text-red-400 hover:bg-red-700/20 rounded-xl transition-colors disabled:opacity-50"
+                >
+                  {exportingPdf ? t('exporting') : t('downloadPdf')}
+                </button>
+                <button
+                  onClick={exportExcel}
+                  disabled={exporting}
+                  className="px-4 py-2 text-sm border border-green-700 text-green-400 hover:bg-green-700/20 rounded-xl transition-colors disabled:opacity-50"
+                >
+                  {exporting ? t('exporting') : t('downloadExcel')}
+                </button>
+              </>
             )}
             <button
               onClick={printReport}

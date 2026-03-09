@@ -29,6 +29,11 @@ export async function PATCH(request: Request, { params }: Params) {
   })
   if (!workCard) return NextResponse.json({ error: 'Not found' }, { status: 404 })
 
+  const service = await prisma.serviceOrder.findUnique({ where: { id: serviceId }, select: { status: true } })
+  if (service?.status === 'COMPLETED' || service?.status === 'CANCELLED') {
+    return NextResponse.json({ error: 'Приключената поръчка не може да се редактира.' }, { status: 422 })
+  }
+
   const body = await request.json()
   const { status, description, mechanicId, specialInstructions } = body
 
