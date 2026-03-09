@@ -280,6 +280,44 @@ describe('POST /api/services/[id]/status — stage transitions', () => {
     expect(completed?.endDate).not.toBeNull()
   })
 
+  it('creates a TruckEquipmentSnapshot with INTAKE items when exit check was skipped', async () => {
+    const service = await setupIntakeService()
+
+    // Seed INTAKE equipment check items
+    await db.equipmentCheckItem.createMany({
+      data: [
+        { serviceOrderId: service.id, itemName: 'Светлоотразителен жилетка', status: 'PRESENT', checkType: 'INTAKE' },
+        { serviceOrderId: service.id, itemName: 'Триъгълник',                status: 'MISSING', checkType: 'INTAKE' },
+      ],
+    })
+
+    // Mark the exit check as skipped — snapshot falls back to INTAKE items
+    const eqSection = await db.serviceSection.findFirst({
+      where: { serviceOrderId: service.id, type: 'EQUIPMENT_CHECK' },
+    })
+    await db.serviceSection.update({
+      where: { id: eqSection!.id },
+      data:  { exitSkippedAt: new Date(), exitSkipNote: 'Skipped in test' },
+    })
+
+    // Run through to COMPLETED
+    for (let i = 0; i < 4; i++) {
+      await advanceStatus(
+        postReq(`http://localhost/api/services/${service.id}/status`, { force: true }),
+        routeParams(service.id),
+      )
+    }
+
+    const snapshot = await db.truckEquipmentSnapshot.findFirst({
+      where:   { serviceOrderId: service.id },
+      include: { items: true },
+    })
+
+    expect(snapshot).not.toBeNull()
+    expect(snapshot!.items).toHaveLength(2)
+    expect(snapshot!.items.map((i) => i.itemName)).toContain('Триъгълник')
+  })
+
   it('returns 422 when trying to advance a COMPLETED service', async () => {
     const service = await setupIntakeService()
     await db.serviceOrder.update({
