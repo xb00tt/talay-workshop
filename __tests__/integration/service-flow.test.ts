@@ -38,10 +38,6 @@ async function createTruck(plate = `T${Date.now()}`) {
   })
 }
 
-async function createBay(name = `Bay ${Date.now()}`) {
-  return db.bay.create({ data: { name, isActive: true } })
-}
-
 // ─── Setup ───────────────────────────────────────────────────────────────────
 
 beforeEach(async () => {
@@ -107,20 +103,18 @@ describe('POST /api/services — create service order', () => {
 describe('POST /api/services/[id]/intake', () => {
   it('advances SCHEDULED → INTAKE, creates CHECKLIST + EQUIPMENT_CHECK sections', async () => {
     const truck   = await createTruck('TX1111AX')
-    const bay     = await createBay('Бокс 1')
     const service = await db.serviceOrder.create({
       data: { truckId: truck.id, truckPlateSnapshot: truck.plateNumber, scheduledDate: new Date(), status: 'SCHEDULED' },
     })
 
     const res = await doIntake(
-      postReq(`http://localhost/api/services/${service.id}/intake`, { bayId: bay.id }),
+      postReq(`http://localhost/api/services/${service.id}/intake`, {}),
       routeParams(service.id),
     )
 
     expect(res.status).toBe(200)
     const { service: updated } = await res.json()
     expect(updated.status).toBe('INTAKE')
-    expect(updated.bayNameSnapshot).toBe('Бокс 1')
     const types = updated.sections.map((s: { type: string }) => s.type).sort()
     expect(types).toEqual(['CHECKLIST', 'EQUIPMENT_CHECK'])
   })
@@ -135,13 +129,12 @@ describe('POST /api/services/[id]/intake', () => {
     })
 
     const truck   = await createTruck('TX2222BX')
-    const bay     = await createBay('Бокс 2')
     const service = await db.serviceOrder.create({
       data: { truckId: truck.id, truckPlateSnapshot: truck.plateNumber, scheduledDate: new Date(), status: 'SCHEDULED' },
     })
 
     const res = await doIntake(
-      postReq(`http://localhost/api/services/${service.id}/intake`, { bayId: bay.id }),
+      postReq(`http://localhost/api/services/${service.id}/intake`, {}),
       routeParams(service.id),
     )
 
@@ -155,54 +148,22 @@ describe('POST /api/services/[id]/intake', () => {
 
   it('returns 422 when service is not SCHEDULED', async () => {
     const truck = await createTruck('TX3333CX')
-    const bay   = await createBay('Бокс 3')
     const service = await db.serviceOrder.create({
       data: {
         truckId:           truck.id,
         truckPlateSnapshot: truck.plateNumber,
         scheduledDate:     new Date(),
         status:            'IN_PROGRESS',
-        bayId:             bay.id,
-        bayNameSnapshot:   bay.name,
         startDate:         new Date(),
       },
     })
 
     const res = await doIntake(
-      postReq(`http://localhost/api/services/${service.id}/intake`, { bayId: bay.id }),
+      postReq(`http://localhost/api/services/${service.id}/intake`, {}),
       routeParams(service.id),
     )
 
     expect(res.status).toBe(422)
-  })
-
-  it('returns 409 when the bay is already occupied', async () => {
-    const truck1  = await createTruck('TX4444DX')
-    const truck2  = await createTruck('TX5555EX')
-    const bay     = await createBay('Бокс 4')
-
-    await db.serviceOrder.create({
-      data: {
-        truckId:           truck1.id,
-        truckPlateSnapshot: truck1.plateNumber,
-        scheduledDate:     new Date(),
-        status:            'INTAKE',
-        bayId:             bay.id,
-        bayNameSnapshot:   bay.name,
-        startDate:         new Date(),
-      },
-    })
-
-    const service2 = await db.serviceOrder.create({
-      data: { truckId: truck2.id, truckPlateSnapshot: truck2.plateNumber, scheduledDate: new Date(), status: 'SCHEDULED' },
-    })
-
-    const res = await doIntake(
-      postReq(`http://localhost/api/services/${service2.id}/intake`, { bayId: bay.id }),
-      routeParams(service2.id),
-    )
-
-    expect(res.status).toBe(409)
   })
 })
 
@@ -212,15 +173,12 @@ describe('POST /api/services/[id]/status — stage transitions', () => {
   /** Creates a service at INTAKE with both required sections present. */
   async function setupIntakeService() {
     const truck   = await createTruck()
-    const bay     = await createBay()
     const service = await db.serviceOrder.create({
       data: {
         truckId:           truck.id,
         truckPlateSnapshot: truck.plateNumber,
         scheduledDate:     new Date(),
         status:            'INTAKE',
-        bayId:             bay.id,
-        bayNameSnapshot:   bay.name,
         startDate:         new Date(),
       },
     })

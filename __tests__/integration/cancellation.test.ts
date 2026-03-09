@@ -177,12 +177,11 @@ describe('PATCH /api/services/[id] — reschedule', () => {
     const truck = await db.truck.create({
       data: { plateNumber: `R${Date.now()}`, make: 'DAF', model: 'CF', isAdr: false, isActive: true },
     })
-    const bay = await db.bay.create({ data: { name: `B${Date.now()}`, isActive: true } })
     const service = await db.serviceOrder.create({
       data: {
         truckId: truck.id, truckPlateSnapshot: truck.plateNumber,
         scheduledDate: new Date(), status: 'INTAKE',
-        bayId: bay.id, bayNameSnapshot: bay.name, startDate: new Date(),
+        startDate: new Date(),
       },
     })
 

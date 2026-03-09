@@ -8,15 +8,14 @@ export default async function DashboardPage() {
   const session = await getServerSession(authOptions)
   if (!session) redirect('/login')
 
-  const [bays, activeServices, upcomingServices, allActiveTruckIds, trucksForAlerts] =
+  const [activeServices, upcomingServices, allActiveTruckIds, trucksForAlerts] =
     await Promise.all([
-      prisma.bay.findMany({ where: { isActive: true }, orderBy: { name: 'asc' } }),
-
       prisma.serviceOrder.findMany({
         where: { status: { in: ['INTAKE', 'IN_PROGRESS', 'QUALITY_CHECK', 'READY'] } },
         include: {
           truck: { select: { make: true, model: true } },
         },
+        orderBy: { startDate: 'asc' },
       }),
 
       prisma.serviceOrder.findMany({
@@ -66,45 +65,19 @@ export default async function DashboardPage() {
       lastServiceMileage: t.serviceOrders[0]?.mileageAtService ?? null,
     }))
 
-  // Build bay → service map
-  const bayServiceMap = new Map(
-    activeServices.filter((s) => s.bayId !== null).map((s) => [s.bayId!, s]),
-  )
-
-  const baysWithService = bays.map((b) => {
-    const svc = bayServiceMap.get(b.id)
-    return {
-      id:   b.id,
-      name: b.name,
-      service: svc
-        ? {
-            id:                 svc.id,
-            truckPlateSnapshot: svc.truckPlateSnapshot,
-            truckMake:          svc.truck.make,
-            truckModel:         svc.truck.model,
-            status:             svc.status as 'INTAKE' | 'IN_PROGRESS' | 'QUALITY_CHECK' | 'READY',
-            startDate:          svc.startDate?.toISOString() ?? null,
-            createdAt:          svc.createdAt.toISOString(),
-          }
-        : null,
-    }
-  })
-
-  const unbayedServices = activeServices
-    .filter((s) => s.bayId === null)
-    .map((s) => ({
-      id:                 s.id,
-      truckPlateSnapshot: s.truckPlateSnapshot,
-      truckMake:          s.truck.make,
-      truckModel:         s.truck.model,
-      status:             s.status,
-      startDate:          s.startDate?.toISOString() ?? null,
-      createdAt:          s.createdAt.toISOString(),
-    }))
+  const activeServicesMapped = activeServices.map((s) => ({
+    id:                 s.id,
+    truckPlateSnapshot: s.truckPlateSnapshot,
+    truckMake:          s.truck.make,
+    truckModel:         s.truck.model,
+    status:             s.status as 'INTAKE' | 'IN_PROGRESS' | 'QUALITY_CHECK' | 'READY',
+    startDate:          s.startDate?.toISOString() ?? null,
+    createdAt:          s.createdAt.toISOString(),
+  }))
 
   return (
     <DashboardClient
-      bays={baysWithService}
+      initialActiveServices={activeServicesMapped}
       upcoming={upcomingServices.map((s) => ({
         id:                 s.id,
         truckPlateSnapshot: s.truckPlateSnapshot,
@@ -113,7 +86,6 @@ export default async function DashboardPage() {
         scheduledDate:      s.scheduledDate.toISOString(),
       }))}
       mileageAlerts={mileageAlerts}
-      unbayedServices={unbayedServices}
     />
   )
 }

@@ -54,18 +54,6 @@ async function main() {
   })
   console.log('✓ Assistant user  →  assist / assist123')
 
-  // ── Bays ──────────────────────────────────────────────────────────────────
-  const bayCount = await prisma.bay.count()
-  const newBayNames = [
-    'Бокс 2', 'Бокс 3', 'Бокс 4 - Диагностика',
-    'Бокс 5 - ТИР', 'Бокс 6 - ADR', 'Бокс 7', 'Бокс 8',
-  ]
-  for (let i = 0; i < Math.max(0, 8 - bayCount); i++) {
-    await prisma.bay.create({ data: { name: newBayNames[i], isActive: true } })
-  }
-  const bays = await prisma.bay.findMany({ where: { isActive: true }, orderBy: { id: 'asc' } })
-  console.log(`✓ Bays  (${bays.length} total)`)
-
   // ── Mechanics ─────────────────────────────────────────────────────────────
   const mechCount = await prisma.mechanic.count()
   const newMechNames = [
@@ -172,7 +160,6 @@ async function main() {
   // Helpers
   const mech = (i: number) => mechanics[i % mechanics.length]
   const drv  = (i: number) => drivers[i % drivers.length]
-  const bay  = (i: number) => bays[i % bays.length]
 
   const stdEquip = equipItems.slice(0, 8).map(e => e.name)
 
@@ -199,7 +186,7 @@ async function main() {
   // ══════════════════════════════════════════════════════════════════════════
 
   type CompletedSpec = {
-    t: number; d: number; b: number
+    t: number; d: number
     mileage: number; sched: string; start: string; end: string
     driverFeedback: string
     dfItems: string[]
@@ -209,7 +196,7 @@ async function main() {
 
   const completedSpecs: CompletedSpec[] = [
     {
-      t: 0, d: 0, b: 0, mileage: 412500, sched: '2026-01-06', start: '2026-01-06', end: '2026-01-07',
+      t: 0, d: 0, mileage: 412500, sched: '2026-01-06', start: '2026-01-06', end: '2026-01-07',
       driverFeedback: 'Вибрация при скорост над 80 км/ч. Климатикът не охлажда.',
       dfItems: ['Вибрация — предна ос / гуми', 'Климатик — слабо охлаждане'],
       midItems: [
@@ -219,7 +206,7 @@ async function main() {
       ],
     },
     {
-      t: 1, d: 1, b: 1, mileage: 287600, sched: '2026-01-12', start: '2026-01-12', end: '2026-01-14',
+      t: 1, d: 1, mileage: 287600, sched: '2026-01-12', start: '2026-01-12', end: '2026-01-14',
       driverFeedback: 'Скърцане от предния мост. Спирачките отиват надолу.',
       dfItems: ['Скърцане — преден мост при завиване', 'Хлабав спирачен педал'],
       midItems: [
@@ -229,7 +216,7 @@ async function main() {
       ],
     },
     {
-      t: 2, d: 2, b: 2, mileage: 534200, sched: '2026-01-19', start: '2026-01-19', end: '2026-01-20',
+      t: 2, d: 2, mileage: 534200, sched: '2026-01-19', start: '2026-01-19', end: '2026-01-20',
       driverFeedback: 'Изтичане на масло под двигателя.',
       dfItems: ['Течащ маслен уплътнител — картер'],
       midItems: [
@@ -238,7 +225,7 @@ async function main() {
       ],
     },
     {
-      t: 3, d: 3, b: 3, mileage: 198300, sched: '2026-01-26', start: '2026-01-27', end: '2026-01-28',
+      t: 3, d: 3, mileage: 198300, sched: '2026-01-26', start: '2026-01-27', end: '2026-01-28',
       driverFeedback: 'Колан за алтернатора се е скъсал.',
       dfItems: ['Скъсан ремък за алтернатора'],
       midItems: [
@@ -246,7 +233,7 @@ async function main() {
       ],
     },
     {
-      t: 4, d: 4, b: 4, mileage: 367800, sched: '2026-02-03', start: '2026-02-03', end: '2026-02-04',
+      t: 4, d: 4, mileage: 367800, sched: '2026-02-03', start: '2026-02-03', end: '2026-02-04',
       driverFeedback: 'Турбото свири на студено. Харчи повече гориво.',
       dfItems: ['Свирене на турбо — на студено', 'Повишен разход на гориво'],
       midItems: [
@@ -255,7 +242,7 @@ async function main() {
       ],
     },
     {
-      t: 5, d: 5, b: 0, mileage: 445100, sched: '2026-02-09', start: '2026-02-09', end: '2026-02-11',
+      t: 5, d: 5, mileage: 445100, sched: '2026-02-09', start: '2026-02-09', end: '2026-02-11',
       driverFeedback: 'Леко гуменото тракане при неравности.',
       dfItems: ['Тракане — заден мост при неравности'],
       midItems: [
@@ -264,7 +251,7 @@ async function main() {
       ],
     },
     {
-      t: 6, d: 6, b: 1, mileage: 623700, sched: '2026-02-16', start: '2026-02-16', end: '2026-02-17',
+      t: 6, d: 6, mileage: 623700, sched: '2026-02-16', start: '2026-02-16', end: '2026-02-17',
       driverFeedback: 'Стъклото на предното огледало напукано. Вентилаторът на кабината не работи.',
       dfItems: ['Напукано странично огледало', 'Вентилатор на кабина — не работи'],
       midItems: [
@@ -273,7 +260,7 @@ async function main() {
       ],
     },
     {
-      t: 7, d: 7, b: 2, mileage: 312400, sched: '2026-02-20', start: '2026-02-20', end: '2026-02-21',
+      t: 7, d: 7, mileage: 312400, sched: '2026-02-20', start: '2026-02-20', end: '2026-02-21',
       driverFeedback: 'Акумулаторът трудно стартира при студено. АБС лампата свети.',
       dfItems: ['Слаб акумулатор', 'Сигнална лампа АБС — активна'],
       midItems: [
@@ -283,7 +270,7 @@ async function main() {
       ],
     },
     {
-      t: 8, d: 8, b: 3, mileage: 489600, sched: '2026-02-24', start: '2026-02-24', end: '2026-02-25',
+      t: 8, d: 8, mileage: 489600, sched: '2026-02-24', start: '2026-02-24', end: '2026-02-25',
       driverFeedback: 'Изгоряла задна стоп-лампа. Наляганата система за гуми показва грешка.',
       dfItems: ['Изгоряла стоп-лампа — задна дясна', 'Грешка TPMS'],
       midItems: [
@@ -292,7 +279,7 @@ async function main() {
       ],
     },
     {
-      t: 9, d: 9, b: 4, mileage: 156800, sched: '2026-03-03', start: '2026-03-03', end: '2026-03-04',
+      t: 9, d: 9, mileage: 156800, sched: '2026-03-03', start: '2026-03-03', end: '2026-03-04',
       driverFeedback: 'Няма забележки от водача.',
       dfItems: [],
       midItems: [
@@ -306,15 +293,12 @@ async function main() {
     const cs = completedSpecs[idx]
     const truck = trucks[cs.t]
     const driver = drv(cs.d)
-    const b = bay(cs.b)
 
     const so = await prisma.serviceOrder.create({
       data: {
         truckId: truck.id,
         truckPlateSnapshot: truck.plateNumber,
         status: 'COMPLETED',
-        bayId: b.id,
-        bayNameSnapshot: b.name,
         scheduledDate: dt(cs.sched),
         startDate: dt(cs.start, '07:30:00'),
         endDate: dt(cs.end, '16:00:00'),
@@ -415,12 +399,12 @@ async function main() {
   console.log('✓ 3 CANCELLED service orders')
 
   // ══════════════════════════════════════════════════════════════════════════
-  // IN_PROGRESS service orders  (3)  — currently in bays 2, 3, 4
+  // IN_PROGRESS service orders  (3)
   // ══════════════════════════════════════════════════════════════════════════
 
   const inProgressSpecs = [
     {
-      t: 13, d: 13, b: 1, mileage: 301200, sched: '2026-03-07', start: '2026-03-07',
+      t: 13, d: 13, mileage: 301200, sched: '2026-03-07', start: '2026-03-07',
       feedback: 'Скърцане от предния мост при завиване вляво.',
       dfItems: ['Скърцане — преден мост при завиване'],
       wcDesc: 'Проверка и смазване на предния мост и кормилни накрайници',
@@ -429,7 +413,7 @@ async function main() {
       midPart: { name: 'Спирачни накладки комплект', pn: 'BP-2241K', qty: 1, cost: 145 },
     },
     {
-      t: 14, d: 14, b: 2, mileage: 478900, sched: '2026-03-08', start: '2026-03-08',
+      t: 14, d: 14, mileage: 478900, sched: '2026-03-08', start: '2026-03-08',
       feedback: 'Двигателят губи мощност при пълно натоварване.',
       dfItems: ['Загуба на мощност — при натоварване'],
       wcDesc: 'Диагностика на двигателя и системата за гориво',
@@ -438,7 +422,7 @@ async function main() {
       midPart: { name: 'Почистващ препарат за инжектори', qty: 2, cost: 28 },
     },
     {
-      t: 15, d: 15, b: 3, mileage: 612100, sched: '2026-03-06', start: '2026-03-06',
+      t: 15, d: 15, mileage: 612100, sched: '2026-03-06', start: '2026-03-06',
       feedback: 'Пропуска гарнитурата на главата. Дим от ауспуха.',
       dfItems: ['Пропускаща гарнитура на главата', 'Дим при изпускателната система'],
       wcDesc: 'Смяна на гарнитурата на главата',
@@ -448,18 +432,16 @@ async function main() {
     },
   ]
 
-  for (const ips of inProgressSpecs) {
+  for (let ipsIdx = 0; ipsIdx < inProgressSpecs.length; ipsIdx++) {
+    const ips = inProgressSpecs[ipsIdx]
     const truck = trucks[ips.t]
     const driver = drv(ips.d)
-    const b = bays[ips.b]
 
     const so = await prisma.serviceOrder.create({
       data: {
         truckId: truck.id,
         truckPlateSnapshot: truck.plateNumber,
         status: 'IN_PROGRESS',
-        bayId: b.id,
-        bayNameSnapshot: b.name,
         scheduledDate: dt(ips.sched),
         startDate: dt(ips.start, '08:00:00'),
         mileageAtService: ips.mileage,
@@ -494,7 +476,7 @@ async function main() {
       await prisma.driverFeedbackItem.create({ data: { serviceOrderId: so.id, description: ips.dfItems[i], order: i + 1 } })
     }
     await prisma.workCard.create({
-      data: { serviceSectionId: dfSec.id, description: ips.wcDesc, mechanicId: mech(ips.b).id, mechanicName: mech(ips.b).name, status: ips.wcStatus },
+      data: { serviceSectionId: dfSec.id, description: ips.wcDesc, mechanicId: mech(ipsIdx).id, mechanicName: mech(ipsIdx).name, status: ips.wcStatus },
     })
 
     // MID_SERVICE
@@ -502,7 +484,7 @@ async function main() {
       data: { serviceOrderId: so.id, type: 'MID_SERVICE', title: 'Открити при преглед', order: 4 },
     })
     const wc = await prisma.workCard.create({
-      data: { serviceSectionId: msSec.id, description: ips.midDesc, mechanicId: mech(ips.b + 1).id, mechanicName: mech(ips.b + 1).name, status: 'PENDING' },
+      data: { serviceSectionId: msSec.id, description: ips.midDesc, mechanicId: mech(ipsIdx + 1).id, mechanicName: mech(ipsIdx + 1).name, status: 'PENDING' },
     })
     await prisma.part.create({ data: { workCardId: wc.id, name: ips.midPart.name, partNumber: (ips.midPart as any).pn ?? null, quantity: ips.midPart.qty, unitCost: ips.midPart.cost } })
 
@@ -512,20 +494,17 @@ async function main() {
   console.log('✓ 3 IN_PROGRESS service orders')
 
   // ══════════════════════════════════════════════════════════════════════════
-  // INTAKE service order  (1)  — bay 5
+  // INTAKE service order  (1)
   // ══════════════════════════════════════════════════════════════════════════
 
   {
     const truck = trucks[16]
     const driver = drv(16)
-    const b = bays[4]
     const so = await prisma.serviceOrder.create({
       data: {
         truckId: truck.id,
         truckPlateSnapshot: truck.plateNumber,
         status: 'INTAKE',
-        bayId: b.id,
-        bayNameSnapshot: b.name,
         scheduledDate: dt('2026-03-08'),
         startDate: dt('2026-03-08', '09:15:00'),
         mileageAtService: 223400,
@@ -541,20 +520,17 @@ async function main() {
   console.log('✓ 1 INTAKE service order')
 
   // ══════════════════════════════════════════════════════════════════════════
-  // QUALITY_CHECK service order  (1)  — bay 6
+  // QUALITY_CHECK service order  (1)
   // ══════════════════════════════════════════════════════════════════════════
 
   {
     const truck = trucks[17]
     const driver = drv(17)
-    const b = bays[5]
     const so = await prisma.serviceOrder.create({
       data: {
         truckId: truck.id,
         truckPlateSnapshot: truck.plateNumber,
         status: 'QUALITY_CHECK',
-        bayId: b.id,
-        bayNameSnapshot: b.name,
         scheduledDate: dt('2026-03-05'),
         startDate: dt('2026-03-05', '07:30:00'),
         mileageAtService: 389000,
@@ -587,20 +563,17 @@ async function main() {
   console.log('✓ 1 QUALITY_CHECK service order')
 
   // ══════════════════════════════════════════════════════════════════════════
-  // READY service order  (1)  — bay 7
+  // READY service order  (1)
   // ══════════════════════════════════════════════════════════════════════════
 
   {
     const truck = trucks[18]
     const driver = drv(18)
-    const b = bays[6]
     const so = await prisma.serviceOrder.create({
       data: {
         truckId: truck.id,
         truckPlateSnapshot: truck.plateNumber,
         status: 'READY',
-        bayId: b.id,
-        bayNameSnapshot: b.name,
         scheduledDate: dt('2026-03-04'),
         startDate: dt('2026-03-04', '08:00:00'),
         mileageAtService: 512300,

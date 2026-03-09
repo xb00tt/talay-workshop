@@ -43,7 +43,7 @@ const PERMISSION_GROUPS = [
   },
   {
     label: 'Работилница',
-    items: ['bay.manage', 'mechanic.manage'],
+    items: ['mechanic.manage'],
   },
   {
     label: 'Конфигурация и администрация',
@@ -67,7 +67,6 @@ const PERMISSION_LABELS: Record<string, string> = {
   'note.create':        'Добавяне на бележки',
   'report.view':        'Преглед на отчети',
   'report.export':      'Експорт на отчети',
-  'bay.manage':         'Управление на боксове',
   'mechanic.manage':    'Управление на механици',
   'checklist.edit':     'Редактиране на чеклист шаблон',
   'equipment.edit':     'Редактиране на оборудване',

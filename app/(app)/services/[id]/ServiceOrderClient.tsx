@@ -38,11 +38,10 @@ interface ServiceNote  { id: number; content: string; userNameSnapshot: string; 
 interface FullService {
   id: number; truckPlateSnapshot: string; status: ServiceStatus
   scheduledDate: string; startDate: string | null; endDate: string | null
-  mileageAtService: number | null; bayId: number | null; bayNameSnapshot: string | null
+  mileageAtService: number | null
   driverId: number | null; driverNameSnapshot: string | null
   driverFeedbackNotes: string | null; cancellationReason: string | null; createdAt: string
   truck: { id: number; make: string; model: string; year: number | null; isAdr: boolean; frotcomVehicleId: string | null }
-  bay: { id: number; name: string } | null
   driver: { id: number; name: string } | null
   sections: Section[]
   equipmentCheckItems: EquipmentCheckItem[]
@@ -50,7 +49,6 @@ interface FullService {
   notes: ServiceNote[]
   photos: Photo[]
 }
-interface Bay      { id: number; name: string }
 interface Driver   { id: number; name: string }
 interface Mechanic { id: number; name: string }
 
@@ -180,16 +178,15 @@ function SmallBtn({ onClick, children, variant = 'default', disabled }: {
 // ─── Modals ───────────────────────────────────────────────────────────────────
 
 function IntakeModal({
-  serviceId, bays, drivers, occupiedBayIds, onClose, onDone,
+  serviceId, drivers, onClose, onDone,
 }: {
-  serviceId: number; bays: Bay[]; drivers: Driver[]; occupiedBayIds: number[]
+  serviceId: number; drivers: Driver[]
   onClose: () => void; onDone: (svc: FullService) => void
 }) {
   const tService = useTranslations('service')
   const tCommon  = useTranslations('common')
   const tErrors  = useTranslations('errors')
 
-  const [bayId,   setBayId]   = useState('')
   const [driverId, setDriverId] = useState('')
   const [mileage,  setMileage]  = useState('')
   const [error,    setError]    = useState('')
@@ -197,14 +194,12 @@ function IntakeModal({
 
   async function submit(e: React.FormEvent) {
     e.preventDefault()
-    if (!bayId) { setError(tService('intake.bayRequired')); return }
     setError(''); setLoading(true)
     try {
       const res  = await fetch(`/api/services/${serviceId}/intake`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          bayId:            Number(bayId),
           driverId:         driverId ? Number(driverId) : undefined,
           mileageAtService: mileage ? Number(mileage) : undefined,
         }),
@@ -218,17 +213,6 @@ function IntakeModal({
 
   return (
     <form onSubmit={submit} className="space-y-4">
-      <div>
-        <Label>{tService('bay')} *</Label>
-        <Select value={bayId} onChange={(e) => setBayId(e.target.value)} className="w-full">
-          <option value="">— {tService('intake.selectBay')} —</option>
-          {bays.map((b) => (
-            <option key={b.id} value={b.id} disabled={occupiedBayIds.includes(b.id)}>
-              {b.name}{occupiedBayIds.includes(b.id) ? ` (${tService('intake.bayOccupied')})` : ''}
-            </option>
-          ))}
-        </Select>
-      </div>
       <div>
         <Label>{tService('driver')} ({tCommon('optional')})</Label>
         <Select value={driverId} onChange={(e) => setDriverId(e.target.value)} className="w-full">
@@ -1442,10 +1426,10 @@ function PreviousStepsAccordion({
         const isOpen = openStep === stage
         const summaryParts: (string | null)[] = []
         if (stage === 'SCHEDULED')     summaryParts.push(fmtDate(service.scheduledDate))
-        if (stage === 'INTAKE')        summaryParts.push(service.bayNameSnapshot, service.mileageAtService != null ? `${Math.round(service.mileageAtService).toLocaleString('bg-BG')} km` : null)
+        if (stage === 'INTAKE')        summaryParts.push(service.mileageAtService != null ? `${Math.round(service.mileageAtService).toLocaleString('bg-BG')} km` : null)
         if (stage === 'IN_PROGRESS')   summaryParts.push(service.startDate ? fmtDate(service.startDate) : null)
         if (stage === 'QUALITY_CHECK') summaryParts.push(`${completedWorkCards.length}/${activeWorkCards.length}`)
-        if (stage === 'READY')         summaryParts.push(service.bayNameSnapshot)
+        if (stage === 'READY')         summaryParts.push(service.endDate ? fmtDate(service.endDate) : null)
         if (stage === 'COMPLETED')     summaryParts.push(service.endDate ? fmtDate(service.endDate) : null)
         const summary = summaryParts.filter(Boolean).join(' · ')
 
@@ -1482,10 +1466,6 @@ function PreviousStepsAccordion({
                 {stage === 'INTAKE' && (
                   <div className="space-y-4 pt-2">
                     <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                      <div>
-                        <p className="text-xs text-gray-500 dark:text-gray-600 mb-0.5">{tService('bay')}</p>
-                        <p className="text-sm text-gray-800 dark:text-gray-200 font-medium">{service.bayNameSnapshot ?? '—'}</p>
-                      </div>
                       <div>
                         <p className="text-xs text-gray-500 dark:text-gray-600 mb-0.5">{tService('driver')}</p>
                         <p className="text-sm text-gray-800 dark:text-gray-200 font-medium">{service.driverNameSnapshot ?? '—'}</p>
@@ -1593,10 +1573,6 @@ function PreviousStepsAccordion({
                 {stage === 'READY' && (
                   <div className="grid grid-cols-2 gap-4 pt-2">
                     <div>
-                      <p className="text-xs text-gray-500 dark:text-gray-600 mb-0.5">{tService('bay')}</p>
-                      <p className="text-sm text-gray-800 dark:text-gray-200 font-medium">{service.bayNameSnapshot ?? '—'}</p>
-                    </div>
-                    <div>
                       <p className="text-xs text-gray-500 dark:text-gray-600 mb-0.5">{tCommon('workCards')}</p>
                       <p className="text-sm text-gray-800 dark:text-gray-200 font-medium">{completedWorkCards.length} / {activeWorkCards.length} {tWorkCard('status.COMPLETED').toLowerCase()}</p>
                     </div>
@@ -1635,13 +1611,13 @@ function resolvedStageState(
 type ModalState = 'intake' | 'cancel' | 'reschedule' | 'addSection' | 'addFeedback' | null
 
 export default function ServiceOrderClient({
-  initialService, bays, drivers, mechanics, occupiedBayIds, userName,
+  initialService, drivers, mechanics, userName,
   canReschedule, canCancel, canCreateWorkCard, canCancelWorkCard, canReopenWorkCard, canCompleteWorkCard,
   canCreateNote, canUploadPhoto, equipmentItems, adrEquipmentItems,
 }: {
   initialService: FullService
-  bays: Bay[]; drivers: Driver[]; mechanics: Mechanic[]
-  occupiedBayIds: number[]; userName: string
+  drivers: Driver[]; mechanics: Mechanic[]
+  userName: string
   canReschedule: boolean; canCancel: boolean
   canCreateWorkCard: boolean; canCancelWorkCard: boolean
   canReopenWorkCard: boolean; canCompleteWorkCard: boolean
@@ -1836,10 +1812,10 @@ export default function ServiceOrderClient({
 
     const summaryLine: Partial<Record<ServiceStatus, string>> = {
       SCHEDULED:     fmtDate(service.scheduledDate),
-      INTAKE:        [service.bayNameSnapshot, service.mileageAtService != null ? `${Math.round(service.mileageAtService).toLocaleString('bg-BG')} km` : null].filter(Boolean).join(' · '),
+      INTAKE:        service.mileageAtService != null ? `${Math.round(service.mileageAtService).toLocaleString('bg-BG')} km` : '',
       IN_PROGRESS:   service.startDate ? fmtDate(service.startDate) : '',
       QUALITY_CHECK: `${completedWorkCards.length}/${activeWorkCards.length}`,
-      READY:         service.bayNameSnapshot ?? '',
+      READY:         service.endDate ? fmtDate(service.endDate) : '',
       COMPLETED:     service.endDate ? fmtDate(service.endDate) : '',
     }
 
@@ -1894,9 +1870,6 @@ export default function ServiceOrderClient({
             )}
             {service.truck.frotcomVehicleId && (
               <span className="text-xs bg-sky-900/40 text-sky-400 border border-sky-800/40 px-1.5 py-0.5 rounded-sm">Frotcom</span>
-            )}
-            {service.bayNameSnapshot && (
-              <span className="text-xs text-gray-500">{tService('bay')}: {service.bayNameSnapshot}</span>
             )}
           </div>
         </div>
@@ -2318,7 +2291,7 @@ export default function ServiceOrderClient({
       {modal === 'intake' && (
         <Modal title={tService('intake.title')} onClose={() => setModal(null)}>
           <IntakeModal
-            serviceId={service.id} bays={bays} drivers={drivers} occupiedBayIds={occupiedBayIds}
+            serviceId={service.id} drivers={drivers}
             onClose={() => setModal(null)} onDone={(svc) => setService(svc as FullService)}
           />
         </Modal>

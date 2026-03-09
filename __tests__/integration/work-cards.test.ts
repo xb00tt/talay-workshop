@@ -46,15 +46,12 @@ async function setupActiveService() {
   const truck = await db.truck.create({
     data: { plateNumber: `W${Date.now()}`, make: 'Scania', model: 'R500', isAdr: false, isActive: true },
   })
-  const bay = await db.bay.create({ data: { name: `B${Date.now()}`, isActive: true } })
   const service = await db.serviceOrder.create({
     data: {
       truckId:           truck.id,
       truckPlateSnapshot: truck.plateNumber,
       scheduledDate:     new Date(),
       status:            'IN_PROGRESS',
-      bayId:             bay.id,
-      bayNameSnapshot:   bay.name,
       startDate:         new Date(),
     },
   })

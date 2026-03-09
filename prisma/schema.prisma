@@ -84,13 +84,6 @@ model Settings {
   frotcomToken    String?
 }
 
-model Bay {
-  id            Int            @id @default(autoincrement())
-  name          String
-  isActive      Boolean        @default(true)
-  serviceOrders ServiceOrder[]
-}
-
 model Truck {
   id               Int      @id @default(autoincrement())
   plateNumber      String   @unique
@@ -133,9 +126,6 @@ model ServiceOrder {
   truck               Truck         @relation(fields: [truckId], references: [id])
   truckPlateSnapshot  String
   status              ServiceStatus @default(SCHEDULED)
-  bayId               Int?
-  bay                 Bay?          @relation(fields: [bayId], references: [id])
-  bayNameSnapshot     String?
   scheduledDate       DateTime      // Date only — store as start-of-day UTC
   startDate           DateTime?
   endDate             DateTime?

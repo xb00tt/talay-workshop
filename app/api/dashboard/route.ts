@@ -7,13 +7,12 @@ export async function GET() {
   const session = await getServerSession(authOptions)
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-  const [bays, activeServices, upcomingServices, allActiveTruckIds, trucksForAlerts] =
+  const [activeServices, upcomingServices, allActiveTruckIds, trucksForAlerts] =
     await Promise.all([
-      prisma.bay.findMany({ where: { isActive: true }, orderBy: { name: 'asc' } }),
-
       prisma.serviceOrder.findMany({
         where: { status: { in: ['INTAKE', 'IN_PROGRESS', 'QUALITY_CHECK', 'READY'] } },
         include: { truck: { select: { make: true, model: true } } },
+        orderBy: { startDate: 'asc' },
       }),
 
       prisma.serviceOrder.findMany({
@@ -61,40 +60,15 @@ export async function GET() {
       lastServiceMileage: t.serviceOrders[0]?.mileageAtService ?? null,
     }))
 
-  const bayServiceMap = new Map(
-    activeServices.filter((s) => s.bayId !== null).map((s) => [s.bayId!, s]),
-  )
-
-  const baysWithService = bays.map((b) => {
-    const svc = bayServiceMap.get(b.id)
-    return {
-      id:   b.id,
-      name: b.name,
-      service: svc
-        ? {
-            id:                 svc.id,
-            truckPlateSnapshot: svc.truckPlateSnapshot,
-            truckMake:          svc.truck.make,
-            truckModel:         svc.truck.model,
-            status:             svc.status,
-            startDate:          svc.startDate?.toISOString() ?? null,
-            createdAt:          svc.createdAt.toISOString(),
-          }
-        : null,
-    }
-  })
-
-  const unbayedServices = activeServices
-    .filter((s) => s.bayId === null)
-    .map((s) => ({
-      id:                 s.id,
-      truckPlateSnapshot: s.truckPlateSnapshot,
-      truckMake:          s.truck.make,
-      truckModel:         s.truck.model,
-      status:             s.status,
-      startDate:          s.startDate?.toISOString() ?? null,
-      createdAt:          s.createdAt.toISOString(),
-    }))
+  const activeServicesMapped = activeServices.map((s) => ({
+    id:                 s.id,
+    truckPlateSnapshot: s.truckPlateSnapshot,
+    truckMake:          s.truck.make,
+    truckModel:         s.truck.model,
+    status:             s.status,
+    startDate:          s.startDate?.toISOString() ?? null,
+    createdAt:          s.createdAt.toISOString(),
+  }))
 
   const upcoming = upcomingServices.map((s) => ({
     id:                 s.id,
@@ -104,5 +78,5 @@ export async function GET() {
     scheduledDate:      s.scheduledDate.toISOString(),
   }))
 
-  return NextResponse.json({ bays: baysWithService, upcoming, mileageAlerts, unbayedServices })
+  return NextResponse.json({ activeServices: activeServicesMapped, upcoming, mileageAlerts })
 }

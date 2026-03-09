@@ -56,7 +56,7 @@ describe('Permission guard on POST /api/services', () => {
 
   it('returns 403 when ASSISTANT has unrelated permissions', async () => {
     vi.mocked(getServerSession).mockResolvedValue(
-      session('ASSISTANT', ['truck.edit', 'report.view', 'bay.manage']),
+      session('ASSISTANT', ['truck.edit', 'report.view', 'mechanic.manage']),
     )
 
     const res = await createService(postBody({ truckId: 1, scheduledDate: '2026-06-01' }))
@@ -113,15 +113,12 @@ describe('Permission guard on POST /api/services/[id]/status', () => {
     const truck = await db.truck.create({
       data: { plateNumber: `ST${Date.now()}`, make: 'MAN', model: 'TGX', isAdr: false, isActive: true },
     })
-    const bay = await db.bay.create({ data: { name: `B${Date.now()}`, isActive: true } })
     const service = await db.serviceOrder.create({
       data: {
         truckId:           truck.id,
         truckPlateSnapshot: truck.plateNumber,
         scheduledDate:     new Date(),
         status:            'INTAKE',
-        bayId:             bay.id,
-        bayNameSnapshot:   bay.name,
         startDate:         new Date(),
       },
     })

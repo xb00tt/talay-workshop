@@ -576,7 +576,6 @@ export default function TrucksClient({
                           className={`mt-1.5 inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-xs font-medium transition-opacity hover:opacity-80 ${STATUS_COLOR[truck.activeService.status] ?? 'bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400'}`}
                         >
                           {tService(`status.${truck.activeService.status}` as any)}
-                          {truck.activeService.bayNameSnapshot && ` · ${truck.activeService.bayNameSnapshot}`}
                           <span className="opacity-60">→</span>
                         </Link>
                       )}

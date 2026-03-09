@@ -9,7 +9,6 @@ function entityLink(type: string, id: string): string | null {
     case 'ServiceOrder': return `/services/${id}`
     case 'Truck':        return `/trucks/${id}`
     case 'User':         return `/users`
-    case 'Bay':          return `/bays`
     case 'Mechanic':     return `/mechanics`
     case 'Driver':       return `/drivers`
     default:             return null

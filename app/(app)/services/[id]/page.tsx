@@ -13,12 +13,11 @@ export default async function ServiceOrderPage({ params }: { params: Promise<{ i
   const serviceId = Number(id)
   if (isNaN(serviceId)) notFound()
 
-  const [service, bays, drivers, mechanics, occupiedBayIds, equipmentItems, adrEquipmentItems] = await Promise.all([
+  const [service, drivers, mechanics, equipmentItems, adrEquipmentItems] = await Promise.all([
     prisma.serviceOrder.findUnique({
       where: { id: serviceId },
       include: {
         truck:    { select: { id: true, make: true, model: true, year: true, isAdr: true, frotcomVehicleId: true } },
-        bay:      { select: { id: true, name: true } },
         driver:   { select: { id: true, name: true } },
         sections: {
           orderBy: { order: 'asc' },
@@ -40,15 +39,8 @@ export default async function ServiceOrderPage({ params }: { params: Promise<{ i
         photos: true,
       },
     }),
-    prisma.bay.findMany({ where: { isActive: true }, orderBy: { name: 'asc' } }),
     prisma.driver.findMany({ where: { isActive: true }, orderBy: { name: 'asc' } }),
     prisma.mechanic.findMany({ where: { isActive: true }, orderBy: { name: 'asc' } }),
-    prisma.serviceOrder
-      .findMany({
-        where:  { status: { in: ['INTAKE', 'IN_PROGRESS', 'QUALITY_CHECK', 'READY'] }, bayId: { not: null } },
-        select: { bayId: true },
-      })
-      .then((rows) => rows.map((r) => r.bayId!)),
     prisma.equipmentItem.findMany({ where: { isActive: true }, orderBy: { order: 'asc' } }),
     prisma.adrEquipmentItem.findMany({ where: { isActive: true }, orderBy: { order: 'asc' } }),
   ])
@@ -89,10 +81,8 @@ export default async function ServiceOrderPage({ params }: { params: Promise<{ i
   return (
     <ServiceOrderClient
       initialService={ser(service)}
-      bays={bays}
       drivers={drivers}
       mechanics={mechanics}
-      occupiedBayIds={occupiedBayIds}
       userName={session.user.name ?? ''}
       canReschedule={hasPermission(role, permissions, 'service.reschedule')}
       canCancel={hasPermission(role, permissions, 'service.cancel')}

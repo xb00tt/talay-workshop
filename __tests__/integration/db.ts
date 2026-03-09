@@ -23,7 +23,6 @@ export async function cleanDb() {
   await db.serviceSection.deleteMany()
   await db.serviceOrder.deleteMany()
   await db.truck.deleteMany()
-  await db.bay.deleteMany()
   await db.driver.deleteMany()
   await db.mechanic.deleteMany()
   await db.checklistTemplate.deleteMany()

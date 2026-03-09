@@ -21,7 +21,6 @@ interface ServiceRow {
   scheduledDate: string
   startDate: string | null
   endDate: string | null
-  bayNameSnapshot: string | null
   driverNameSnapshot: string | null
   createdAt: string
   truck: { make: string; model: string; isAdr: boolean }
@@ -371,14 +370,9 @@ function ServiceCard({
           )}
         </div>
 
-        {/* Status + Bay */}
+        {/* Status */}
         <div className="min-w-32.5 flex-1">
           <StatusBadge status={s.status} label={t(`status.${s.status}`)} />
-          {s.bayNameSnapshot && (
-            <p className="text-xs text-gray-500 mt-1.5">
-              <span className="text-gray-600">{t('bay')}: </span>{s.bayNameSnapshot}
-            </p>
-          )}
         </div>
 
         {/* Work card progress — only when there are cards */}

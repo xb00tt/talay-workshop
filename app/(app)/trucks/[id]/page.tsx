@@ -156,7 +156,6 @@ export default async function TruckProfilePage({ params }: { params: Promise<{ i
               <p className="text-xs text-blue-400 font-medium mb-0.5">{t('activeService')}</p>
               <p className="text-sm text-gray-900 dark:text-white">
                 {tService(`status.${activeService.status}` as any)} · {fmtDate(activeService.scheduledDate)}
-                {activeService.bayNameSnapshot ? ` · ${activeService.bayNameSnapshot}` : ''}
               </p>
             </div>
             <span className="text-blue-400 text-lg">→</span>
@@ -193,9 +192,6 @@ export default async function TruckProfilePage({ params }: { params: Promise<{ i
                         </span>
                         <span className="text-sm text-gray-600 dark:text-gray-300">{fmtDate(svc.scheduledDate)}</span>
                       </div>
-                      {svc.bayNameSnapshot && (
-                        <p className="text-xs text-gray-500">{tService('bay')}: {svc.bayNameSnapshot}</p>
-                      )}
                       {svc.driverNameSnapshot && (
                         <p className="text-xs text-gray-500">{tService('driver')}: {svc.driverNameSnapshot}</p>
                       )}

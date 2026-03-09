@@ -146,7 +146,6 @@ export async function POST(request: Request, { params }: Params) {
     data:    updateData,
     include: {
       truck:    { select: { id: true, make: true, model: true, year: true, isAdr: true, frotcomVehicleId: true } },
-      bay:      { select: { id: true, name: true } },
       driver:   { select: { id: true, name: true } },
       sections: {
         orderBy: { order: 'asc' },

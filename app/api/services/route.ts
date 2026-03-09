@@ -26,7 +26,6 @@ export async function GET(request: Request) {
       { truckPlateSnapshot: { contains: q } },
       { truck: { make:  { contains: q } } },
       { truck: { model: { contains: q } } },
-      { bayNameSnapshot: { contains: q } },
     ],
   } : {}
 

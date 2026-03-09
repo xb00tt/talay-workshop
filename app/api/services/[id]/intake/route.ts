@@ -26,24 +26,7 @@ export async function POST(request: Request, { params }: Params) {
   }
 
   const body = await request.json()
-  const { bayId, driverId, mileageAtService } = body
-
-  if (!bayId) return NextResponse.json({ error: 'Изберете бокс.' }, { status: 422 })
-
-  const bay = await prisma.bay.findUnique({ where: { id: Number(bayId) } })
-  if (!bay || !bay.isActive) return NextResponse.json({ error: 'Боксът не е намерен.' }, { status: 404 })
-
-  // Hard block: bay already occupied
-  const occupying = await prisma.serviceOrder.findFirst({
-    where: {
-      bayId:  bay.id,
-      status: { in: ['INTAKE', 'IN_PROGRESS', 'QUALITY_CHECK', 'READY'] },
-      id:     { not: serviceId },
-    },
-  })
-  if (occupying) {
-    return NextResponse.json({ error: 'Боксът е зает от друга поръчка.' }, { status: 409 })
-  }
+  const { driverId, mileageAtService } = body
 
   let driverRecord: { id: number; name: string } | null = null
   if (driverId) {
@@ -87,8 +70,6 @@ export async function POST(request: Request, { params }: Params) {
       where: { id: serviceId },
       data: {
         status:             'INTAKE',
-        bayId:              bay.id,
-        bayNameSnapshot:    bay.name,
         driverId:           driverRecord?.id ?? null,
         driverNameSnapshot: driverRecord?.name ?? null,
         startDate:          new Date(),
@@ -117,7 +98,6 @@ export async function POST(request: Request, { params }: Params) {
       where: { id: serviceId },
       include: {
         truck:    { select: { id: true, make: true, model: true, year: true, isAdr: true, frotcomVehicleId: true } },
-        bay:      { select: { id: true, name: true } },
         driver:   { select: { id: true, name: true } },
         sections: {
           orderBy: { order: 'asc' },
@@ -146,7 +126,7 @@ export async function POST(request: Request, { params }: Params) {
     action:     'service.intake',
     entityType: 'ServiceOrder',
     entityId:   serviceId,
-    newValue:   { bayId: bay.id, bayName: bay.name, driverName: driverRecord?.name ?? null, mileageAtService: resolvedMileage },
+    newValue:   { driverName: driverRecord?.name ?? null, mileageAtService: resolvedMileage },
   })
 
   return NextResponse.json({ service: updated })

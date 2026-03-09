@@ -15,15 +15,9 @@ interface ActiveService {
   truckPlateSnapshot: string
   truckMake: string
   truckModel: string
-  status: string
+  status: ActiveStatus
   startDate: string | null
   createdAt: string
-}
-
-interface BayInfo {
-  id: number
-  name: string
-  service: (ActiveService & { status: ActiveStatus }) | null
 }
 
 interface UpcomingService {
@@ -53,7 +47,7 @@ const STATUS_COLOR: Record<string, string> = {
   READY:         'bg-green-100 text-green-800 border-green-300 dark:bg-green-600/20 dark:text-green-400 dark:border-green-500/30',
 }
 
-const BAY_BORDER: Record<string, string> = {
+const CARD_BORDER: Record<string, string> = {
   INTAKE:        'border-blue-500/30',
   IN_PROGRESS:   'border-indigo-500/30',
   QUALITY_CHECK: 'border-purple-500/30',
@@ -90,40 +84,28 @@ function StatusBadge({ status, label }: { status: string; label: string }) {
   )
 }
 
-function BayCard({
-  bay,
+function ActiveServiceCard({
+  service,
   statusLabel,
   dayLabel,
-  freeLabel,
 }: {
-  bay: BayInfo
+  service: ActiveService
   statusLabel: string
   dayLabel: string
-  freeLabel: string
 }) {
-  if (!bay.service) {
-    return (
-      <div className="bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-800 rounded-xl p-4 min-h-[128px] flex flex-col">
-        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-auto">{bay.name}</p>
-        <p className="text-sm text-gray-600 mt-3">{freeLabel}</p>
-      </div>
-    )
-  }
-
-  const { service } = bay
-  const border = BAY_BORDER[service.status] ?? 'border-gray-700'
-
+  const border = CARD_BORDER[service.status] ?? 'border-gray-700'
   return (
     <Link
       href={`/services/${service.id}`}
-      className={`block bg-white dark:bg-gray-900 border ${border} rounded-xl p-4 min-h-[128px] flex flex-col hover:brightness-110 transition-all`}
+      className={`block bg-white dark:bg-gray-900 border ${border} rounded-xl p-4 min-h-[110px] flex flex-col hover:brightness-110 transition-all`}
     >
       <div className="flex items-start justify-between mb-2">
-        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">{bay.name}</p>
+        <p className="font-mono font-bold text-gray-900 dark:text-white text-lg leading-tight">
+          {service.truckPlateSnapshot}
+        </p>
         <StatusBadge status={service.status} label={statusLabel} />
       </div>
-      <p className="font-mono font-bold text-gray-900 dark:text-white text-lg leading-tight">{service.truckPlateSnapshot}</p>
-      <p className="text-xs text-gray-500 mt-0.5">{service.truckMake} {service.truckModel}</p>
+      <p className="text-xs text-gray-500">{service.truckMake} {service.truckModel}</p>
       <p className="text-xs text-gray-600 mt-auto pt-2">{dayLabel}</p>
     </Link>
   )
@@ -132,31 +114,26 @@ function BayCard({
 // ─── Main component ───────────────────────────────────────────────────────────
 
 export default function DashboardClient({
-  bays: initialBays,
+  initialActiveServices,
   upcoming: initialUpcoming,
   mileageAlerts: initialMileageAlerts,
-  unbayedServices: initialUnbayed,
 }: {
-  bays: BayInfo[]
+  initialActiveServices: ActiveService[]
   upcoming: UpcomingService[]
   mileageAlerts: MileageAlert[]
-  unbayedServices: ActiveService[]
 }) {
   const t = useTranslations('dashboard')
   const tService = useTranslations('service')
 
   const { data } = useSWR('/api/dashboard', fetcher, {
     refreshInterval:    30_000,
-    fallbackData:       { bays: initialBays, upcoming: initialUpcoming, mileageAlerts: initialMileageAlerts, unbayedServices: initialUnbayed },
+    fallbackData:       { activeServices: initialActiveServices, upcoming: initialUpcoming, mileageAlerts: initialMileageAlerts },
     revalidateOnFocus:  false,
   })
 
-  const bays             = (data?.bays            ?? initialBays)            as BayInfo[]
-  const upcoming         = (data?.upcoming         ?? initialUpcoming)        as UpcomingService[]
-  const mileageAlerts    = (data?.mileageAlerts    ?? initialMileageAlerts)   as MileageAlert[]
-  const unbayedServices  = (data?.unbayedServices  ?? initialUnbayed)         as ActiveService[]
-
-  const occupiedCount = bays.filter((b) => b.service).length
+  const activeServices = (data?.activeServices ?? initialActiveServices) as ActiveService[]
+  const upcoming       = (data?.upcoming       ?? initialUpcoming)       as UpcomingService[]
+  const mileageAlerts  = (data?.mileageAlerts  ?? initialMileageAlerts)  as MileageAlert[]
 
   const kmUnit = t('kmUnit')
 
@@ -174,7 +151,7 @@ export default function DashboardClient({
         <div>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{t('title')}</h1>
           <p className="text-sm text-gray-500 mt-0.5">
-            {t('baysOccupied', { occupied: occupiedCount, total: bays.length })}
+            {t('inWorkshopCount', { count: activeServices.length })}
           </p>
         </div>
         {mileageAlerts.length > 0 && (
@@ -189,53 +166,29 @@ export default function DashboardClient({
         )}
       </div>
 
-      {/* Bay grid */}
+      {/* In Workshop */}
       <section>
-        <h2 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3">{t('bays')}</h2>
-        {bays.length === 0 ? (
-          <p className="text-sm text-gray-500">{t('noBaysConfigured')}</p>
+        <h2 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3">
+          {t('inWorkshop')}
+        </h2>
+        {activeServices.length === 0 ? (
+          <p className="text-sm text-gray-500">{t('noTrucksInWorkshop')}</p>
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
-            {bays.map((bay) => {
-              const days = bay.service ? daysInService(bay.service.startDate, bay.service.createdAt) : 0
+            {activeServices.map((svc) => {
+              const days = daysInService(svc.startDate, svc.createdAt)
               return (
-                <BayCard
-                  key={bay.id}
-                  bay={bay}
-                  statusLabel={bay.service ? (tService(`status.${bay.service.status}`) ?? bay.service.status) : ''}
+                <ActiveServiceCard
+                  key={svc.id}
+                  service={svc}
+                  statusLabel={tService(`status.${svc.status}`) ?? svc.status}
                   dayLabel={getDayLabel(days)}
-                  freeLabel={t('bayFree')}
                 />
               )
             })}
           </div>
         )}
       </section>
-
-      {/* Unbayed active services (active but no bay assigned yet) */}
-      {unbayedServices.length > 0 && (
-        <section>
-          <h2 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3">
-            {t('activeNoBay')}
-          </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-            {unbayedServices.map((s) => (
-              <Link
-                key={s.id}
-                href={`/services/${s.id}`}
-                className="block bg-white dark:bg-gray-900 border border-gray-300/50 dark:border-gray-700/50 rounded-xl p-4 hover:border-gray-400 dark:hover:border-gray-600 transition-colors"
-              >
-                <div className="flex items-start justify-between mb-1">
-                  <p className="font-mono font-semibold text-gray-900 dark:text-white">{s.truckPlateSnapshot}</p>
-                  <StatusBadge status={s.status} label={tService(`status.${s.status}`) ?? s.status} />
-                </div>
-                <p className="text-xs text-gray-500">{s.truckMake} {s.truckModel}</p>
-                <p className="text-xs text-gray-600 mt-2">{getDayLabel(daysInService(s.startDate, s.createdAt))}</p>
-              </Link>
-            ))}
-          </div>
-        </section>
-      )}
 
       {/* Bottom two-column section */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

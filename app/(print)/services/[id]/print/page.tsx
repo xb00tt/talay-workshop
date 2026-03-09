@@ -40,7 +40,6 @@ export default async function ServiceOrderPrintPage({
       where: { id: serviceId },
       include: {
         truck: true,
-        bay:   { select: { name: true } },
         driver: { select: { name: true } },
         sections: {
           orderBy: { order: 'asc' },
@@ -146,10 +145,6 @@ export default async function ServiceOrderPrintPage({
           <div className="cell">
             <div className="label">Пробег при приемане</div>
             <div className="value">{fmtKm(service.mileageAtService)}</div>
-          </div>
-          <div className="cell">
-            <div className="label">Бокс</div>
-            <div className="value">{service.bayNameSnapshot ?? '—'}</div>
           </div>
           <div className="cell">
             <div className="label">Шофьор</div>

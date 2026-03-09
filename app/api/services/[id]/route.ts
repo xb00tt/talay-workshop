@@ -17,7 +17,6 @@ export async function GET(_req: Request, { params }: Params) {
     where: { id: Number(id) },
     include: {
       truck:    { select: { id: true, make: true, model: true, year: true, isAdr: true, frotcomVehicleId: true } },
-      bay:      { select: { id: true, name: true } },
       driver:   { select: { id: true, name: true } },
       sections: {
         orderBy:  { order: 'asc' },

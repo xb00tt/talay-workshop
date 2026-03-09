@@ -15,7 +15,7 @@ export type EnrichedTruck = {
   lastServiceMileage: number | null
   kmSinceService: number | null
   mileageAlert: boolean
-  activeService: { id: number; status: string; bayNameSnapshot: string | null } | null
+  activeService: { id: number; status: string } | null
 }
 
 export async function enrichTrucks(
@@ -37,7 +37,7 @@ export async function enrichTrucks(
     }),
     prisma.serviceOrder.findMany({
       where: { status: { notIn: ['COMPLETED', 'CANCELLED'] }, truckId: { in: ids } },
-      select: { id: true, truckId: true, status: true, bayNameSnapshot: true },
+      select: { id: true, truckId: true, status: true },
     }),
   ])
 
@@ -47,7 +47,7 @@ export async function enrichTrucks(
     if (!lastMap.has(s.truckId)) lastMap.set(s.truckId, s)
   }
 
-  const activeMap = new Map<number, { id: number; status: string; bayNameSnapshot: string | null }>()
+  const activeMap = new Map<number, { id: number; status: string }>()
   for (const s of activeServices) activeMap.set(s.truckId, s)
 
   return trucks.map((t) => {

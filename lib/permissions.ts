@@ -20,7 +20,6 @@ export const PERMISSIONS = {
   NOTE_CREATE: 'note.create',
   REPORT_VIEW: 'report.view',
   REPORT_EXPORT: 'report.export',
-  BAY_MANAGE: 'bay.manage',
   MECHANIC_MANAGE: 'mechanic.manage',
   CHECKLIST_EDIT: 'checklist.edit',
   EQUIPMENT_EDIT: 'equipment.edit',

@@ -56,7 +56,7 @@ describe('Translation key parity (bg ↔ en)', () => {
 describe('Translation namespaces', () => {
   const expectedNamespaces = [
     'common', 'nav', 'auth', 'dashboard', 'service', 'truck',
-    'workCard', 'mechanic', 'bay', 'checklist', 'equipment',
+    'workCard', 'mechanic', 'checklist', 'equipment',
     'auditLog', 'settings', 'user', 'calendar', 'report', 'section', 'errors',
   ]
 

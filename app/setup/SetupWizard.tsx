@@ -17,7 +17,6 @@ interface WizardData {
   managerName: string
   password: string
   confirmPassword: string
-  bays: string[]
   mechanics: string[]
   equipmentItems: EquipmentEntry[]
   adrEquipmentItems: EquipmentEntry[]
@@ -27,7 +26,6 @@ interface WizardData {
 const STEPS = [
   'Информация за компанията',
   'Мениджър акаунт',
-  'Сервизни места',
   'Механици',
   'Оборудване',
   'Чеклист шаблон',
@@ -178,44 +176,6 @@ function StepManagerAccount({
           autoComplete="new-password"
         />
       </div>
-    </div>
-  )
-}
-
-function StepBays({
-  data,
-  onChange,
-}: {
-  data: WizardData
-  onChange: (patch: Partial<WizardData>) => void
-}) {
-  const update = (i: number, val: string) => {
-    const bays = [...data.bays]
-    bays[i] = val
-    onChange({ bays })
-  }
-  const add = () => onChange({ bays: [...data.bays, ''] })
-  const remove = (i: number) => {
-    if (data.bays.length === 1) return
-    onChange({ bays: data.bays.filter((_, idx) => idx !== i) })
-  }
-
-  return (
-    <div className="space-y-3">
-      <p className="text-sm text-gray-400">
-        Добавете сервизните места (боксове) в работилницата. Минимум едно е задължително.
-      </p>
-      {data.bays.map((bay, i) => (
-        <div key={i} className="flex items-center gap-2">
-          <Input
-            value={bay}
-            onChange={(e) => update(i, e.target.value)}
-            placeholder={`Бокс ${i + 1}`}
-          />
-          {data.bays.length > 1 && <RemoveButton onClick={() => remove(i)} />}
-        </div>
-      ))}
-      <AddButton onClick={add} label="Добави бокс" />
     </div>
   )
 }
@@ -436,7 +396,6 @@ const initial: WizardData = {
   managerName: '',
   password: '',
   confirmPassword: '',
-  bays: [''],
   mechanics: [''],
   equipmentItems: [{ name: '', description: '' }],
   adrEquipmentItems: [{ name: '', description: '' }],
@@ -463,9 +422,6 @@ export default function SetupWizard() {
       if (!data.managerName.trim()) return 'Въведете пълно име.'
       if (data.password.length < 8) return 'Паролата трябва да е поне 8 символа.'
       if (data.password !== data.confirmPassword) return 'Паролите не съвпадат.'
-    }
-    if (step === 3) {
-      if (!data.bays.some((b) => b.trim())) return 'Добавете поне едно сервизно място.'
     }
     return ''
   }
@@ -519,10 +475,9 @@ export default function SetupWizard() {
   const stepComponent = [
     <StepCompanyInfo key={1} data={data} onChange={patch} />,
     <StepManagerAccount key={2} data={data} onChange={patch} />,
-    <StepBays key={3} data={data} onChange={patch} />,
-    <StepMechanics key={4} data={data} onChange={patch} />,
-    <StepEquipment key={5} data={data} onChange={patch} />,
-    <StepChecklist key={6} data={data} onChange={patch} />,
+    <StepMechanics key={3} data={data} onChange={patch} />,
+    <StepEquipment key={4} data={data} onChange={patch} />,
+    <StepChecklist key={5} data={data} onChange={patch} />,
   ][step - 1]
 
   return (

@@ -60,8 +60,7 @@ const NAV: NavGroup[] = [
   {
     groupKey: 'groupWorkshop',
     items: [
-      { href: '/bays',      labelKey: 'bays',      icon: 'building' },
-      { href: '/mechanics', labelKey: 'mechanics', icon: 'wrench'   },
+      { href: '/mechanics', labelKey: 'mechanics', icon: 'wrench' },
     ],
   },
   {

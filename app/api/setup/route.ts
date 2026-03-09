@@ -24,11 +24,6 @@ export async function POST(request: Request) {
   if (!body.password || body.password.length < 8) {
     return NextResponse.json({ error: 'Password must be at least 8 characters' }, { status: 422 })
   }
-  const validBays = (body.bays as string[]).filter((b) => b.trim())
-  if (validBays.length === 0) {
-    return NextResponse.json({ error: 'At least one bay is required' }, { status: 422 })
-  }
-
   const recoveryCode = crypto.randomBytes(6).toString('hex').toUpperCase()
   const passwordHash = await bcrypt.hash(body.password, 12)
 
@@ -60,11 +55,6 @@ export async function POST(request: Request) {
         recoveryCode,
       },
     })
-
-    // Bays
-    for (const name of validBays) {
-      await tx.bay.create({ data: { name: name.trim() } })
-    }
 
     // Mechanics (optional)
     const validMechanics = (body.mechanics as string[]).filter((m) => m.trim())
