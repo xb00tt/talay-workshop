@@ -37,6 +37,10 @@
     "saving": "Saving...",
     "update": "Update",
     "connectionFailed": "Connection failed.",
+    "syncing": "Syncing...",
+    "importing": "Importing...",
+    "tryAgain": "Try again",
+    "truck": "Truck",
     "nameRequired": "Name is required.",
     "kmUnit": "km",
     "checklist": "Checklist",
@@ -210,7 +214,9 @@
       "READY": "The truck is ready for collection. Review the summary, then confirm completion.",
       "COMPLETED": "Service completed. All records are read-only.",
       "CANCELLED": "This service was cancelled."
-    }
+    },
+    "daysInShop": "{days} days in service",
+    "enteredToday": "Entered today"
   },
   "section": {
     "type": {
@@ -372,7 +378,8 @@
     "backToList": "Back to trucks",
     "cancelledNote": "Cancelled:",
     "plateNumberShort": "Plate No.",
-    "lastService": "Last Service"
+    "lastService": "Last Service",
+    "alertCount": "{count} need service"
   },
   "mechanic": {
     "title": "Mechanic",
@@ -621,6 +628,8 @@
     "unauthorized": "You do not have permission to do this",
     "generic": "An error occurred. Please try again.",
     "connectionFailed": "Connection failed.",
-    "genericShort": "Error."
+    "genericShort": "Error.",
+    "somethingWentWrong": "Something went wrong",
+    "unexpectedError": "An unexpected error occurred."
   }
 }

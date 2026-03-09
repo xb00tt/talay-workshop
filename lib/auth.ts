@@ -15,9 +15,9 @@ export const authOptions: NextAuthOptions = {
       async authorize(credentials) {
         if (!credentials?.username || !credentials?.password) return null
 
-        // Rate-limit: 10 failed attempts per username per 15 minutes
+        // Rate-limit: 5 attempts per username per 15 minutes (matches recovery endpoint)
         const key = `login:${credentials.username.toLowerCase()}`
-        if (!rateLimit(key, 10, 15 * 60 * 1000).allowed) return null
+        if (!rateLimit(key, 5, 15 * 60 * 1000).allowed) return null
 
         const user = await prisma.user.findUnique({
           where: { username: credentials.username },

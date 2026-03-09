@@ -68,10 +68,6 @@ function fmtDate(iso: string | null) {
   return `${String(d.getUTCDate()).padStart(2, '0')}.${String(d.getUTCMonth() + 1).padStart(2, '0')}.${d.getUTCFullYear()}`
 }
 
-const STATUS_LABEL: Record<string, string> = {
-  SCHEDULED: 'Планирана', INTAKE: 'Приемане', IN_PROGRESS: 'В процес',
-  QUALITY_CHECK: 'Контрол', READY: 'Готова', COMPLETED: 'Завършена', CANCELLED: 'Отменена',
-}
 const STATUS_COLOR: Record<string, string> = {
   SCHEDULED:     'bg-amber-600/20 text-amber-400',
   INTAKE:        'bg-blue-600/20 text-blue-400',
@@ -383,6 +379,7 @@ export default function TrucksClient({
   const t = useTranslations('truck')
   const tCommon = useTranslations('common')
   const tErrors = useTranslations('errors')
+  const tService = useTranslations('service')
 
   const [trucks,    setTrucks]    = useState<Truck[]>(initialTrucks)
   const [modal,     setModal]     = useState<ModalState>(null)
@@ -417,11 +414,11 @@ export default function TrucksClient({
     try {
       const res  = await fetch('/api/trucks/import', { method: 'POST' })
       const json = await res.json()
-      if (!res.ok) { setImportError(json.error ?? 'Грешка при импорт.'); return }
+      if (!res.ok) { setImportError(json.error ?? tErrors('genericShort')); return }
       setImportResult(json)
       await refreshList()
     } catch {
-      setImportError('Неуспешна връзка с Frotcom.')
+      setImportError(tErrors('connectionFailed'))
     } finally {
       setImporting(false)
     }
@@ -432,10 +429,10 @@ export default function TrucksClient({
     try {
       const res  = await fetch('/api/trucks/sync-mileage', { method: 'POST' })
       const json = await res.json()
-      if (!res.ok) { setSyncError(json.error ?? 'Грешка при синхрон.'); return }
+      if (!res.ok) { setSyncError(json.error ?? tErrors('genericShort')); return }
       setSyncResult(json)
       await refreshList()
-    } catch { setSyncError('Неуспешна връзка с Frotcom.') }
+    } catch { setSyncError(tErrors('connectionFailed')) }
     finally { setSyncing(false) }
   }
 
@@ -461,12 +458,12 @@ export default function TrucksClient({
         {/* Header */}
         <div className="flex flex-wrap items-center justify-between gap-3 mb-5">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Камиони</h1>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{t('list')}</h1>
             <p className="text-sm text-gray-500 mt-0.5">
-              {active} активни
-              {inactive > 0 ? `, ${inactive} неактивни` : ''}
+              {t('activeCount', { count: active })}
+              {inactive > 0 ? `, ${t('inactiveCount', { count: inactive })}` : ''}
               {alerts > 0 && (
-                <span className="ml-2 text-amber-400 font-medium">⚠ {alerts} за сервиз</span>
+                <span className="ml-2 text-amber-400 font-medium">⚠ {t('alertCount', { count: alerts })}</span>
               )}
             </p>
           </div>
@@ -478,14 +475,14 @@ export default function TrucksClient({
                   disabled={syncing}
                   className="flex items-center gap-2 px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:border-gray-400 dark:hover:border-gray-400 text-sm font-medium rounded-xl transition-colors disabled:opacity-50"
                 >
-                  {syncing ? 'Синхрон...' : t('syncMileage')}
+                  {syncing ? tCommon('syncing') : t('syncMileage')}
                 </button>
                 <button
                   onClick={runImport}
                   disabled={importing}
                   className="flex items-center gap-2 px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:border-gray-400 dark:hover:border-gray-400 text-sm font-medium rounded-xl transition-colors disabled:opacity-50"
                 >
-                  {importing ? 'Импортиране...' : t('frotcomImport')}
+                  {importing ? tCommon('importing') : t('frotcomImport')}
                 </button>
               </>
             )}
@@ -539,10 +536,10 @@ export default function TrucksClient({
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-gray-200 dark:border-gray-800">
-                  <th className="text-left px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Рег. номер</th>
-                  <th className="text-left px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider hidden sm:table-cell">Марка / Модел</th>
-                  <th className="text-left px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider hidden md:table-cell">Пробег</th>
-                  <th className="text-left px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider hidden lg:table-cell">Последен сервиз</th>
+                  <th className="text-left px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">{t('plateNumberShort')}</th>
+                  <th className="text-left px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider hidden sm:table-cell">{t('makeModel')}</th>
+                  <th className="text-left px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider hidden md:table-cell">{t('mileage')}</th>
+                  <th className="text-left px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider hidden lg:table-cell">{t('lastService')}</th>
                   <th className="px-5 py-3" />
                 </tr>
               </thead>
@@ -560,13 +557,13 @@ export default function TrucksClient({
                           {truck.plateNumber}
                         </Link>
                         {truck.mileageAlert && (
-                          <span title="Нуждае се от сервиз" className="text-amber-400 text-sm leading-none">⚠</span>
+                          <span title={t('needsService')} className="text-amber-400 text-sm leading-none">⚠</span>
                         )}
                         {truck.isAdr && (
                           <span className="inline-flex items-center px-1.5 py-0 rounded-sm text-xs font-bold bg-orange-600/20 text-orange-400">ADR</span>
                         )}
                         {!truck.isActive && (
-                          <span className="inline-flex items-center px-1.5 py-0 rounded-sm text-xs font-medium bg-gray-200 dark:bg-gray-700 text-gray-500">Неактивен</span>
+                          <span className="inline-flex items-center px-1.5 py-0 rounded-sm text-xs font-medium bg-gray-200 dark:bg-gray-700 text-gray-500">{tCommon('inactive')}</span>
                         )}
                         {truck.frotcomVehicleId && (
                           <span className="text-xs text-gray-600">Frotcom</span>
@@ -578,7 +575,7 @@ export default function TrucksClient({
                           href={`/services/${truck.activeService.id}`}
                           className={`mt-1.5 inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-xs font-medium transition-opacity hover:opacity-80 ${STATUS_COLOR[truck.activeService.status] ?? 'bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400'}`}
                         >
-                          {STATUS_LABEL[truck.activeService.status] ?? truck.activeService.status}
+                          {tService(`status.${truck.activeService.status}` as any)}
                           {truck.activeService.bayNameSnapshot && ` · ${truck.activeService.bayNameSnapshot}`}
                           <span className="opacity-60">→</span>
                         </Link>

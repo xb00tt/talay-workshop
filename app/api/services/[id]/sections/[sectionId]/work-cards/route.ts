@@ -30,7 +30,7 @@ export async function POST(request: Request, { params }: Params) {
     return NextResponse.json({ error: 'Не може да се добавят работни карти в този раздел.' }, { status: 422 })
   }
   if (service.status === 'COMPLETED' || service.status === 'CANCELLED') {
-    return NextResponse.json({ error: 'Поръчката е приключена.' }, { status: 422 })
+    return NextResponse.json({ error: 'Приключената поръчка не може да се редактира.' }, { status: 422 })
   }
 
   const body = await request.json()

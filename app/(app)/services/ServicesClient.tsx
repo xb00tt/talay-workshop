@@ -200,7 +200,7 @@ function CreateModal({
   return (
     <form onSubmit={submit} className="space-y-4">
       <div>
-        <Label>{tCommon('truck') ?? 'Камион'} *</Label>
+        <Label>{tCommon('truck')} *</Label>
         <Select value={truckId} onChange={(e) => setTruckId(e.target.value)} className="w-full">
           <option value="">{t('selectTruckPlaceholder')}</option>
           {activeTrucks.map((tr) => (
@@ -328,8 +328,8 @@ function ServiceCard({
   if (s.startDate) {
     const days = daysInShop(s.startDate, s.endDate)
     daysLabel = isTerminal
-      ? `${days} дни в сервиз`
-      : days === 0 ? 'Влязъл днес' : `${days} дни в сервиз`
+      ? t('daysInShop', { days })
+      : days === 0 ? t('enteredToday') : t('daysInShop', { days })
   }
 
   return (

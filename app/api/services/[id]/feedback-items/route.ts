@@ -16,7 +16,7 @@ export async function POST(request: Request, { params }: Params) {
   const service = await prisma.serviceOrder.findUnique({ where: { id: serviceId } })
   if (!service) return NextResponse.json({ error: 'Not found' }, { status: 404 })
   if (service.status === 'COMPLETED' || service.status === 'CANCELLED') {
-    return NextResponse.json({ error: 'Поръчката е приключена.' }, { status: 422 })
+    return NextResponse.json({ error: 'Приключената поръчка не може да се редактира.' }, { status: 422 })
   }
 
   const { description } = await request.json()

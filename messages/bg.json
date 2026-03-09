@@ -37,6 +37,10 @@
     "saving": "Запазване...",
     "update": "Обнови",
     "connectionFailed": "Неуспешна връзка.",
+    "syncing": "Синхрон...",
+    "importing": "Импортиране...",
+    "tryAgain": "Опитай отново",
+    "truck": "Камион",
     "nameRequired": "Името е задължително.",
     "kmUnit": "км",
     "checklist": "Контролен лист",
@@ -210,7 +214,9 @@
       "READY": "Камионът е готов за вземане. Прегледайте резюмето и потвърдете завършването.",
       "COMPLETED": "Сервизният преглед е завършен. Всички записи са само за четене.",
       "CANCELLED": "Тази поръчка е анулирана."
-    }
+    },
+    "daysInShop": "{days} дни в сервиз",
+    "enteredToday": "Влязъл днес"
   },
   "section": {
     "type": {
@@ -372,7 +378,8 @@
     "backToList": "Назад към камионите",
     "cancelledNote": "Отменена:",
     "plateNumberShort": "Рег. номер",
-    "lastService": "Последен сервиз"
+    "lastService": "Последен сервиз",
+    "alertCount": "{count} за сервиз"
   },
   "mechanic": {
     "title": "Механик",
@@ -621,6 +628,8 @@
     "unauthorized": "Нямате права за това действие",
     "generic": "Възникна грешка. Моля, опитайте отново.",
     "connectionFailed": "Неуспешна връзка.",
-    "genericShort": "Грешка."
+    "genericShort": "Грешка.",
+    "somethingWentWrong": "Нещо се обърка",
+    "unexpectedError": "Възникна неочаквана грешка."
   }
 }

@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect } from 'react'
+import { useTranslations } from 'next-intl'
 
 export default function Error({
   error,
@@ -9,6 +10,9 @@ export default function Error({
   error: Error & { digest?: string }
   reset: () => void
 }) {
+  const t = useTranslations('errors')
+  const tCommon = useTranslations('common')
+
   useEffect(() => {
     console.error(error)
   }, [error])
@@ -21,14 +25,14 @@ export default function Error({
         </svg>
       </div>
       <div>
-        <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">Нещо се обърка</h2>
-        <p className="text-sm text-gray-400 max-w-sm">{error.message || 'Възникна неочаквана грешка.'}</p>
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">{t('somethingWentWrong')}</h2>
+        <p className="text-sm text-gray-400 max-w-sm">{error.message || t('unexpectedError')}</p>
       </div>
       <button
         onClick={reset}
         className="px-4 py-2 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300 text-sm rounded-xl transition-colors"
       >
-        Опитай отново
+        {tCommon('tryAgain')}
       </button>
     </div>
   )
