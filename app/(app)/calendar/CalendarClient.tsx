@@ -34,6 +34,61 @@ const STATUS_COLOR: Record<ServiceStatus, string> = {
   CANCELLED:     'bg-red-100 text-red-700 dark:bg-red-600/30 dark:text-red-400',
 }
 
+// ─── Span helpers ─────────────────────────────────────────────────────────────
+
+function getServiceSpan(svc: CalService, today: string): { start: string; end: string } {
+  if (svc.status === 'SCHEDULED') {
+    return { start: svc.scheduledDate, end: svc.scheduledDate }
+  }
+  if (svc.status === 'CANCELLED') {
+    const d = svc.startDate?.slice(0, 10) ?? svc.scheduledDate
+    return { start: d, end: d }
+  }
+  // INTAKE | IN_PROGRESS | QUALITY_CHECK | READY | COMPLETED
+  const start = svc.startDate?.slice(0, 10) ?? svc.scheduledDate
+  const end   = svc.endDate?.slice(0, 10)   ?? today
+  return { start, end }
+}
+
+function occupies(svc: CalService, date: string, today: string): boolean {
+  const { start, end } = getServiceSpan(svc, today)
+  return date >= start && date <= end
+}
+
+// Day of week: 0=Mon … 6=Sun (Monday-first)
+function dowMon(date: string): number {
+  return (new Date(date + 'T12:00:00').getDay() + 6) % 7
+}
+
+// ─── Greedy slot assignment for week view ─────────────────────────────────────
+
+function assignSlots(svcs: CalService[], weekDays: string[], today: string): Map<number, number> {
+  // Sort by span start so earlier-starting events get lower slots
+  const sorted = [...svcs].sort((a, b) => {
+    const sa = getServiceSpan(a, today).start
+    const sb = getServiceSpan(b, today).start
+    return sa < sb ? -1 : sa > sb ? 1 : 0
+  })
+
+  const slots: { from: string; to: string }[][] = []
+  const assignment = new Map<number, number>()
+
+  for (const svc of sorted) {
+    const { start, end } = getServiceSpan(svc, today)
+    const visStart = weekDays.find(d => d >= start) ?? weekDays[0]
+    const visEnd   = [...weekDays].reverse().find(d => d <= end) ?? weekDays[6]
+
+    let row = slots.findIndex(occupied =>
+      !occupied.some(seg => visStart <= seg.to && visEnd >= seg.from)
+    )
+    if (row === -1) { row = slots.length; slots.push([]) }
+    slots[row].push({ from: visStart, to: visEnd })
+    assignment.set(svc.id, row)
+  }
+
+  return assignment
+}
+
 // ─── CreateServiceModal ───────────────────────────────────────────────────────
 
 function CreateServiceModal({
@@ -131,7 +186,6 @@ function MonthView({
   )
 
   const firstDay = new Date(year, month, 1)
-  // Monday-first: 0=Mon,...,6=Sun
   const startDow = (firstDay.getDay() + 6) % 7
   const daysInMonth = new Date(year, month + 1, 0).getDate()
 
@@ -139,7 +193,6 @@ function MonthView({
     ...Array(startDow).fill(null),
     ...Array.from({ length: daysInMonth }, (_, i) => i + 1),
   ]
-  // Pad to complete weeks
   while (cells.length % 7 !== 0) cells.push(null)
 
   const today = new Date().toISOString().slice(0, 10)
@@ -160,32 +213,46 @@ function MonthView({
       {/* Cells */}
       <div className="grid grid-cols-7 gap-px bg-gray-200 dark:bg-gray-800 border border-gray-300 dark:border-gray-800 rounded-xl overflow-hidden">
         {cells.map((day, i) => {
-          if (!day) return <div key={i} className="bg-gray-50 dark:bg-gray-950 min-h-[80px]" />
+          if (!day) return <div key={i} className="bg-gray-50 dark:bg-gray-950 min-h-20" />
 
           const ds = dateStr(day)
-          const daySvcs = services.filter((s) => s.scheduledDate === ds)
+          const daySvcs = services.filter((s) => occupies(s, ds, today))
           const isToday = ds === today
+          const dow = dowMon(ds) // 0=Mon 6=Sun
 
           return (
             <div
               key={i}
-              className={`bg-white dark:bg-gray-900 min-h-[80px] p-1 flex flex-col ${canCreate ? 'cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800/70' : ''} ${isToday ? 'ring-1 ring-blue-500 ring-inset' : ''}`}
+              className={`bg-white dark:bg-gray-900 min-h-20 p-1 flex flex-col ${canCreate ? 'cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800/70' : ''} ${isToday ? 'ring-1 ring-blue-500 ring-inset' : ''}`}
               onClick={() => canCreate && onDayClick(ds)}
             >
               <span className={`text-xs font-medium mb-1 self-end ${isToday ? 'text-blue-600 dark:text-blue-400' : 'text-gray-500'}`}>
                 {day}
               </span>
               <div className="space-y-0.5 flex-1">
-                {daySvcs.slice(0, 3).map((svc) => (
-                  <Link
-                    key={svc.id}
-                    href={`/services/${svc.id}`}
-                    onClick={(e) => e.stopPropagation()}
-                    className={`block px-1 py-0.5 rounded-sm text-xs truncate leading-tight ${STATUS_COLOR[svc.status]}`}
-                  >
-                    {svc.truckPlateSnapshot}
-                  </Link>
-                ))}
+                {daySvcs.slice(0, 3).map((svc) => {
+                  const { start, end } = getServiceSpan(svc, today)
+                  // Visual row position: restart at Monday, end at Sunday
+                  const isVisStart = ds === start || dow === 0
+                  const isVisEnd   = ds === end   || dow === 6
+                  const showText   = ds === start || dow === 0 // show plate only at visual row start
+
+                  const rounding = isVisStart && isVisEnd ? 'rounded-sm'
+                    : isVisStart ? 'rounded-l-sm rounded-r-none'
+                    : isVisEnd   ? 'rounded-r-sm rounded-l-none'
+                    : 'rounded-none'
+
+                  return (
+                    <Link
+                      key={svc.id}
+                      href={`/services/${svc.id}`}
+                      onClick={(e) => e.stopPropagation()}
+                      className={`block px-1 py-0.5 text-xs truncate leading-tight ${STATUS_COLOR[svc.status]} ${rounding}`}
+                    >
+                      {showText ? svc.truckPlateSnapshot : '\u00A0'}
+                    </Link>
+                  )
+                })}
                 {daySvcs.length > 3 && (
                   <p className="text-xs text-gray-600">+{daySvcs.length - 3}</p>
                 )}
@@ -220,41 +287,85 @@ function WeekView({
     return d
   })
 
-  const today = new Date().toISOString().slice(0, 10)
+  const weekDays = days.map(d => d.toISOString().slice(0, 10))
+  const today    = new Date().toISOString().slice(0, 10)
+
+  // All services visible in this week
+  const weekSvcs = services.filter(svc => weekDays.some(d => occupies(svc, d, today)))
+
+  // Assign each service to a slot row
+  const slotMap  = assignSlots(weekSvcs, weekDays, today)
+  const numSlots = weekSvcs.length === 0 ? 0 : Math.max(...weekSvcs.map(s => slotMap.get(s.id) ?? 0)) + 1
 
   return (
     <div className="grid grid-cols-7 gap-px bg-gray-200 dark:bg-gray-800 border border-gray-300 dark:border-gray-800 rounded-xl overflow-hidden">
-      {days.map((day) => {
-        const ds      = day.toISOString().slice(0, 10)
-        const daySvcs = services.filter((s) => s.scheduledDate === ds)
+      {days.map((day, colIdx) => {
+        const ds      = weekDays[colIdx]
         const isToday = ds === today
 
         return (
           <div
             key={ds}
-            className={`bg-white dark:bg-gray-900 min-h-[200px] p-2 flex flex-col ${canCreate ? 'cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800/70' : ''} ${isToday ? 'ring-1 ring-blue-500 ring-inset' : ''}`}
+            className={`bg-white dark:bg-gray-900 min-h-50 flex flex-col ${canCreate ? 'cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800/70' : ''} ${isToday ? 'ring-1 ring-blue-500 ring-inset' : ''}`}
             onClick={() => canCreate && onDayClick(ds)}
           >
-            <div className="mb-2">
+            {/* Day header */}
+            <div className="p-2 pb-1">
               <p className="text-xs text-gray-500">{DAYS[(day.getDay() + 6) % 7]}</p>
               <p className={`text-sm font-semibold ${isToday ? 'text-blue-600 dark:text-blue-400' : 'text-gray-900 dark:text-white'}`}>
                 {day.getDate()}.{String(day.getMonth() + 1).padStart(2, '0')}
               </p>
             </div>
-            <div className="space-y-1 flex-1">
-              {daySvcs.map((svc) => (
-                <Link
-                  key={svc.id}
-                  href={`/services/${svc.id}`}
-                  onClick={(e) => e.stopPropagation()}
-                  className={`block px-2 py-1 rounded-lg text-xs ${STATUS_COLOR[svc.status]}`}
-                >
-                  <p className="font-mono font-semibold">{svc.truckPlateSnapshot}</p>
-                  <p className="opacity-80">{tService(`status.${svc.status}`)}</p>
-                </Link>
-              ))}
-              {canCreate && (
-                <div className="mt-auto pt-1">
+
+            {/* Slot rows */}
+            <div className="flex-1 pb-1">
+              {Array.from({ length: numSlots }, (_, slotIdx) => {
+                const svc = weekSvcs.find(s => slotMap.get(s.id) === slotIdx && occupies(s, ds, today))
+
+                if (!svc) {
+                  return <div key={slotIdx} className="h-8 mx-1 mb-1" />
+                }
+
+                const { start, end } = getServiceSpan(svc, today)
+                const isSpanStart = ds === start
+                const isSpanEnd   = ds === end
+                const isWeekStart = colIdx === 0
+                const isWeekEnd   = colIdx === 6
+
+                const roundLeft  = isSpanStart || isWeekStart
+                const roundRight = isSpanEnd   || isWeekEnd
+                const rounding   = roundLeft && roundRight ? 'rounded-lg'
+                  : roundLeft  ? 'rounded-l-lg rounded-r-none'
+                  : roundRight ? 'rounded-r-lg rounded-l-none'
+                  : 'rounded-none'
+
+                // Negative horizontal margin to eliminate gap-px gap on continuation cells
+                const mx = roundLeft && roundRight ? 'mx-1'
+                  : roundLeft  ? 'ml-1 mr-0'
+                  : roundRight ? 'ml-0 mr-1'
+                  : 'mx-0'
+
+                return (
+                  <Link
+                    key={svc.id}
+                    href={`/services/${svc.id}`}
+                    onClick={(e) => e.stopPropagation()}
+                    className={`flex h-8 mb-1 px-2 items-center overflow-hidden ${STATUS_COLOR[svc.status]} ${rounding} ${mx}`}
+                  >
+                    {isSpanStart || isWeekStart ? (
+                      <span className="min-w-0">
+                        <span className="block font-mono font-semibold text-xs truncate leading-tight">{svc.truckPlateSnapshot}</span>
+                        <span className="block text-xs opacity-70 truncate leading-tight">{tService(`status.${svc.status}`)}</span>
+                      </span>
+                    ) : (
+                      <span className="sr-only">{svc.truckPlateSnapshot}</span>
+                    )}
+                  </Link>
+                )
+              })}
+
+              {canCreate && numSlots === 0 && (
+                <div className="px-2 pt-1">
                   <p className="text-xs text-gray-700 hover:text-gray-500 text-center">{t('newHint')}</p>
                 </div>
               )}
@@ -289,10 +400,9 @@ export default function CalendarClient({
   const [services,    setServices]    = useState<CalService[]>(initialServices)
   const [createDate,  setCreateDate]  = useState<string | null>(null)
 
-  // Week start: Monday of the week containing currentDate
   function getWeekStart(d: Date) {
     const date = new Date(d)
-    const dow  = (date.getDay() + 6) % 7 // 0=Mon
+    const dow  = (date.getDay() + 6) % 7
     date.setDate(date.getDate() - dow)
     return date
   }
