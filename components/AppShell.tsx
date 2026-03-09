@@ -92,7 +92,7 @@ function NavLink({ item, label, active, onClick }: { item: NavItem; label: strin
       className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors ${
         active
           ? 'bg-blue-600/20 text-blue-400'
-          : 'text-gray-400 hover:text-white hover:bg-gray-800'
+          : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800'
       }`}
     >
       <Ico name={item.icon} />
@@ -118,18 +118,18 @@ function UserMenu({ userName, userRole }: { userName: string; userRole: string }
   }, [])
 
   return (
-    <div ref={ref} className="relative border-t border-gray-800 px-3 py-2">
+    <div ref={ref} className="relative border-t border-gray-200 dark:border-gray-800 px-3 py-2">
       <button
         onClick={() => setOpen((v) => !v)}
-        className="w-full flex items-center gap-3 px-2 py-2 rounded-lg hover:bg-gray-800 transition-colors"
+        className="w-full flex items-center gap-3 px-2 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
       >
-        <div className="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center shrink-0">
-          <span className="text-xs font-bold text-gray-300">
+        <div className="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center shrink-0">
+          <span className="text-xs font-bold text-gray-600 dark:text-gray-300">
             {userName.charAt(0).toUpperCase()}
           </span>
         </div>
         <div className="flex-1 min-w-0 text-left">
-          <p className="text-sm font-medium text-white truncate">{userName}</p>
+          <p className="text-sm font-medium text-gray-900 dark:text-white truncate">{userName}</p>
           <p className="text-xs text-gray-500">{userRole === 'MANAGER' ? t('manager') : t('assistant')}</p>
         </div>
         <svg className={`w-4 h-4 text-gray-500 shrink-0 transition-transform ${open ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -138,22 +138,22 @@ function UserMenu({ userName, userRole }: { userName: string; userRole: string }
       </button>
 
       {open && (
-        <div className="absolute bottom-full left-3 right-3 mb-1 bg-gray-800 border border-gray-700 rounded-xl shadow-xl overflow-hidden z-50">
-          <div className="px-4 py-3 border-b border-gray-700">
-            <p className="text-xs font-semibold text-white truncate">{userName}</p>
+        <div className="absolute bottom-full left-3 right-3 mb-1 bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-xl shadow-xl overflow-hidden z-50">
+          <div className="px-4 py-3 border-b border-gray-300 dark:border-gray-700">
+            <p className="text-xs font-semibold text-gray-900 dark:text-white truncate">{userName}</p>
             <p className="text-xs text-gray-500 mt-0.5">{userRole === 'MANAGER' ? t('manager') : t('assistant')}</p>
           </div>
           <Link
             href="/settings"
             onClick={() => setOpen(false)}
-            className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-300 hover:bg-gray-700 hover:text-white transition-colors"
+            className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white transition-colors"
           >
             <Ico name="cog" className="w-4 h-4" />
             {tAuth('preferences')}
           </Link>
           <button
             onClick={() => signOut({ callbackUrl: '/login' })}
-            className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-400 hover:bg-gray-700 hover:text-red-300 transition-colors"
+            className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-400 hover:bg-gray-200 dark:hover:bg-gray-700 hover:text-red-300 transition-colors"
           >
             <Ico name="logout" className="w-4 h-4" />
             {tAuth('logout')}
@@ -180,13 +180,13 @@ function SidebarContent({
   return (
     <div className="flex flex-col h-full">
       {/* Logo */}
-      <div className="px-4 py-5 border-b border-gray-800">
+      <div className="px-4 py-5 border-b border-gray-200 dark:border-gray-800">
         <div className="flex items-center gap-2.5">
           <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center shrink-0">
-            <Ico name="wrench" className="w-4 h-4 text-white" />
+            <Ico name="wrench" className="w-4 h-4 text-gray-900 dark:text-white" />
           </div>
           <div>
-            <p className="text-sm font-bold text-white leading-tight">Talay</p>
+            <p className="text-sm font-bold text-gray-900 dark:text-white leading-tight">Talay</p>
             <p className="text-xs text-gray-500 leading-tight">Workshop</p>
           </div>
         </div>
@@ -237,7 +237,7 @@ export default function AppShell({
   return (
     <div className="flex min-h-screen">
       {/* Desktop sidebar */}
-      <aside className="hidden lg:flex lg:flex-col w-60 bg-gray-900 fixed inset-y-0 left-0 z-30">
+      <aside className="hidden lg:flex lg:flex-col w-60 bg-white dark:bg-gray-900 fixed inset-y-0 left-0 z-30">
         <SidebarContent pathname={pathname} userName={userName} userRole={userRole} />
       </aside>
 
@@ -251,13 +251,13 @@ export default function AppShell({
 
       {/* Mobile sidebar drawer */}
       <aside
-        className={`lg:hidden fixed inset-y-0 left-0 w-60 bg-gray-900 z-50 transform transition-transform duration-200 ${
+        className={`lg:hidden fixed inset-y-0 left-0 w-60 bg-white dark:bg-gray-900 z-50 transform transition-transform duration-200 ${
           open ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
         <button
           onClick={() => setOpen(false)}
-          className="absolute top-3 right-3 text-gray-400 hover:text-white p-1"
+          className="absolute top-3 right-3 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white p-1"
         >
           <Ico name="xmark" />
         </button>
@@ -272,11 +272,11 @@ export default function AppShell({
       {/* Main content */}
       <div className="flex-1 lg:ml-60 flex flex-col min-h-screen">
         {/* Mobile top bar */}
-        <header className="lg:hidden sticky top-0 z-20 bg-gray-950/80 backdrop-blur-xs border-b border-gray-800 px-4 py-3 flex items-center justify-between">
-          <button onClick={() => setOpen(true)} className="text-gray-400 hover:text-white">
+        <header className="lg:hidden sticky top-0 z-20 bg-gray-50/80 dark:bg-gray-950/80 backdrop-blur-xs border-b border-gray-200 dark:border-gray-800 px-4 py-3 flex items-center justify-between">
+          <button onClick={() => setOpen(true)} className="text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white">
             <Ico name="bars" />
           </button>
-          <p className="text-sm font-semibold text-white">Talay Workshop</p>
+          <p className="text-sm font-semibold text-gray-900 dark:text-white">Talay Workshop</p>
           <button
             onClick={() => signOut({ callbackUrl: '/login' })}
             className="text-gray-500 hover:text-red-400 transition-colors"

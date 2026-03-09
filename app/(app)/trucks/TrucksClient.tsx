@@ -22,8 +22,8 @@ function Input(props: React.InputHTMLAttributes<HTMLInputElement>) {
     <input
       {...props}
       className={
-        'w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-white ' +
-        'placeholder-gray-500 focus:outline-hidden focus:ring-2 focus:ring-blue-500 ' +
+        'w-full bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-gray-900 dark:text-white ' +
+        'placeholder-gray-400 dark:placeholder-gray-500 focus:outline-hidden focus:ring-2 focus:ring-blue-500 ' +
         (props.className ?? '')
       }
     />
@@ -31,7 +31,7 @@ function Input(props: React.InputHTMLAttributes<HTMLInputElement>) {
 }
 
 function Label({ children }: { children: React.ReactNode }) {
-  return <label className="block text-sm font-medium text-gray-300 mb-1">{children}</label>
+  return <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">{children}</label>
 }
 
 function ErrorBox({ msg }: { msg: string }) {
@@ -46,10 +46,10 @@ function Modal({ title, onClose, children }: { title: string; onClose: () => voi
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/60" onClick={onClose} />
-      <div className="relative w-full max-w-md bg-gray-900 rounded-2xl shadow-2xl p-6 max-h-[90vh] overflow-y-auto">
+      <div className="relative w-full max-w-md bg-white dark:bg-gray-900 rounded-2xl shadow-2xl p-6 max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between mb-5">
-          <h2 className="text-base font-semibold text-white">{title}</h2>
-          <button onClick={onClose} className="text-gray-500 hover:text-white text-xl leading-none">×</button>
+          <h2 className="text-base font-semibold text-gray-900 dark:text-white">{title}</h2>
+          <button onClick={onClose} className="text-gray-500 hover:text-gray-900 dark:hover:text-white text-xl leading-none">×</button>
         </div>
         {children}
       </div>
@@ -210,7 +210,7 @@ function TruckForm({
 
       <div className="flex gap-3 pt-1">
         <button type="button" onClick={onClose}
-          className="flex-1 py-2.5 rounded-xl border border-gray-600 text-gray-300 hover:bg-gray-800 transition-colors text-sm">
+          className="flex-1 py-2.5 rounded-xl border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-sm">
           {tCommon('cancel')}
         </button>
         <button type="submit" disabled={loading}
@@ -257,8 +257,8 @@ function MileageModal({ truck, onClose, onSaved }: { truck: Truck; onClose: () =
 
   return (
     <form onSubmit={submit} className="space-y-4">
-      <p className="text-sm text-gray-400">
-        {t('updateMileageFor')} <strong className="text-white">{truck.plateNumber}</strong>
+      <p className="text-sm text-gray-500 dark:text-gray-400">
+        {t('updateMileageFor')} <strong className="text-gray-900 dark:text-white">{truck.plateNumber}</strong>
       </p>
       <div>
         <Label>{t('mileageKm')}</Label>
@@ -274,7 +274,7 @@ function MileageModal({ truck, onClose, onSaved }: { truck: Truck; onClose: () =
       {error && <ErrorBox msg={error} />}
       <div className="flex gap-3">
         <button type="button" onClick={onClose}
-          className="flex-1 py-2.5 rounded-xl border border-gray-600 text-gray-300 hover:bg-gray-800 transition-colors text-sm">
+          className="flex-1 py-2.5 rounded-xl border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-sm">
           {tCommon('cancel')}
         </button>
         <button type="submit" disabled={loading}
@@ -320,15 +320,15 @@ function ToggleModal({ truck, onClose, onSaved }: { truck: Truck; onClose: () =>
 
   return (
     <div className="space-y-5">
-      <p className="text-sm text-gray-300">
+      <p className="text-sm text-gray-600 dark:text-gray-300">
         {tCommon('confirm')} {action}{' '}
-        <strong className="text-white">{truck.plateNumber}</strong> — {truck.make} {truck.model}.
+        <strong className="text-gray-900 dark:text-white">{truck.plateNumber}</strong> — {truck.make} {truck.model}.
         {truck.isActive && ` ${t('historyPreserved')}`}
       </p>
       {error && <ErrorBox msg={error} />}
       <div className="flex gap-3">
         <button onClick={onClose}
-          className="flex-1 py-2.5 rounded-xl border border-gray-600 text-gray-300 hover:bg-gray-800 transition-colors text-sm">
+          className="flex-1 py-2.5 rounded-xl border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-sm">
           {tCommon('cancel')}
         </button>
         <button onClick={confirm} disabled={loading}
@@ -349,16 +349,16 @@ function ImportResult({ result, onClose }: { result: { imported: number; skipped
   const tCommon = useTranslations('common')
 
   return (
-    <div className="flex items-start gap-3 px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-sm">
+    <div className="flex items-start gap-3 px-4 py-3 bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-xl text-sm">
       <div className="flex-1">
-        <p className="font-medium text-white">
+        <p className="font-medium text-gray-900 dark:text-white">
           {t('importComplete', { imported: result.imported, skipped: result.skipped })}
         </p>
         {result.errors.length > 0 && (
           <p className="text-red-400 mt-1 text-xs">{result.errors.slice(0, 3).join('; ')}</p>
         )}
       </div>
-      <button onClick={onClose} className="text-gray-500 hover:text-white text-lg leading-none shrink-0" aria-label={tCommon('close')}>×</button>
+      <button onClick={onClose} className="text-gray-500 hover:text-gray-900 dark:hover:text-white text-lg leading-none shrink-0" aria-label={tCommon('close')}>×</button>
     </div>
   )
 }
@@ -461,7 +461,7 @@ export default function TrucksClient({
         {/* Header */}
         <div className="flex flex-wrap items-center justify-between gap-3 mb-5">
           <div>
-            <h1 className="text-2xl font-bold text-white">Камиони</h1>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Камиони</h1>
             <p className="text-sm text-gray-500 mt-0.5">
               {active} активни
               {inactive > 0 ? `, ${inactive} неактивни` : ''}
@@ -476,14 +476,14 @@ export default function TrucksClient({
                 <button
                   onClick={runSyncMileage}
                   disabled={syncing}
-                  className="flex items-center gap-2 px-4 py-2 border border-gray-600 text-gray-300 hover:text-white hover:border-gray-400 text-sm font-medium rounded-xl transition-colors disabled:opacity-50"
+                  className="flex items-center gap-2 px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:border-gray-400 dark:hover:border-gray-400 text-sm font-medium rounded-xl transition-colors disabled:opacity-50"
                 >
                   {syncing ? 'Синхрон...' : t('syncMileage')}
                 </button>
                 <button
                   onClick={runImport}
                   disabled={importing}
-                  className="flex items-center gap-2 px-4 py-2 border border-gray-600 text-gray-300 hover:text-white hover:border-gray-400 text-sm font-medium rounded-xl transition-colors disabled:opacity-50"
+                  className="flex items-center gap-2 px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:border-gray-400 dark:hover:border-gray-400 text-sm font-medium rounded-xl transition-colors disabled:opacity-50"
                 >
                   {importing ? 'Импортиране...' : t('frotcomImport')}
                 </button>
@@ -508,7 +508,7 @@ export default function TrucksClient({
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder={t('searchPlaceholder')}
-            className="w-full max-w-sm bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-hidden focus:ring-2 focus:ring-blue-500"
+            className="w-full max-w-sm bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-sm text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-hidden focus:ring-2 focus:ring-blue-500"
           />
         </div>
 
@@ -534,11 +534,11 @@ export default function TrucksClient({
         )}
 
         {/* Table */}
-        <div className="bg-gray-900 rounded-2xl overflow-hidden">
+        <div className="bg-white dark:bg-gray-900 rounded-2xl overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-gray-800">
+                <tr className="border-b border-gray-200 dark:border-gray-800">
                   <th className="text-left px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Рег. номер</th>
                   <th className="text-left px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider hidden sm:table-cell">Марка / Модел</th>
                   <th className="text-left px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider hidden md:table-cell">Пробег</th>
@@ -546,16 +546,16 @@ export default function TrucksClient({
                   <th className="px-5 py-3" />
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-800">
+              <tbody className="divide-y divide-gray-200 dark:divide-gray-800">
                 {paginated.map((truck) => (
-                  <tr key={truck.id} className={`hover:bg-gray-800/50 transition-colors ${!truck.isActive ? 'opacity-50' : ''}`}>
+                  <tr key={truck.id} className={`hover:bg-gray-100/50 dark:hover:bg-gray-800/50 transition-colors ${!truck.isActive ? 'opacity-50' : ''}`}>
 
                     {/* Plate + badges + active service chip */}
                     <td className="px-5 py-4">
                       <div className="flex items-center gap-2 flex-wrap">
                         <Link
                           href={`/trucks/${truck.id}`}
-                          className="font-mono font-semibold text-white hover:text-blue-400 transition-colors underline-offset-2 hover:underline"
+                          className="font-mono font-semibold text-gray-900 dark:text-white hover:text-blue-400 transition-colors underline-offset-2 hover:underline"
                         >
                           {truck.plateNumber}
                         </Link>
@@ -566,7 +566,7 @@ export default function TrucksClient({
                           <span className="inline-flex items-center px-1.5 py-0 rounded-sm text-xs font-bold bg-orange-600/20 text-orange-400">ADR</span>
                         )}
                         {!truck.isActive && (
-                          <span className="inline-flex items-center px-1.5 py-0 rounded-sm text-xs font-medium bg-gray-700 text-gray-500">Неактивен</span>
+                          <span className="inline-flex items-center px-1.5 py-0 rounded-sm text-xs font-medium bg-gray-200 dark:bg-gray-700 text-gray-500">Неактивен</span>
                         )}
                         {truck.frotcomVehicleId && (
                           <span className="text-xs text-gray-600">Frotcom</span>
@@ -576,7 +576,7 @@ export default function TrucksClient({
                       {truck.activeService && (
                         <Link
                           href={`/services/${truck.activeService.id}`}
-                          className={`mt-1.5 inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-xs font-medium transition-opacity hover:opacity-80 ${STATUS_COLOR[truck.activeService.status] ?? 'bg-gray-700 text-gray-400'}`}
+                          className={`mt-1.5 inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-xs font-medium transition-opacity hover:opacity-80 ${STATUS_COLOR[truck.activeService.status] ?? 'bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400'}`}
                         >
                           {STATUS_LABEL[truck.activeService.status] ?? truck.activeService.status}
                           {truck.activeService.bayNameSnapshot && ` · ${truck.activeService.bayNameSnapshot}`}
@@ -587,13 +587,13 @@ export default function TrucksClient({
 
                     {/* Make / Model */}
                     <td className="px-5 py-4 hidden sm:table-cell">
-                      <p className="text-white">{truck.make} {truck.model}</p>
+                      <p className="text-gray-900 dark:text-white">{truck.make} {truck.model}</p>
                       {truck.year && <p className="text-xs text-gray-500">{truck.year}</p>}
                     </td>
 
                     {/* Mileage + km since last service */}
                     <td className="px-5 py-4 hidden md:table-cell">
-                      <p className={truck.mileageAlert ? 'text-amber-400 font-medium' : 'text-gray-300'}>
+                      <p className={truck.mileageAlert ? 'text-amber-400 font-medium' : 'text-gray-600 dark:text-gray-300'}>
                         {fmtMileage(truck.currentMileage)}
                       </p>
                       {truck.kmSinceService != null && (
@@ -604,7 +604,7 @@ export default function TrucksClient({
                     </td>
 
                     {/* Last service date */}
-                    <td className="px-5 py-4 text-gray-400 hidden lg:table-cell">
+                    <td className="px-5 py-4 text-gray-500 dark:text-gray-400 hidden lg:table-cell">
                       {fmtDate(truck.lastServiceDate)}
                     </td>
 
@@ -613,14 +613,14 @@ export default function TrucksClient({
                       <div className="flex items-center justify-end gap-1 flex-wrap">
                         <Link
                           href={`/trucks/${truck.id}`}
-                          className="px-2.5 py-1.5 text-xs rounded-lg border border-gray-700 text-gray-400 hover:text-white hover:border-gray-500 transition-colors"
+                          className="px-2.5 py-1.5 text-xs rounded-lg border border-gray-300 dark:border-gray-700 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:border-gray-400 dark:hover:border-gray-500 transition-colors"
                         >
                           Профил
                         </Link>
                         {canEdit && (
                           <button
                             onClick={() => setModal({ type: 'edit', truck })}
-                            className="px-2.5 py-1.5 text-xs rounded-lg border border-gray-700 text-gray-400 hover:text-white hover:border-gray-500 transition-colors"
+                            className="px-2.5 py-1.5 text-xs rounded-lg border border-gray-300 dark:border-gray-700 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:border-gray-400 dark:hover:border-gray-500 transition-colors"
                           >
                             {tCommon('edit')}
                           </button>
@@ -628,7 +628,7 @@ export default function TrucksClient({
                         {canEdit && !truck.frotcomVehicleId && (
                           <button
                             onClick={() => setModal({ type: 'mileage', truck })}
-                            className="px-2.5 py-1.5 text-xs rounded-lg border border-gray-700 text-gray-400 hover:text-white hover:border-gray-500 transition-colors"
+                            className="px-2.5 py-1.5 text-xs rounded-lg border border-gray-300 dark:border-gray-700 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:border-gray-400 dark:hover:border-gray-500 transition-colors"
                           >
                             Пробег
                           </button>

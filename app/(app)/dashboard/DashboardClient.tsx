@@ -103,7 +103,7 @@ function BayCard({
 }) {
   if (!bay.service) {
     return (
-      <div className="bg-gray-900 border border-gray-800 rounded-xl p-4 min-h-[128px] flex flex-col">
+      <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-4 min-h-[128px] flex flex-col">
         <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-auto">{bay.name}</p>
         <p className="text-sm text-gray-600 mt-3">{freeLabel}</p>
       </div>
@@ -116,13 +116,13 @@ function BayCard({
   return (
     <Link
       href={`/services/${service.id}`}
-      className={`block bg-gray-900 border ${border} rounded-xl p-4 min-h-[128px] flex flex-col hover:brightness-110 transition-all`}
+      className={`block bg-white dark:bg-gray-900 border ${border} rounded-xl p-4 min-h-[128px] flex flex-col hover:brightness-110 transition-all`}
     >
       <div className="flex items-start justify-between mb-2">
         <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">{bay.name}</p>
         <StatusBadge status={service.status} label={statusLabel} />
       </div>
-      <p className="font-mono font-bold text-white text-lg leading-tight">{service.truckPlateSnapshot}</p>
+      <p className="font-mono font-bold text-gray-900 dark:text-white text-lg leading-tight">{service.truckPlateSnapshot}</p>
       <p className="text-xs text-gray-500 mt-0.5">{service.truckMake} {service.truckModel}</p>
       <p className="text-xs text-gray-600 mt-auto pt-2">{dayLabel}</p>
     </Link>
@@ -172,7 +172,7 @@ export default function DashboardClient({
       {/* Header */}
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-white">{t('title')}</h1>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{t('title')}</h1>
           <p className="text-sm text-gray-500 mt-0.5">
             {t('baysOccupied', { occupied: occupiedCount, total: bays.length })}
           </p>
@@ -191,7 +191,7 @@ export default function DashboardClient({
 
       {/* Bay grid */}
       <section>
-        <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">{t('bays')}</h2>
+        <h2 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3">{t('bays')}</h2>
         {bays.length === 0 ? (
           <p className="text-sm text-gray-500">{t('noBaysConfigured')}</p>
         ) : (
@@ -215,7 +215,7 @@ export default function DashboardClient({
       {/* Unbayed active services (active but no bay assigned yet) */}
       {unbayedServices.length > 0 && (
         <section>
-          <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">
+          <h2 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3">
             {t('activeNoBay')}
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
@@ -223,10 +223,10 @@ export default function DashboardClient({
               <Link
                 key={s.id}
                 href={`/services/${s.id}`}
-                className="block bg-gray-900 border border-gray-700/50 rounded-xl p-4 hover:border-gray-600 transition-colors"
+                className="block bg-white dark:bg-gray-900 border border-gray-300/50 dark:border-gray-700/50 rounded-xl p-4 hover:border-gray-300 dark:hover:border-gray-600 transition-colors"
               >
                 <div className="flex items-start justify-between mb-1">
-                  <p className="font-mono font-semibold text-white">{s.truckPlateSnapshot}</p>
+                  <p className="font-mono font-semibold text-gray-900 dark:text-white">{s.truckPlateSnapshot}</p>
                   <StatusBadge status={s.status} label={tService(`status.${s.status}`) ?? s.status} />
                 </div>
                 <p className="text-xs text-gray-500">{s.truckMake} {s.truckModel}</p>
@@ -242,25 +242,25 @@ export default function DashboardClient({
 
         {/* Upcoming scheduled */}
         <section>
-          <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">
+          <h2 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3">
             {t('upcomingScheduled')}
           </h2>
-          <div className="bg-gray-900 rounded-2xl overflow-hidden">
+          <div className="bg-white dark:bg-gray-900 rounded-2xl overflow-hidden">
             {upcoming.length === 0 ? (
               <p className="px-5 py-10 text-sm text-gray-500 text-center">{t('noUpcomingScheduled')}</p>
             ) : (
-              <ul className="divide-y divide-gray-800">
+              <ul className="divide-y divide-gray-200 dark:divide-gray-800">
                 {upcoming.map((s) => (
                   <li key={s.id}>
                     <Link
                       href={`/services/${s.id}`}
-                      className="flex items-center justify-between px-5 py-3.5 hover:bg-gray-800/50 transition-colors"
+                      className="flex items-center justify-between px-5 py-3.5 hover:bg-gray-100/50 dark:hover:bg-gray-800/50 transition-colors"
                     >
                       <div>
-                        <p className="font-mono font-semibold text-white text-sm">{s.truckPlateSnapshot}</p>
+                        <p className="font-mono font-semibold text-gray-900 dark:text-white text-sm">{s.truckPlateSnapshot}</p>
                         <p className="text-xs text-gray-500">{s.truckMake} {s.truckModel}</p>
                       </div>
-                      <p className="text-sm text-gray-300 tabular-nums">{fmtDate(s.scheduledDate)}</p>
+                      <p className="text-sm text-gray-600 dark:text-gray-300 tabular-nums">{fmtDate(s.scheduledDate)}</p>
                     </Link>
                   </li>
                 ))}
@@ -271,14 +271,14 @@ export default function DashboardClient({
 
         {/* Mileage alerts */}
         <section>
-          <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">
+          <h2 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3">
             {t('mileageAlerts')}
           </h2>
-          <div className="bg-gray-900 rounded-2xl overflow-hidden">
+          <div className="bg-white dark:bg-gray-900 rounded-2xl overflow-hidden">
             {mileageAlerts.length === 0 ? (
               <p className="px-5 py-10 text-sm text-gray-500 text-center">{t('noMileageAlerts')}</p>
             ) : (
-              <ul className="divide-y divide-gray-800">
+              <ul className="divide-y divide-gray-200 dark:divide-gray-800">
                 {mileageAlerts.map((truck) => {
                   const kmSince = truck.lastServiceMileage !== null
                     ? truck.currentMileage - truck.lastServiceMileage
@@ -288,10 +288,10 @@ export default function DashboardClient({
                     <li key={truck.id}>
                       <Link
                         href={`/trucks/${truck.id}`}
-                        className="flex items-center justify-between px-5 py-3.5 hover:bg-gray-800/50 transition-colors"
+                        className="flex items-center justify-between px-5 py-3.5 hover:bg-gray-100/50 dark:hover:bg-gray-800/50 transition-colors"
                       >
                         <div>
-                          <p className="font-mono font-semibold text-white text-sm">{truck.plateNumber}</p>
+                          <p className="font-mono font-semibold text-gray-900 dark:text-white text-sm">{truck.plateNumber}</p>
                           <p className="text-xs text-gray-500">{truck.make} {truck.model}</p>
                         </div>
                         <div className="text-right">

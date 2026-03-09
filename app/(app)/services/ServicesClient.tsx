@@ -94,8 +94,8 @@ function Input(props: React.InputHTMLAttributes<HTMLInputElement>) {
     <input
       {...props}
       className={
-        'w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-white ' +
-        'placeholder-gray-500 focus:outline-hidden focus:ring-2 focus:ring-blue-500 ' +
+        'w-full bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-gray-900 dark:text-white ' +
+        'placeholder-gray-400 dark:placeholder-gray-500 focus:outline-hidden focus:ring-2 focus:ring-blue-500 ' +
         (props.className ?? '')
       }
     />
@@ -107,7 +107,7 @@ function Select(props: React.SelectHTMLAttributes<HTMLSelectElement>) {
     <select
       {...props}
       className={
-        'bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-white ' +
+        'bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-gray-900 dark:text-white ' +
         'focus:outline-hidden focus:ring-2 focus:ring-blue-500 ' +
         (props.className ?? '')
       }
@@ -116,7 +116,7 @@ function Select(props: React.SelectHTMLAttributes<HTMLSelectElement>) {
 }
 
 function Label({ children }: { children: React.ReactNode }) {
-  return <label className="block text-sm font-medium text-gray-300 mb-1">{children}</label>
+  return <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">{children}</label>
 }
 
 function ErrorBox({ msg }: { msg: string }) {
@@ -131,10 +131,10 @@ function Modal({ title, onClose, children }: { title: string; onClose: () => voi
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/60" onClick={onClose} />
-      <div className="relative w-full max-w-md bg-gray-900 rounded-2xl shadow-2xl p-6">
+      <div className="relative w-full max-w-md bg-white dark:bg-gray-900 rounded-2xl shadow-2xl p-6">
         <div className="flex items-center justify-between mb-5">
-          <h2 className="text-base font-semibold text-white">{title}</h2>
-          <button onClick={onClose} className="text-gray-500 hover:text-white text-xl leading-none">×</button>
+          <h2 className="text-base font-semibold text-gray-900 dark:text-white">{title}</h2>
+          <button onClick={onClose} className="text-gray-500 hover:text-gray-900 dark:hover:text-white text-xl leading-none">×</button>
         </div>
         {children}
       </div>
@@ -221,7 +221,7 @@ function CreateModal({
       {error && <ErrorBox msg={error} />}
       <div className="flex gap-3 pt-1">
         <button type="button" onClick={onClose}
-          className="flex-1 py-2.5 rounded-xl border border-gray-600 text-gray-300 hover:bg-gray-800 transition-colors text-sm">
+          className="flex-1 py-2.5 rounded-xl border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-sm">
           {tCommon('cancel')}
         </button>
         <button type="submit" disabled={loading}
@@ -277,9 +277,9 @@ function RescheduleModal({
 
   return (
     <form onSubmit={submit} className="space-y-4">
-      <p className="text-sm text-gray-400">
+      <p className="text-sm text-gray-500 dark:text-gray-400">
         {t('reschedulingOf')}{' '}
-        <strong className="text-white">{service.truckPlateSnapshot}</strong>
+        <strong className="text-gray-900 dark:text-white">{service.truckPlateSnapshot}</strong>
       </p>
       <div>
         <Label>{t('newDate')} *</Label>
@@ -288,7 +288,7 @@ function RescheduleModal({
       {error && <ErrorBox msg={error} />}
       <div className="flex gap-3 pt-1">
         <button type="button" onClick={onClose}
-          className="flex-1 py-2.5 rounded-xl border border-gray-600 text-gray-300 hover:bg-gray-800 transition-colors text-sm">
+          className="flex-1 py-2.5 rounded-xl border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-sm">
           {tCommon('cancel')}
         </button>
         <button type="submit" disabled={loading}
@@ -333,7 +333,7 @@ function ServiceCard({
   }
 
   return (
-    <div className="flex bg-gray-900 rounded-xl border border-gray-800 overflow-hidden hover:border-gray-700 transition-colors group">
+    <div className="flex bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 overflow-hidden hover:border-gray-300 dark:hover:border-gray-700 transition-colors group">
       {/* Status stripe */}
       <div className={`w-1 shrink-0 ${STATUS_STRIPE[s.status]}`} />
 
@@ -343,7 +343,7 @@ function ServiceCard({
         {/* Truck identity */}
         <div className="min-w-37.5 flex-2">
           <div className="flex items-center gap-2 flex-wrap">
-            <span className="font-mono font-bold text-white text-base leading-tight">
+            <span className="font-mono font-bold text-gray-900 dark:text-white text-base leading-tight">
               {s.truckPlateSnapshot}
             </span>
             {s.truck.isAdr && (
@@ -363,7 +363,7 @@ function ServiceCard({
           <p className="text-[10px] text-gray-600 uppercase tracking-wider font-medium">
             {t('scheduledDate')}
           </p>
-          <p className="text-sm text-white mt-0.5">{fmtDate(s.scheduledDate)}</p>
+          <p className="text-sm text-gray-900 dark:text-white mt-0.5">{fmtDate(s.scheduledDate)}</p>
           {daysLabel && (
             <p className={`text-xs mt-0.5 ${isTerminal ? 'text-gray-600' : 'text-amber-400'}`}>
               {daysLabel}
@@ -387,7 +387,7 @@ function ServiceCard({
             <p className="text-xs text-gray-500 mb-1.5">
               {doneWc}/{totalWc} {tCommon('workCards')}
             </p>
-            <div className="h-1.5 bg-gray-800 rounded-full overflow-hidden">
+            <div className="h-1.5 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
               <div
                 className={`h-full rounded-full transition-all ${doneWc === totalWc ? 'bg-green-500' : 'bg-blue-500'}`}
                 style={{ width: `${progress * 100}%` }}
@@ -398,13 +398,13 @@ function ServiceCard({
       </div>
 
       {/* Actions */}
-      <div className="flex items-center gap-2 px-4 py-4 border-l border-gray-800 shrink-0">
+      <div className="flex items-center gap-2 px-4 py-4 border-l border-gray-200 dark:border-gray-800 shrink-0">
         {/* Reschedule icon button — SCHEDULED only */}
         {canReschedule && s.status === 'SCHEDULED' && (
           <button
             onClick={() => onReschedule(s)}
             title={t('reschedule')}
-            className="p-2 rounded-lg border border-gray-700 text-gray-400 hover:text-white hover:border-gray-500 transition-colors"
+            className="p-2 rounded-lg border border-gray-300 dark:border-gray-700 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:border-gray-400 dark:hover:border-gray-500 transition-colors"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
@@ -419,7 +419,7 @@ function ServiceCard({
             href={`/services/${s.id}/intake-protocol`}
             target="_blank"
             title={t('intakeProtocol')}
-            className="p-2 rounded-lg border border-gray-700 text-gray-400 hover:text-white hover:border-gray-500 transition-colors"
+            className="p-2 rounded-lg border border-gray-300 dark:border-gray-700 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:border-gray-400 dark:hover:border-gray-500 transition-colors"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
@@ -502,7 +502,7 @@ export default function ServicesClient({
         {/* Header */}
         <div className="flex flex-wrap items-center justify-between gap-3 mb-5">
           <div>
-            <h1 className="text-2xl font-bold text-white">{t('list')}</h1>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{t('list')}</h1>
             <p className="text-sm text-gray-500 mt-0.5">{t('resultsCount', { count: total })}</p>
           </div>
           {canCreate && (
@@ -530,7 +530,7 @@ export default function ServicesClient({
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder={t('searchPlaceholder')}
-            className="flex-1 min-w-50 bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-hidden focus:ring-2 focus:ring-blue-500"
+            className="flex-1 min-w-50 bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-sm text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-hidden focus:ring-2 focus:ring-blue-500"
           />
         </div>
 
@@ -547,7 +547,7 @@ export default function ServicesClient({
             />
           ))}
           {services.length === 0 && (
-            <div className="bg-gray-900 rounded-xl border border-gray-800 px-5 py-12 text-center text-gray-500">
+            <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 px-5 py-12 text-center text-gray-500">
               {t('noResults')}
             </div>
           )}

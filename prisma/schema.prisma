@@ -63,7 +63,7 @@ model User {
   permissions     String   @default("[]")
   pageSize        Int      @default(10)
   preferredLocale String   @default("bg")
-  darkMode        Boolean  @default(true)
+  darkMode        Boolean  @default(false)
   recoveryCode    String?
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt

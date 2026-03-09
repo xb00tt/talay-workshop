@@ -50,6 +50,19 @@ export const authOptions: NextAuthOptions = {
         token.preferredLocale = (user as any).preferredLocale
         token.darkMode = (user as any).darkMode
         token.pageSize = (user as any).pageSize
+      } else if (token.id) {
+        // Re-read mutable preferences from DB on every refresh so changes
+        // made in Settings take effect on the next navigation, not next login.
+        const fresh = await prisma.user.findUnique({
+          where:  { id: Number(token.id) },
+          select: { preferredLocale: true, darkMode: true, pageSize: true, permissions: true },
+        })
+        if (fresh) {
+          token.preferredLocale = fresh.preferredLocale
+          token.darkMode        = fresh.darkMode
+          token.pageSize        = fresh.pageSize
+          token.permissions     = JSON.parse(fresh.permissions) as string[]
+        }
       }
       return token
     },

@@ -101,8 +101,8 @@ function Input(props: React.InputHTMLAttributes<HTMLInputElement>) {
     <input
       {...props}
       className={
-        'w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-white ' +
-        'placeholder-gray-500 focus:outline-hidden focus:ring-2 focus:ring-blue-500 ' +
+        'w-full bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-gray-900 dark:text-white ' +
+        'placeholder-gray-400 dark:placeholder-gray-500 focus:outline-hidden focus:ring-2 focus:ring-blue-500 ' +
         (props.className ?? '')
       }
     />
@@ -113,8 +113,8 @@ function Textarea(props: React.TextareaHTMLAttributes<HTMLTextAreaElement>) {
     <textarea
       {...props}
       className={
-        'w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-white ' +
-        'placeholder-gray-500 focus:outline-hidden focus:ring-2 focus:ring-blue-500 resize-none ' +
+        'w-full bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-gray-900 dark:text-white ' +
+        'placeholder-gray-400 dark:placeholder-gray-500 focus:outline-hidden focus:ring-2 focus:ring-blue-500 resize-none ' +
         (props.className ?? '')
       }
     />
@@ -125,7 +125,7 @@ function Select(props: React.SelectHTMLAttributes<HTMLSelectElement>) {
     <select
       {...props}
       className={
-        'bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-white ' +
+        'bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-gray-900 dark:text-white ' +
         'focus:outline-hidden focus:ring-2 focus:ring-blue-500 ' +
         (props.className ?? '')
       }
@@ -133,7 +133,7 @@ function Select(props: React.SelectHTMLAttributes<HTMLSelectElement>) {
   )
 }
 function Label({ children }: { children: React.ReactNode }) {
-  return <label className="block text-sm font-medium text-gray-300 mb-1">{children}</label>
+  return <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">{children}</label>
 }
 function ErrorBox({ msg }: { msg: string }) {
   return (
@@ -146,10 +146,10 @@ function Modal({ title, onClose, children }: { title: string; onClose: () => voi
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/60" onClick={onClose} />
-      <div className="relative w-full max-w-md bg-gray-900 rounded-2xl shadow-2xl p-6 max-h-[90vh] overflow-y-auto">
+      <div className="relative w-full max-w-md bg-white dark:bg-gray-900 rounded-2xl shadow-2xl p-6 max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between mb-5">
-          <h2 className="text-base font-semibold text-white">{title}</h2>
-          <button onClick={onClose} className="text-gray-500 hover:text-white text-xl leading-none">×</button>
+          <h2 className="text-base font-semibold text-gray-900 dark:text-white">{title}</h2>
+          <button onClick={onClose} className="text-gray-500 hover:text-gray-900 dark:hover:text-white text-xl leading-none">×</button>
         </div>
         {children}
       </div>
@@ -161,7 +161,7 @@ function SmallBtn({ onClick, children, variant = 'default', disabled }: {
   variant?: 'default' | 'danger' | 'success' | 'primary'; disabled?: boolean
 }) {
   const colors = {
-    default: 'border-gray-700 text-gray-400 hover:text-white hover:border-gray-500',
+    default: 'border-gray-300 dark:border-gray-700 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:border-gray-400 dark:hover:border-gray-500',
     danger:  'border-red-800 text-red-400 hover:text-red-300 hover:border-red-600',
     success: 'border-green-800 text-green-400 hover:text-green-300 hover:border-green-600',
     primary: 'border-blue-700 text-blue-400 hover:text-blue-300 hover:border-blue-500',
@@ -243,7 +243,7 @@ function IntakeModal({
       {error && <ErrorBox msg={error} />}
       <div className="flex gap-3 pt-1">
         <button type="button" onClick={onClose}
-          className="flex-1 py-2.5 rounded-xl border border-gray-600 text-gray-300 hover:bg-gray-800 transition-colors text-sm">
+          className="flex-1 py-2.5 rounded-xl border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-sm">
           {tCommon('cancel')}
         </button>
         <button type="submit" disabled={loading}
@@ -287,7 +287,7 @@ function CancelServiceModal({
 
   return (
     <form onSubmit={submit} className="space-y-4">
-      <p className="text-sm text-gray-400">{tService('cancelModal.info')}</p>
+      <p className="text-sm text-gray-500 dark:text-gray-400">{tService('cancelModal.info')}</p>
       <div>
         <Label>{tService('cancellationReason')} *</Label>
         <Textarea rows={3} value={reason} onChange={(e) => setReason(e.target.value)} placeholder={tService('cancelModal.reasonPlaceholder')} />
@@ -295,7 +295,7 @@ function CancelServiceModal({
       {error && <ErrorBox msg={error} />}
       <div className="flex gap-3 pt-1">
         <button type="button" onClick={onClose}
-          className="flex-1 py-2.5 rounded-xl border border-gray-600 text-gray-300 hover:bg-gray-800 transition-colors text-sm">
+          className="flex-1 py-2.5 rounded-xl border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-sm">
           {tCommon('back')}
         </button>
         <button type="submit" disabled={loading}
@@ -346,7 +346,7 @@ function RescheduleModal({
       {error && <ErrorBox msg={error} />}
       <div className="flex gap-3 pt-1">
         <button type="button" onClick={onClose}
-          className="flex-1 py-2.5 rounded-xl border border-gray-600 text-gray-300 hover:bg-gray-800 transition-colors text-sm">
+          className="flex-1 py-2.5 rounded-xl border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-sm">
           {tCommon('cancel')}
         </button>
         <button type="submit" disabled={loading}
@@ -417,7 +417,7 @@ function AddSectionModal({
       {error && <ErrorBox msg={error} />}
       <div className="flex gap-3 pt-1">
         <button type="button" onClick={onClose}
-          className="flex-1 py-2.5 rounded-xl border border-gray-600 text-gray-300 hover:bg-gray-800 transition-colors text-sm">
+          className="flex-1 py-2.5 rounded-xl border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-sm">
           {tCommon('cancel')}
         </button>
         <button type="submit" disabled={loading}
@@ -492,7 +492,7 @@ function WorkCardModal({
       {error && <ErrorBox msg={error} />}
       <div className="flex gap-3 pt-1">
         <button type="button" onClick={onClose}
-          className="flex-1 py-2.5 rounded-xl border border-gray-600 text-gray-300 hover:bg-gray-800 transition-colors text-sm">
+          className="flex-1 py-2.5 rounded-xl border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-sm">
           {tCommon('cancel')}
         </button>
         <button type="submit" disabled={loading}
@@ -543,7 +543,7 @@ function AddFeedbackModal({
       {error && <ErrorBox msg={error} />}
       <div className="flex gap-3 pt-1">
         <button type="button" onClick={onClose}
-          className="flex-1 py-2.5 rounded-xl border border-gray-600 text-gray-300 hover:bg-gray-800 transition-colors text-sm">
+          className="flex-1 py-2.5 rounded-xl border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-sm">
           {tCommon('cancel')}
         </button>
         <button type="submit" disabled={loading}
@@ -599,14 +599,14 @@ function ChecklistItemRow({
   }
 
   return (
-    <div className="flex items-start gap-3 py-2.5 border-b border-gray-800 last:border-0">
+    <div className="flex items-start gap-3 py-2.5 border-b border-gray-200 dark:border-gray-800 last:border-0">
       <button
         onClick={toggle}
         disabled={disabled || saving}
         className={`mt-0.5 w-4 h-4 rounded border-2 flex items-center justify-center shrink-0 transition-colors ${
           item.isCompleted
             ? 'bg-green-500 border-green-500'
-            : 'border-gray-600 hover:border-gray-400'
+            : 'border-gray-300 dark:border-gray-600 hover:border-gray-400'
         } disabled:opacity-50`}
       >
         {item.isCompleted && (
@@ -616,7 +616,7 @@ function ChecklistItemRow({
         )}
       </button>
       <div className="flex-1 min-w-0">
-        <p className={`text-sm ${item.isCompleted ? 'line-through text-gray-500' : 'text-white'}`}>
+        <p className={`text-sm ${item.isCompleted ? 'line-through text-gray-500' : 'text-gray-900 dark:text-white'}`}>
           {item.description}
         </p>
         {item.isCompleted && item.completedByName && (
@@ -658,10 +658,10 @@ function WorkCardRow({
   }
 
   return (
-    <div className="py-3 border-b border-gray-800 last:border-0">
+    <div className="py-3 border-b border-gray-200 dark:border-gray-800 last:border-0">
       <div className="flex items-start justify-between gap-3">
         <div className="flex-1 min-w-0">
-          <p className="text-sm text-white">{wc.description}</p>
+          <p className="text-sm text-gray-900 dark:text-white">{wc.description}</p>
           {wc.mechanicName && (
             <p className="text-xs text-gray-500 mt-0.5">{wc.mechanicName}</p>
           )}
@@ -681,7 +681,7 @@ function WorkCardRow({
           <SmallBtn onClick={onEdit}>{tCommon('edit')}</SmallBtn>
           <Link
             href={`/services/${serviceId}/work-cards/${wc.id}`}
-            className="px-2.5 py-1 text-xs rounded-lg border border-gray-700 text-gray-400 hover:text-white hover:border-gray-500 transition-colors"
+            className="px-2.5 py-1 text-xs rounded-lg border border-gray-300 dark:border-gray-700 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:border-gray-400 dark:hover:border-gray-500 transition-colors"
           >
             {tWorkCard('details')}
           </Link>
@@ -802,8 +802,8 @@ function EquipmentCheckPanel({
                 }>
                   {item.status === 'PRESENT' ? '✓' : item.status === 'MISSING' ? '✗' : '↻'}
                 </span>
-                <span className="text-gray-300">{item.itemName}</span>
-                {item.explanation && <span className="text-gray-600">— {item.explanation}</span>}
+                <span className="text-gray-600 dark:text-gray-300">{item.itemName}</span>
+                {item.explanation && <span className="text-gray-500 dark:text-gray-600">— {item.explanation}</span>}
               </li>
             ))}
           </ul>
@@ -815,7 +815,7 @@ function EquipmentCheckPanel({
   if (isTerminal) {
     const saved = existingItems.filter((i) => i.checkType === phase)
     return saved.length === 0 ? (
-      <p className="py-3 text-sm text-gray-600">{tEquipment('notChecked')}</p>
+      <p className="py-3 text-sm text-gray-500 dark:text-gray-600">{tEquipment('notChecked')}</p>
     ) : (
       <ul className="py-3 space-y-1">
         {saved.map((item) => (
@@ -826,8 +826,8 @@ function EquipmentCheckPanel({
             }>
               {item.status === 'PRESENT' ? '✓' : item.status === 'MISSING' ? '✗' : '↻'}
             </span>
-            <span className="text-gray-300">{item.itemName}</span>
-            {item.explanation && <span className="text-gray-600">— {item.explanation}</span>}
+            <span className="text-gray-600 dark:text-gray-300">{item.itemName}</span>
+            {item.explanation && <span className="text-gray-500 dark:text-gray-600">— {item.explanation}</span>}
           </li>
         ))}
       </ul>
@@ -839,15 +839,15 @@ function EquipmentCheckPanel({
       <p className="text-xs text-gray-500 font-semibold uppercase tracking-wider">{phaseLabel}</p>
 
       {itemDefs.length === 0 ? (
-        <p className="text-sm text-gray-600">{tEquipment('noItemsDefined')}</p>
+        <p className="text-sm text-gray-500 dark:text-gray-600">{tEquipment('noItemsDefined')}</p>
       ) : (
         <div className="space-y-2">
           {itemDefs.map((def) => {
             const row = rows[def.name] ?? { status: 'PRESENT' as EqStatus, explanation: '' }
             return (
-              <div key={def.id} className="rounded-lg bg-gray-800/50 px-3 py-2">
+              <div key={def.id} className="rounded-lg bg-gray-100/50 dark:bg-gray-800/50 px-3 py-2">
                 <div className="flex flex-wrap items-center gap-3">
-                  <span className="flex-1 text-sm text-gray-200 min-w-0">{def.name}</span>
+                  <span className="flex-1 text-sm text-gray-800 dark:text-gray-200 min-w-0">{def.name}</span>
                   <div className="flex gap-2 text-xs">
                     {(phase === 'INTAKE' ? ['PRESENT', 'MISSING'] as const : ['PRESENT', 'MISSING', 'RESTOCKED'] as const).map((s) => (
                       <label key={s} className="flex items-center gap-1 cursor-pointer">
@@ -872,7 +872,7 @@ function EquipmentCheckPanel({
                     value={row.explanation}
                     onChange={(e) => setRow(def.name, { explanation: e.target.value })}
                     placeholder={tEquipment('notePlaceholder')}
-                    className="mt-1.5 w-full bg-gray-700 border border-gray-600 rounded-sm px-2 py-1 text-xs text-white placeholder-gray-500 focus:outline-hidden focus:ring-1 focus:ring-blue-500"
+                    className="mt-1.5 w-full bg-gray-200 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-sm px-2 py-1 text-xs text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-hidden focus:ring-1 focus:ring-blue-500"
                   />
                 )}
               </div>
@@ -894,7 +894,7 @@ function EquipmentCheckPanel({
         {!showSkip && (
           <button
             onClick={() => setShowSkip(true)}
-            className="px-3 py-1.5 text-sm text-gray-500 hover:text-gray-300 transition-colors"
+            className="px-3 py-1.5 text-sm text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
           >
             {tEquipment('skip')}
           </button>
@@ -907,11 +907,11 @@ function EquipmentCheckPanel({
             value={skipInput}
             onChange={(e) => setSkipInput(e.target.value)}
             placeholder={tEquipment('skipNote')}
-            className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-1.5 text-sm text-white placeholder-gray-500 focus:outline-hidden focus:ring-2 focus:ring-blue-500"
+            className="w-full bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-1.5 text-sm text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-hidden focus:ring-2 focus:ring-blue-500"
           />
           <div className="flex gap-2">
             <button onClick={() => setShowSkip(false)}
-              className="px-3 py-1.5 text-xs text-gray-500 hover:text-gray-300 transition-colors">
+              className="px-3 py-1.5 text-xs text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors">
               {tCommon('cancel')}
             </button>
             <button
@@ -973,12 +973,12 @@ function SectionCard({
     sec.type !== 'CHECKLIST' && sec.type !== 'EQUIPMENT_CHECK'
 
   return (
-    <div className="bg-gray-900 rounded-xl overflow-hidden">
+    <div className="bg-white dark:bg-gray-900 rounded-xl overflow-hidden">
       {/* Section header */}
-      <div className="flex items-center justify-between px-4 py-3 border-b border-gray-800">
+      <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200 dark:border-gray-800">
         <div className="flex items-center gap-2">
-          <h3 className="text-sm font-semibold text-white">{sec.title}</h3>
-          <span className="text-xs px-1.5 py-0.5 rounded-sm bg-gray-800 text-gray-500">
+          <h3 className="text-sm font-semibold text-gray-900 dark:text-white">{sec.title}</h3>
+          <span className="text-xs px-1.5 py-0.5 rounded-sm bg-gray-100 dark:bg-gray-800 text-gray-500">
             {tSection(`type.${sec.type}`)}
           </span>
           {sec.type === 'CHECKLIST' && (
@@ -1002,7 +1002,7 @@ function SectionCard({
       <div className="px-4">
         {sec.type === 'CHECKLIST' && (
           sec.checklistItems.length === 0 ? (
-            <p className="py-4 text-sm text-gray-600">{tChecklist('noItems')}</p>
+            <p className="py-4 text-sm text-gray-500 dark:text-gray-600">{tChecklist('noItems')}</p>
           ) : (
             sec.checklistItems.map((item) => (
               <ChecklistItemRow
@@ -1023,7 +1023,7 @@ function SectionCard({
           const showIntake = ['INTAKE', 'IN_PROGRESS', 'QUALITY_CHECK', 'READY', 'COMPLETED'].includes(serviceStatus)
           const showExit   = ['QUALITY_CHECK', 'READY', 'COMPLETED'].includes(serviceStatus)
           return (
-            <div className="divide-y divide-gray-800">
+            <div className="divide-y divide-gray-200 dark:divide-gray-800">
               {showIntake && (
                 <div className="px-0 py-1">
                   <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">{tEquipment('intakeCheck')}</p>
@@ -1051,7 +1051,7 @@ function SectionCard({
                 </div>
               )}
               {!showIntake && (
-                <p className="py-4 text-sm text-gray-600">{tEquipment('checkAtIntake')}</p>
+                <p className="py-4 text-sm text-gray-500 dark:text-gray-600">{tEquipment('checkAtIntake')}</p>
               )}
             </div>
           )
@@ -1059,7 +1059,7 @@ function SectionCard({
 
         {(sec.type === 'DRIVER_FEEDBACK' || sec.type === 'MID_SERVICE' || sec.type === 'CUSTOM') && (
           sec.workCards.length === 0 ? (
-            <p className="py-4 text-sm text-gray-600">{tSection('noWorkCards')}</p>
+            <p className="py-4 text-sm text-gray-500 dark:text-gray-600">{tSection('noWorkCards')}</p>
           ) : (
             sec.workCards.map((wc) => (
               <WorkCardRow
@@ -1081,7 +1081,7 @@ function SectionCard({
 
       {/* Footer */}
       {showAddWorkCard && (
-        <div className="px-4 py-3 border-t border-gray-800">
+        <div className="px-4 py-3 border-t border-gray-200 dark:border-gray-800">
           <button
             onClick={() => setShowAddWC(true)}
             className="text-sm text-blue-400 hover:text-blue-300 transition-colors"
@@ -1160,20 +1160,20 @@ function CollapsiblePanel({
 }) {
   const [open, setOpen] = useState(defaultOpen)
   return (
-    <div className="bg-gray-900 rounded-xl border border-gray-800 overflow-hidden">
+    <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 overflow-hidden">
       <div
         role="button"
         tabIndex={0}
         onClick={() => setOpen((o) => !o)}
         onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setOpen((o) => !o) } }}
-        className="w-full flex items-center justify-between px-5 py-4 hover:bg-gray-800/50 transition-colors cursor-pointer"
+        className="w-full flex items-center justify-between px-5 py-4 hover:bg-gray-100/50 dark:hover:bg-gray-800/50 transition-colors cursor-pointer"
       >
         <div className="flex items-center gap-3 min-w-0">
           <div className={`w-8 h-8 ${PANEL_ICON_BG[kind] ?? 'bg-gray-700/60'} rounded-lg flex items-center justify-center shrink-0`}>
             <PanelIcon kind={kind} />
           </div>
           <div className="min-w-0">
-            <div className="text-sm font-semibold text-white flex items-center gap-2 flex-wrap">
+            <div className="text-sm font-semibold text-gray-900 dark:text-white flex items-center gap-2 flex-wrap">
               {title}
               {badge !== undefined && (
                 <span className="text-xs text-gray-500 font-normal">{badge}</span>
@@ -1181,7 +1181,7 @@ function CollapsiblePanel({
             </div>
             {progress && (
               <div className="flex items-center gap-2 mt-0.5">
-                <div className="w-24 h-1.5 bg-gray-700 rounded-full overflow-hidden">
+                <div className="w-24 h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
                   <div
                     className="h-full bg-blue-500 rounded-full transition-all"
                     style={{ width: progress.total > 0 ? `${(progress.done / progress.total) * 100}%` : '0%' }}
@@ -1203,7 +1203,7 @@ function CollapsiblePanel({
           </svg>
         </div>
       </div>
-      {open && <div className="border-t border-gray-800">{children}</div>}
+      {open && <div className="border-t border-gray-200 dark:border-gray-800">{children}</div>}
     </div>
   )
 }
@@ -1454,7 +1454,7 @@ export default function ServiceOrderClient({
     const dotCls =
       railState === 'done'   ? 'bg-green-500/20 border-green-500' :
       railState === 'active' ? 'bg-blue-600 border-blue-400 shadow-[0_0_0_4px_rgba(59,130,246,0.2)]' :
-                               'bg-gray-800 border-gray-700'
+                               'bg-gray-100 dark:bg-gray-800 border-gray-300 dark:border-gray-700'
     const labelCls =
       railState === 'done'   ? 'text-green-400' :
       railState === 'active' ? 'text-blue-400 font-bold' :
@@ -1467,7 +1467,7 @@ export default function ServiceOrderClient({
     return (
       <div className="flex flex-col items-start">
         <div
-          className={`flex items-center gap-3 w-full py-1 rounded ${isViewable || isCurrentLive ? 'cursor-pointer hover:bg-gray-800/60' : ''} ${isViewing ? 'bg-gray-800/80' : ''}`}
+          className={`flex items-center gap-3 w-full py-1 rounded ${isViewable || isCurrentLive ? 'cursor-pointer hover:bg-gray-100/60 dark:hover:bg-gray-800/60' : ''} ${isViewing ? 'bg-gray-100/80 dark:bg-gray-800/80' : ''}`}
           onClick={
             isViewable    ? () => setViewingStage(isViewing ? null : stage) :
             isCurrentLive ? () => setViewingStage(null) :
@@ -1494,7 +1494,7 @@ export default function ServiceOrderClient({
           )}
         </div>
         {!isLast && (
-          <div className={`w-0.5 ml-[15px] my-0.5 ${railState === 'done' ? 'bg-green-500/40' : 'bg-gray-700'}`} style={{ minHeight: 12 }} />
+          <div className={`w-0.5 ml-[15px] my-0.5 ${railState === 'done' ? 'bg-green-500/40' : 'bg-gray-300 dark:bg-gray-700'}`} style={{ minHeight: 12 }} />
         )}
       </div>
     )
@@ -1506,12 +1506,12 @@ export default function ServiceOrderClient({
     <div className="flex overflow-hidden" style={{ height: '100dvh' }}>
 
       {/* ═══ Stage Rail (desktop) ═══ */}
-      <div className="hidden lg:flex flex-col w-56 shrink-0 bg-gray-900 border-r border-gray-800 overflow-y-auto">
+      <div className="hidden lg:flex flex-col w-56 shrink-0 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 overflow-y-auto">
         {/* Truck mini-card */}
-        <div className="p-4 border-b border-gray-800 shrink-0">
+        <div className="p-4 border-b border-gray-200 dark:border-gray-800 shrink-0">
           <div className="text-xs text-gray-500 mb-1">#{service.id}</div>
-          <div className="font-mono text-sm font-bold text-white">{service.truckPlateSnapshot}</div>
-          <div className="text-xs text-gray-400">{service.truck.make} {service.truck.model}{service.truck.year ? ` · ${service.truck.year}` : ''}</div>
+          <div className="font-mono text-sm font-bold text-gray-900 dark:text-white">{service.truckPlateSnapshot}</div>
+          <div className="text-xs text-gray-500 dark:text-gray-400">{service.truck.make} {service.truck.model}{service.truck.year ? ` · ${service.truck.year}` : ''}</div>
           <div className="mt-2 flex flex-wrap items-center gap-1.5">
             {service.truck.isAdr && (
               <span className="text-xs bg-orange-900/50 text-orange-400 border border-orange-800/50 px-1.5 py-0.5 rounded-sm font-medium">ADR</span>
@@ -1547,17 +1547,17 @@ export default function ServiceOrderClient({
       <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
 
         {/* ── Top bar (breadcrumb + actions) ── */}
-        <div className="shrink-0 bg-gray-900/95 border-b border-gray-800 px-4 lg:px-6 py-3 flex items-center justify-between gap-3">
+        <div className="shrink-0 bg-white/95 dark:bg-gray-900/95 border-b border-gray-200 dark:border-gray-800 px-4 lg:px-6 py-3 flex items-center justify-between gap-3">
           <nav className="flex items-center gap-2 text-sm min-w-0">
-            <Link href="/services" className="text-gray-400 hover:text-white transition-colors hidden sm:inline">
+            <Link href="/services" className="text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors hidden sm:inline">
               {tService('backToOrders').replace('←', '').trim()}
             </Link>
-            <Link href="/services" className="text-gray-400 hover:text-white sm:hidden">←</Link>
-            <span className="text-gray-600 hidden sm:inline">›</span>
+            <Link href="/services" className="text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white sm:hidden">←</Link>
+            <span className="text-gray-300 dark:text-gray-600 hidden sm:inline">›</span>
             <Link href={`/trucks/${service.truck.id}`} className="text-blue-400 hover:text-blue-300 font-mono font-medium truncate transition-colors">
               {service.truckPlateSnapshot}
             </Link>
-            <span className="text-gray-600">›</span>
+            <span className="text-gray-300 dark:text-gray-600">›</span>
             <span className={`font-semibold truncate inline-flex items-center gap-1.5 ${SVC_COLOR[service.status]}`}>
               {tService(`status.${service.status}`)}
             </span>
@@ -1567,7 +1567,7 @@ export default function ServiceOrderClient({
               <Link
                 href={`/services/${service.id}/intake-protocol`}
                 target="_blank"
-                className="px-3 py-1.5 text-xs border border-gray-700 text-gray-400 hover:text-white hover:border-gray-500 rounded-lg transition-colors flex items-center gap-1.5"
+                className="px-3 py-1.5 text-xs border border-gray-300 dark:border-gray-700 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:border-gray-400 dark:hover:border-gray-500 rounded-lg transition-colors flex items-center gap-1.5"
               >
                 <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -1578,7 +1578,7 @@ export default function ServiceOrderClient({
             <Link
               href={`/services/${service.id}/print`}
               target="_blank"
-              className="px-3 py-1.5 text-xs border border-gray-700 text-gray-400 hover:text-white hover:border-gray-500 rounded-lg transition-colors flex items-center gap-1.5"
+              className="px-3 py-1.5 text-xs border border-gray-300 dark:border-gray-700 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:border-gray-400 dark:hover:border-gray-500 rounded-lg transition-colors flex items-center gap-1.5"
             >
               <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
@@ -1597,23 +1597,23 @@ export default function ServiceOrderClient({
         </div>
 
         {/* ── Mobile progress bar ── */}
-        <div className="lg:hidden shrink-0 bg-gray-900 border-b border-gray-800 px-4 py-2.5">
+        <div className="lg:hidden shrink-0 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 px-4 py-2.5">
           <div className="flex gap-1 mb-1.5">
             {STAGE_ORDER.map((stage) => {
               const s = resolvedStageState(stage, service.status)
               return (
-                <div key={stage} className={`h-1.5 flex-1 rounded-full ${s === 'done' ? 'bg-green-500' : s === 'active' ? 'bg-blue-500' : 'bg-gray-700'}`} />
+                <div key={stage} className={`h-1.5 flex-1 rounded-full ${s === 'done' ? 'bg-green-500' : s === 'active' ? 'bg-blue-500' : 'bg-gray-200 dark:bg-gray-700'}`} />
               )
             })}
           </div>
-          <p className="text-xs text-center text-gray-400">{tService(`status.${service.status}`)}</p>
+          <p className="text-xs text-center text-gray-500 dark:text-gray-400">{tService(`status.${service.status}`)}</p>
         </div>
 
         {/* ── Scrollable body ── */}
-        <div className="flex-1 overflow-y-auto bg-gray-950">
+        <div className="flex-1 overflow-y-auto bg-gray-50 dark:bg-gray-950">
 
           {/* Stage header */}
-          <div className="px-4 lg:px-6 pt-5 pb-4 border-b border-gray-800">
+          <div className="px-4 lg:px-6 pt-5 pb-4 border-b border-gray-200 dark:border-gray-800">
             <div className="flex items-start justify-between gap-4">
               <div className="min-w-0">
                 {!isCancelled && service.status !== 'COMPLETED' && (
@@ -1621,8 +1621,8 @@ export default function ServiceOrderClient({
                     Step {STAGE_ORDER.indexOf(service.status) + 1} of {STAGE_ORDER.length}
                   </div>
                 )}
-                <h1 className="text-xl font-bold text-white">{tService(`status.${service.status}`)}</h1>
-                <p className="text-sm text-gray-400 mt-1 max-w-xl leading-relaxed">
+                <h1 className="text-xl font-bold text-gray-900 dark:text-white">{tService(`status.${service.status}`)}</h1>
+                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 max-w-xl leading-relaxed">
                   {stageGuidance[service.status]}
                 </p>
               </div>
@@ -1630,16 +1630,16 @@ export default function ServiceOrderClient({
               {(checklistItems.length > 0 || activeWorkCards.length > 0) && !isCancelled && (
                 <div className="flex gap-2 shrink-0">
                   {checklistItems.length > 0 && showChecklist && (
-                    <div className="bg-gray-800 rounded-lg px-3 py-2 border border-gray-700 text-center min-w-[56px]">
-                      <div className="text-sm font-bold text-white leading-tight">
+                    <div className="bg-gray-100 dark:bg-gray-800 rounded-lg px-3 py-2 border border-gray-200 dark:border-gray-700 text-center min-w-[56px]">
+                      <div className="text-sm font-bold text-gray-900 dark:text-white leading-tight">
                         {completedChecklist.length}<span className="text-gray-500 text-xs font-normal">/{checklistItems.length}</span>
                       </div>
                       <div className="text-xs text-gray-500 mt-0.5">{tCommon('checklist')}</div>
                     </div>
                   )}
                   {activeWorkCards.length > 0 && (
-                    <div className="bg-gray-800 rounded-lg px-3 py-2 border border-gray-700 text-center min-w-[56px]">
-                      <div className="text-sm font-bold text-white leading-tight">
+                    <div className="bg-gray-100 dark:bg-gray-800 rounded-lg px-3 py-2 border border-gray-200 dark:border-gray-700 text-center min-w-[56px]">
+                      <div className="text-sm font-bold text-gray-900 dark:text-white leading-tight">
                         {completedWorkCards.length}<span className="text-gray-500 text-xs font-normal">/{activeWorkCards.length}</span>
                       </div>
                       <div className="text-xs text-gray-500 mt-0.5">{tCommon('workCards')}</div>
@@ -1665,24 +1665,24 @@ export default function ServiceOrderClient({
             {viewingStage && (
               <div>
                 {/* Banner */}
-                <div className="flex items-center justify-between px-4 py-2.5 bg-gray-800/60 border border-gray-700 rounded-xl mb-4">
-                  <span className="text-xs text-gray-400">
-                    Преглед само за четене: <span className="text-white font-semibold">{tService(`status.${viewingStage}`)}</span>
+                <div className="flex items-center justify-between px-4 py-2.5 bg-gray-100/60 dark:bg-gray-800/60 border border-gray-300 dark:border-gray-700 rounded-xl mb-4">
+                  <span className="text-xs text-gray-500 dark:text-gray-400">
+                    Преглед само за четене: <span className="text-gray-900 dark:text-white font-semibold">{tService(`status.${viewingStage}`)}</span>
                   </span>
-                  <button onClick={() => setViewingStage(null)} className="text-xs text-gray-500 hover:text-white transition-colors">✕ Затвори</button>
+                  <button onClick={() => setViewingStage(null)} className="text-xs text-gray-500 hover:text-gray-900 dark:hover:text-white transition-colors">✕ Затвори</button>
                 </div>
 
                 {/* SCHEDULED read-only */}
                 {viewingStage === 'SCHEDULED' && (
-                  <div className="bg-gray-900 rounded-xl border border-gray-800 p-5 space-y-3">
+                  <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 p-5 space-y-3">
                     <div className="flex items-center gap-2">
-                      <span className="font-mono text-lg font-bold text-white">{service.truckPlateSnapshot}</span>
+                      <span className="font-mono text-lg font-bold text-gray-900 dark:text-white">{service.truckPlateSnapshot}</span>
                       {service.truck.isAdr && <span className="px-1.5 py-0.5 rounded-sm text-xs font-bold bg-orange-500/20 text-orange-400 border border-orange-500/30">ADR</span>}
                     </div>
                     <p className="text-sm text-gray-400">{service.truck.make} {service.truck.model}{service.truck.year ? ` · ${service.truck.year}` : ''}</p>
                     <div>
-                      <p className="text-xs text-gray-600 mb-0.5">{tService('scheduledDate')}</p>
-                      <p className="text-sm text-gray-200 font-medium">{fmtDate(service.scheduledDate)}</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-600 mb-0.5">{tService('scheduledDate')}</p>
+                      <p className="text-sm text-gray-800 dark:text-gray-200 font-medium">{fmtDate(service.scheduledDate)}</p>
                     </div>
                   </div>
                 )}
@@ -1691,20 +1691,20 @@ export default function ServiceOrderClient({
                 {viewingStage === 'INTAKE' && (
                   <div className="space-y-4">
                     {/* Intake info card */}
-                    <div className="bg-gray-900 rounded-xl border border-gray-800 p-5">
+                    <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 p-5">
                       <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">{tService('status.INTAKE')}</p>
                       <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
                         <div>
-                          <p className="text-xs text-gray-600 mb-0.5">{tService('bay')}</p>
-                          <p className="text-sm text-gray-200 font-medium">{service.bayNameSnapshot ?? '—'}</p>
+                          <p className="text-xs text-gray-500 dark:text-gray-600 mb-0.5">{tService('bay')}</p>
+                          <p className="text-sm text-gray-800 dark:text-gray-200 font-medium">{service.bayNameSnapshot ?? '—'}</p>
                         </div>
                         <div>
-                          <p className="text-xs text-gray-600 mb-0.5">{tService('driver')}</p>
-                          <p className="text-sm text-gray-200 font-medium">{service.driverNameSnapshot ?? '—'}</p>
+                          <p className="text-xs text-gray-500 dark:text-gray-600 mb-0.5">{tService('driver')}</p>
+                          <p className="text-sm text-gray-800 dark:text-gray-200 font-medium">{service.driverNameSnapshot ?? '—'}</p>
                         </div>
                         <div>
-                          <p className="text-xs text-gray-600 mb-0.5">{tService('mileageAtService')}</p>
-                          <p className="text-sm text-gray-200 font-medium">
+                          <p className="text-xs text-gray-500 dark:text-gray-600 mb-0.5">{tService('mileageAtService')}</p>
+                          <p className="text-sm text-gray-800 dark:text-gray-200 font-medium">
                             {service.mileageAtService != null ? `${Math.round(service.mileageAtService).toLocaleString('bg-BG')} ${tCommon('kmUnit')}` : '—'}
                           </p>
                         </div>
@@ -1713,12 +1713,12 @@ export default function ServiceOrderClient({
 
                     {/* Driver feedback read-only */}
                     {(service.driverFeedbackItems.length > 0 || service.driverFeedbackNotes) && (
-                      <div className="bg-gray-900 rounded-xl border border-gray-800 p-5">
+                      <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 p-5">
                         <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">{tService('driverFeedback')}</p>
                         {service.driverFeedbackItems.length > 0 && (
                           <ul className="space-y-1.5 mb-3">
                             {service.driverFeedbackItems.map((item) => (
-                              <li key={item.id} className="flex items-start gap-2 text-sm text-gray-300">
+                              <li key={item.id} className="flex items-start gap-2 text-sm text-gray-600 dark:text-gray-300">
                                 <span className="text-gray-600 mt-0.5">•</span>
                                 <span>{item.description}</span>
                               </li>
@@ -1733,7 +1733,7 @@ export default function ServiceOrderClient({
 
                     {/* Equipment check intake read-only */}
                     {service.equipmentCheckItems.filter((i) => i.checkType === 'INTAKE').length > 0 && (
-                      <div className="bg-gray-900 rounded-xl border border-gray-800 p-5">
+                      <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 p-5">
                         <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">{tCommon('equipmentCheck')} — {tService('status.INTAKE')}</p>
                         <div className="space-y-1.5">
                           {service.equipmentCheckItems.filter((i) => i.checkType === 'INTAKE').map((item) => (
@@ -1741,7 +1741,7 @@ export default function ServiceOrderClient({
                               <span className={item.status === 'PRESENT' ? 'text-green-400' : 'text-red-400'}>
                                 {item.status === 'PRESENT' ? '✓' : '✗'}
                               </span>
-                              <span className={item.status === 'PRESENT' ? 'text-gray-300' : 'text-red-300'}>{item.itemName}</span>
+                              <span className={item.status === 'PRESENT' ? 'text-gray-600 dark:text-gray-300' : 'text-red-300'}>{item.itemName}</span>
                               {item.explanation && <span className="text-xs text-gray-500">({item.explanation})</span>}
                             </div>
                           ))}
@@ -1754,21 +1754,21 @@ export default function ServiceOrderClient({
                 {/* IN_PROGRESS read-only */}
                 {viewingStage === 'IN_PROGRESS' && (
                   <div className="space-y-4">
-                    <div className="bg-gray-900 rounded-xl border border-gray-800 p-5">
+                    <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 p-5">
                       <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">{tService('status.IN_PROGRESS')}</p>
                       <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
                         <div>
-                          <p className="text-xs text-gray-600 mb-0.5">{tService('startDate')}</p>
-                          <p className="text-sm text-gray-200 font-medium">{service.startDate ? fmtDate(service.startDate) : '—'}</p>
+                          <p className="text-xs text-gray-500 dark:text-gray-600 mb-0.5">{tService('startDate')}</p>
+                          <p className="text-sm text-gray-800 dark:text-gray-200 font-medium">{service.startDate ? fmtDate(service.startDate) : '—'}</p>
                         </div>
                         <div>
-                          <p className="text-xs text-gray-600 mb-0.5">{tCommon('workCards')}</p>
-                          <p className="text-sm text-gray-200 font-medium">{completedWorkCards.length} / {activeWorkCards.length} {tWorkCard('status.COMPLETED').toLowerCase()}</p>
+                          <p className="text-xs text-gray-500 dark:text-gray-600 mb-0.5">{tCommon('workCards')}</p>
+                          <p className="text-sm text-gray-800 dark:text-gray-200 font-medium">{completedWorkCards.length} / {activeWorkCards.length} {tWorkCard('status.COMPLETED').toLowerCase()}</p>
                         </div>
                       </div>
                     </div>
                     {service.sections.filter((s) => s.type !== 'EQUIPMENT_CHECK').map((sec) => (
-                      <div key={sec.id} className="bg-gray-900 rounded-xl border border-gray-800 p-5">
+                      <div key={sec.id} className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 p-5">
                         <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">{sec.title}</p>
                         {sec.workCards.length === 0 ? (
                           <p className="text-sm text-gray-600">—</p>
@@ -1776,7 +1776,7 @@ export default function ServiceOrderClient({
                           <div className="space-y-1.5">
                             {sec.workCards.map((wc) => (
                               <div key={wc.id} className="flex items-center justify-between gap-2 text-sm">
-                                <span className="text-gray-300 truncate">{wc.description}</span>
+                                <span className="text-gray-600 dark:text-gray-300 truncate">{wc.description}</span>
                                 <span className={`shrink-0 text-xs px-1.5 py-0.5 rounded-sm font-medium ${
                                   wc.status === 'COMPLETED' ? 'bg-green-900/40 text-green-400' :
                                   wc.status === 'CANCELLED' ? 'bg-gray-800 text-gray-500' :
@@ -1794,18 +1794,18 @@ export default function ServiceOrderClient({
                 {/* QUALITY_CHECK read-only */}
                 {viewingStage === 'QUALITY_CHECK' && (
                   <div className="space-y-4">
-                    <div className="bg-gray-900 rounded-xl border border-gray-800 p-5">
+                    <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 p-5">
                       <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">{tService('status.QUALITY_CHECK')}</p>
                       <div className="grid grid-cols-2 gap-4">
                         <div>
-                          <p className="text-xs text-gray-600 mb-0.5">{tCommon('workCards')}</p>
-                          <p className="text-sm text-gray-200 font-medium">{completedWorkCards.length} / {activeWorkCards.length} {tWorkCard('status.COMPLETED').toLowerCase()}</p>
+                          <p className="text-xs text-gray-500 dark:text-gray-600 mb-0.5">{tCommon('workCards')}</p>
+                          <p className="text-sm text-gray-800 dark:text-gray-200 font-medium">{completedWorkCards.length} / {activeWorkCards.length} {tWorkCard('status.COMPLETED').toLowerCase()}</p>
                         </div>
                       </div>
                     </div>
                     {/* Equipment check exit */}
                     {service.equipmentCheckItems.filter((i) => i.checkType === 'EXIT').length > 0 && (
-                      <div className="bg-gray-900 rounded-xl border border-gray-800 p-5">
+                      <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 p-5">
                         <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">{tCommon('equipmentCheck')} — {tEquipment('exitCheck')}</p>
                         <div className="space-y-1.5">
                           {service.equipmentCheckItems.filter((i) => i.checkType === 'EXIT').map((item) => (
@@ -1813,7 +1813,7 @@ export default function ServiceOrderClient({
                               <span className={item.status === 'PRESENT' ? 'text-green-400' : item.status === 'RESTOCKED' ? 'text-amber-400' : 'text-red-400'}>
                                 {item.status === 'PRESENT' ? '✓' : item.status === 'RESTOCKED' ? '↻' : '✗'}
                               </span>
-                              <span className={item.status === 'MISSING' ? 'text-red-300' : 'text-gray-300'}>{item.itemName}</span>
+                              <span className={item.status === 'MISSING' ? 'text-red-300' : 'text-gray-600 dark:text-gray-300'}>{item.itemName}</span>
                               {item.explanation && <span className="text-xs text-gray-500">({item.explanation})</span>}
                             </div>
                           ))}
@@ -1825,16 +1825,16 @@ export default function ServiceOrderClient({
 
                 {/* READY read-only */}
                 {viewingStage === 'READY' && (
-                  <div className="bg-gray-900 rounded-xl border border-gray-800 p-5">
+                  <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 p-5">
                     <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">{tService('status.READY')}</p>
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <p className="text-xs text-gray-600 mb-0.5">{tService('bay')}</p>
-                        <p className="text-sm text-gray-200 font-medium">{service.bayNameSnapshot ?? '—'}</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-600 mb-0.5">{tService('bay')}</p>
+                        <p className="text-sm text-gray-800 dark:text-gray-200 font-medium">{service.bayNameSnapshot ?? '—'}</p>
                       </div>
                       <div>
-                        <p className="text-xs text-gray-600 mb-0.5">{tCommon('workCards')}</p>
-                        <p className="text-sm text-gray-200 font-medium">{completedWorkCards.length} / {activeWorkCards.length} {tWorkCard('status.COMPLETED').toLowerCase()}</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-600 mb-0.5">{tCommon('workCards')}</p>
+                        <p className="text-sm text-gray-800 dark:text-gray-200 font-medium">{completedWorkCards.length} / {activeWorkCards.length} {tWorkCard('status.COMPLETED').toLowerCase()}</p>
                       </div>
                     </div>
                   </div>
@@ -1843,23 +1843,23 @@ export default function ServiceOrderClient({
                 {/* COMPLETED read-only */}
                 {viewingStage === 'COMPLETED' && (
                   <div className="space-y-4">
-                    <div className="bg-gray-900 rounded-xl border border-gray-800 p-5">
+                    <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 p-5">
                       <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">{tService('status.COMPLETED')}</p>
                       <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
                         <div>
-                          <p className="text-xs text-gray-600 mb-0.5">{tService('endDate')}</p>
-                          <p className="text-sm text-gray-200 font-medium">{service.endDate ? fmtDate(service.endDate) : '—'}</p>
+                          <p className="text-xs text-gray-500 dark:text-gray-600 mb-0.5">{tService('endDate')}</p>
+                          <p className="text-sm text-gray-800 dark:text-gray-200 font-medium">{service.endDate ? fmtDate(service.endDate) : '—'}</p>
                         </div>
                         <div>
-                          <p className="text-xs text-gray-600 mb-0.5">{tCommon('workCards')}</p>
-                          <p className="text-sm text-gray-200 font-medium">{completedWorkCards.length} / {activeWorkCards.length} {tWorkCard('status.COMPLETED').toLowerCase()}</p>
+                          <p className="text-xs text-gray-500 dark:text-gray-600 mb-0.5">{tCommon('workCards')}</p>
+                          <p className="text-sm text-gray-800 dark:text-gray-200 font-medium">{completedWorkCards.length} / {activeWorkCards.length} {tWorkCard('status.COMPLETED').toLowerCase()}</p>
                         </div>
                         {(() => {
                           const cost = allWorkCards.flatMap((wc) => wc.parts).reduce((s, p) => s + (p.unitCost ?? 0) * p.quantity, 0)
                           return cost > 0 ? (
                             <div>
-                              <p className="text-xs text-gray-600 mb-0.5">{tService('totalPartsCost')}</p>
-                              <p className="text-sm text-gray-200 font-medium">{cost.toFixed(2)} €</p>
+                              <p className="text-xs text-gray-500 dark:text-gray-600 mb-0.5">{tService('totalPartsCost')}</p>
+                              <p className="text-sm text-gray-800 dark:text-gray-200 font-medium">{cost.toFixed(2)} €</p>
                             </div>
                           ) : null
                         })()}
@@ -1877,11 +1877,11 @@ export default function ServiceOrderClient({
             {/* SCHEDULED: truck info + preview */}
             {service.status === 'SCHEDULED' && (
               <>
-                <div className="bg-gray-900 rounded-xl border border-gray-800 p-5">
+                <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 p-5">
                   <div className="flex flex-wrap items-start justify-between gap-3 mb-4">
                     <div>
                       <div className="flex items-center gap-2 mb-1">
-                        <span className="font-mono text-xl font-bold text-white">{service.truckPlateSnapshot}</span>
+                        <span className="font-mono text-xl font-bold text-gray-900 dark:text-white">{service.truckPlateSnapshot}</span>
                         {service.truck.isAdr && (
                           <span className="px-1.5 py-0.5 rounded-sm text-xs font-bold bg-orange-500/20 text-orange-400 border border-orange-500/30">ADR</span>
                         )}
@@ -1891,7 +1891,7 @@ export default function ServiceOrderClient({
                     {canReschedule && (
                       <button
                         onClick={() => setModal('reschedule')}
-                        className="text-xs px-3 py-1.5 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-lg transition-colors"
+                        className="text-xs px-3 py-1.5 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300 rounded-lg transition-colors"
                       >
                         {tService('reschedule')}
                       </button>
@@ -1899,13 +1899,13 @@ export default function ServiceOrderClient({
                   </div>
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
                     <div>
-                      <p className="text-xs text-gray-600 mb-0.5">{tService('scheduledDate')}</p>
-                      <p className="text-sm text-gray-200 font-medium">{fmtDate(service.scheduledDate)}</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-600 mb-0.5">{tService('scheduledDate')}</p>
+                      <p className="text-sm text-gray-800 dark:text-gray-200 font-medium">{fmtDate(service.scheduledDate)}</p>
                     </div>
                     {service.mileageAtService !== null && (
                       <div>
-                        <p className="text-xs text-gray-600 mb-0.5">{tService('mileageAtService')}</p>
-                        <p className="text-sm text-gray-200">{Math.round(service.mileageAtService).toLocaleString('bg-BG')} {tCommon('kmUnit')}</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-600 mb-0.5">{tService('mileageAtService')}</p>
+                        <p className="text-sm text-gray-800 dark:text-gray-200">{Math.round(service.mileageAtService).toLocaleString('bg-BG')} {tCommon('kmUnit')}</p>
                       </div>
                     )}
                   </div>
@@ -1987,7 +1987,7 @@ export default function ServiceOrderClient({
                     <ul className="space-y-2">
                       {service.driverFeedbackItems.map((item) => (
                         <li key={item.id} className="flex items-start justify-between gap-2">
-                          <p className="text-sm text-gray-300">• {item.description}</p>
+                          <p className="text-sm text-gray-600 dark:text-gray-300">• {item.description}</p>
                           {!isTerminal && (
                             <button onClick={() => deleteFeedbackItem(item.id)} className="text-gray-700 hover:text-red-400 transition-colors shrink-0 text-lg leading-none">×</button>
                           )}
@@ -2137,7 +2137,7 @@ export default function ServiceOrderClient({
                     >
                       {tService('continueAnyway')}
                     </button>
-                    <button onClick={() => setStageWarnings([])} className="px-3 py-1.5 text-xs text-gray-400 hover:text-white transition-colors">
+                    <button onClick={() => setStageWarnings([])} className="px-3 py-1.5 text-xs text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors">
                       {tCommon('cancel')}
                     </button>
                   </div>

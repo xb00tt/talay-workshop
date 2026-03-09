@@ -11,12 +11,12 @@ export default async function AppLayout({ children }: { children: React.ReactNod
 
   const { locale, messages } = await (getRequestConfig as Function)()
 
-  const darkMode = session.user.darkMode !== false
+  const darkMode = session.user.darkMode === true
 
   return (
     <NextIntlClientProvider locale={locale} messages={messages}>
       <div className={darkMode ? 'dark' : ''}>
-        <div className="bg-gray-950 text-gray-100 min-h-screen">
+        <div className="bg-white text-gray-900 dark:bg-gray-950 dark:text-gray-100 min-h-screen">
           <AppShell userName={session.user.name ?? ''} userRole={session.user.role}>
             {children}
           </AppShell>
