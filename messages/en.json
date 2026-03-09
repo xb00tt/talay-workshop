@@ -336,6 +336,8 @@
     "currentMileageShort": "Current Mileage (km)",
     "mileageTrigger": "Mileage Trigger (km)",
     "mileageTriggerShort": "Trigger (km)",
+    "lastKnownServiceMileage": "Mileage at Last Service (km)",
+    "lastKnownServiceMileageHint": "Set this if the truck has not been serviced in this system yet. Used as the baseline for alert calculation.",
     "mileage": "Mileage",
     "mileageKm": "Mileage (km)",
     "isAdr": "ADR",

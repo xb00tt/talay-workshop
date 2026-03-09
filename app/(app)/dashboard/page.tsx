@@ -52,8 +52,10 @@ export default async function DashboardPage() {
       const lastService = truck.serviceOrders[0]
       const kmSince = lastService
         ? truck.currentMileage! - lastService.mileageAtService!
-        : truck.currentMileage!
-      return kmSince >= truck.mileageTriggerKm
+        : truck.lastKnownServiceMileage != null
+          ? truck.currentMileage! - truck.lastKnownServiceMileage
+          : null
+      return kmSince != null && kmSince >= truck.mileageTriggerKm
     })
     .map((t) => ({
       id:                 t.id,
@@ -62,7 +64,7 @@ export default async function DashboardPage() {
       model:              t.model,
       currentMileage:     t.currentMileage!,
       mileageTriggerKm:   t.mileageTriggerKm,
-      lastServiceMileage: t.serviceOrders[0]?.mileageAtService ?? null,
+      lastServiceMileage: t.serviceOrders[0]?.mileageAtService ?? t.lastKnownServiceMileage ?? null,
     }))
 
   const activeServicesMapped = activeServices.map((s) => ({

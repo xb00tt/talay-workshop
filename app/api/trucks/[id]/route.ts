@@ -23,14 +23,14 @@ export async function PATCH(request: Request, { params }: Params) {
   if (!truck) return NextResponse.json({ error: 'Not found' }, { status: 404 })
 
   const body = await request.json()
-  const { plateNumber, make, model, year, isAdr, mileageTriggerKm, currentMileage, isActive } = body
+  const { plateNumber, make, model, year, isAdr, mileageTriggerKm, currentMileage, lastKnownServiceMileage, isActive } = body
 
   // Deactivate/activate requires truck.deactivate
   if (isActive !== undefined && !hasPermission(session.user.role, session.user.permissions, 'truck.deactivate')) {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
   }
   // Edit fields require truck.edit
-  if ((plateNumber ?? make ?? model ?? year ?? isAdr ?? mileageTriggerKm ?? currentMileage) !== undefined) {
+  if ((plateNumber ?? make ?? model ?? year ?? isAdr ?? mileageTriggerKm ?? currentMileage ?? lastKnownServiceMileage) !== undefined) {
     if (!hasPermission(session.user.role, session.user.permissions, 'truck.edit')) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }
@@ -49,8 +49,9 @@ export async function PATCH(request: Request, { params }: Params) {
   if (year            !== undefined) data.year            = year ? Number(year) : null
   if (isAdr           !== undefined) data.isAdr           = Boolean(isAdr)
   if (mileageTriggerKm !== undefined) data.mileageTriggerKm = Math.min(999999, Math.max(0, Number(mileageTriggerKm)))
-  if (currentMileage  !== undefined) data.currentMileage  = currentMileage != null ? Number(currentMileage) : null
-  if (isActive        !== undefined) data.isActive        = Boolean(isActive)
+  if (currentMileage           !== undefined) data.currentMileage          = currentMileage != null ? Number(currentMileage) : null
+  if (lastKnownServiceMileage  !== undefined) data.lastKnownServiceMileage = lastKnownServiceMileage != null ? Number(lastKnownServiceMileage) : null
+  if (isActive                 !== undefined) data.isActive                = Boolean(isActive)
 
   const updated = await prisma.truck.update({ where: { id: truck.id }, data })
   const action = isActive !== undefined ? (data.isActive ? 'truck.activate' : 'truck.deactivate') : 'truck.update'

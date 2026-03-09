@@ -336,6 +336,8 @@
     "currentMileageShort": "Текущ пробег (км)",
     "mileageTrigger": "Праг за пробег (км)",
     "mileageTriggerShort": "Праг (км)",
+    "lastKnownServiceMileage": "Пробег при последен сервиз (км)",
+    "lastKnownServiceMileageHint": "Задайте ако камионът не е сервизиран в тази система. Използва се като начална точка за изчисляване на сигнала.",
     "mileage": "Пробег",
     "mileageKm": "Пробег (км)",
     "isAdr": "ADR",

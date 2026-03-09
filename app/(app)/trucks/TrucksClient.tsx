@@ -97,8 +97,9 @@ function TruckForm({
   const [model,            setModel]          = useState(initial?.model            ?? '')
   const [year,             setYear]           = useState(initial?.year?.toString() ?? '')
   const [isAdr,            setIsAdr]          = useState(initial?.isAdr            ?? false)
-  const [mileageTriggerKm, setMileageTrigger] = useState(initial?.mileageTriggerKm?.toString() ?? '30000')
-  const [currentMileage,   setCurrentMileage] = useState(initial?.currentMileage?.toString() ?? '')
+  const [mileageTriggerKm,        setMileageTrigger]        = useState(initial?.mileageTriggerKm?.toString() ?? '30000')
+  const [currentMileage,          setCurrentMileage]          = useState(initial?.currentMileage?.toString() ?? '')
+  const [lastKnownServiceMileage, setLastKnownServiceMileage] = useState(initial?.lastKnownServiceMileage?.toString() ?? '')
   const [error,   setError]   = useState('')
   const [loading, setLoading] = useState(false)
 
@@ -117,6 +118,7 @@ function TruckForm({
         isAdr,
         mileageTriggerKm: Number(mileageTriggerKm) || 30000,
         ...((!isFrotcom && currentMileage) && { currentMileage: Number(currentMileage) }),
+        lastKnownServiceMileage: lastKnownServiceMileage ? Number(lastKnownServiceMileage) : null,
       }
       const url    = isEdit ? `/api/trucks/${initial!.id}` : '/api/trucks'
       const method = isEdit ? 'PATCH' : 'POST'
@@ -190,6 +192,17 @@ function TruckForm({
             />
           </div>
         )}
+        <div className="col-span-2">
+          <Label>{t('lastKnownServiceMileage')}</Label>
+          <Input
+            type="number"
+            value={lastKnownServiceMileage}
+            onChange={(e) => setLastKnownServiceMileage(e.target.value)}
+            placeholder="420000"
+            min="0"
+          />
+          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{t('lastKnownServiceMileageHint')}</p>
+        </div>
       </div>
 
       <label className="flex items-center gap-3 cursor-pointer">

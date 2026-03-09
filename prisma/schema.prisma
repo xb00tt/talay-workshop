@@ -91,10 +91,12 @@ model Truck {
   model            String
   year             Int?
   frotcomVehicleId String?  @unique
-  currentMileage   Float?
+  currentMileage          Float?
   /// From Frotcom; selects odometerCanbus vs odometerGps on sync
-  useCanbusMileage Boolean  @default(true)
-  mileageTriggerKm Float    @default(30000)
+  useCanbusMileage        Boolean  @default(true)
+  mileageTriggerKm        Float    @default(30000)
+  /// Manual baseline: odometer at last real-world service; used as fallback when no completed ServiceOrder exists yet
+  lastKnownServiceMileage Float?
   isAdr            Boolean  @default(false)
   isActive         Boolean  @default(true)
   createdAt        DateTime @default(now())

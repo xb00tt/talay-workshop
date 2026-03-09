@@ -9,6 +9,7 @@ export type EnrichedTruck = {
   frotcomVehicleId: string | null
   currentMileage: number | null
   mileageTriggerKm: number
+  lastKnownServiceMileage: number | null
   isAdr: boolean
   isActive: boolean
   lastServiceDate: string | null
@@ -22,7 +23,7 @@ export async function enrichTrucks(
   trucks: {
     id: number; plateNumber: string; make: string; model: string; year: number | null
     frotcomVehicleId: string | null; currentMileage: number | null; mileageTriggerKm: number
-    isAdr: boolean; isActive: boolean
+    lastKnownServiceMileage: number | null; isAdr: boolean; isActive: boolean
   }[]
 ): Promise<EnrichedTruck[]> {
   if (trucks.length === 0) return []
@@ -53,7 +54,7 @@ export async function enrichTrucks(
   return trucks.map((t) => {
     const last = lastMap.get(t.id) ?? null
     const active = activeMap.get(t.id) ?? null
-    const lastMileage = last?.mileageAtService ?? null
+    const lastMileage = last?.mileageAtService ?? t.lastKnownServiceMileage ?? null
     const kmSince = t.currentMileage != null && lastMileage != null ? t.currentMileage - lastMileage : null
     const mileageAlert = kmSince != null && kmSince >= t.mileageTriggerKm
     const lastDate = last ? (last.endDate ?? last.scheduledDate) : null
