@@ -16,7 +16,7 @@ export default function Pagination({ page, totalPages, total, pageSize, onPageCh
   const to   = Math.min(page * pageSize, total)
 
   return (
-    <div className={`flex items-center justify-between gap-4 px-5 py-3 border-t border-gray-200 dark:border-gray-800 text-sm ${className ?? ''}`}>
+    <div className={`flex items-center justify-between gap-4 px-5 py-3 border-t border-gray-300 dark:border-gray-800 text-sm ${className ?? ''}`}>
       <span className="text-gray-500">
         {from}–{to} от {total}
       </span>

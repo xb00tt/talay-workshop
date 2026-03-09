@@ -122,7 +122,7 @@ export function PhotoGallery({
 
   return (
     <div className="bg-white dark:bg-gray-900 rounded-2xl overflow-hidden">
-      <div className="flex items-center justify-between px-5 py-3 border-b border-gray-200 dark:border-gray-800">
+      <div className="flex items-center justify-between px-5 py-3 border-b border-gray-300 dark:border-gray-800">
         <h2 className="text-sm font-semibold text-gray-900 dark:text-white">Снимки ({photos.length})</h2>
         {canUpload && (
           <button
@@ -219,14 +219,14 @@ export function NotesSection({
 
   return (
     <div className="bg-white dark:bg-gray-900 rounded-2xl overflow-hidden">
-      <div className="px-5 py-3 border-b border-gray-200 dark:border-gray-800">
+      <div className="px-5 py-3 border-b border-gray-300 dark:border-gray-800">
         <h2 className="text-sm font-semibold text-gray-900 dark:text-white">Бележки</h2>
       </div>
 
       {notes.length === 0 ? (
         <p className="px-5 py-6 text-sm text-gray-500 text-center">Няма бележки.</p>
       ) : (
-        <ul className="divide-y divide-gray-200 dark:divide-gray-800">
+        <ul className="divide-y divide-gray-300 dark:divide-gray-800">
           {notes.map((n) => (
             <li key={n.id} className="px-5 py-3">
               <p className="text-sm text-gray-700 dark:text-gray-200 whitespace-pre-wrap">{n.content}</p>
@@ -239,13 +239,13 @@ export function NotesSection({
       )}
 
       {canCreate && (
-        <form onSubmit={submit} className="px-5 py-4 border-t border-gray-200 dark:border-gray-800 space-y-2">
+        <form onSubmit={submit} className="px-5 py-4 border-t border-gray-300 dark:border-gray-800 space-y-2">
           <textarea
             value={content}
             onChange={(e) => setContent(e.target.value)}
             rows={2}
             placeholder="Добави бележка..."
-            className="w-full bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-2 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-600 text-sm focus:outline-hidden focus:ring-2 focus:ring-blue-500 resize-none"
+            className="w-full bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg px-3 py-2 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-600 text-sm focus:outline-hidden focus:ring-2 focus:ring-blue-500 resize-none"
           />
           {error && <p className="text-red-400 text-xs">{error}</p>}
           <button

@@ -89,6 +89,9 @@ export async function PATCH(request: Request, { params }: Params) {
     if (!hasPermission(session.user.role, session.user.permissions, 'service.cancel')) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }
+    if (service.status === 'COMPLETED' || service.status === 'CANCELLED') {
+      return NextResponse.json({ error: 'Завършените и отменените поръчки не могат да бъдат отменени.' }, { status: 422 })
+    }
     if (!cancellationReason?.trim()) {
       return NextResponse.json({ error: 'Причината за отмяна е задължителна.' }, { status: 422 })
     }

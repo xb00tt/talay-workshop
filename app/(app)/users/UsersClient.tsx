@@ -122,7 +122,7 @@ function Label({ children }: { children: React.ReactNode }) {
 
 function ErrorBox({ msg }: { msg: string }) {
   return (
-    <div className="px-3 py-2 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 text-sm">
+    <div className="px-3 py-2 bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/30 rounded-lg text-red-700 dark:text-red-400 text-sm">
       {msg}
     </div>
   )
@@ -135,7 +135,7 @@ function Modal({ title, onClose, children }: { title: string; onClose: () => voi
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/60" onClick={onClose} />
       <div className="relative w-full max-w-lg bg-white dark:bg-gray-900 rounded-2xl shadow-2xl flex flex-col max-h-[90vh]">
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-gray-800 shrink-0">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-300 dark:border-gray-800 shrink-0">
           <h2 className="text-base font-semibold text-gray-900 dark:text-white">{title}</h2>
           <button onClick={onClose} className="text-gray-500 hover:text-gray-900 dark:hover:text-white text-xl leading-none">×</button>
         </div>
@@ -448,7 +448,7 @@ function EditUserModal({
         </div>
 
         {role === 'ASSISTANT' && (
-          <div className="border border-gray-200 dark:border-gray-700 rounded-xl p-4">
+          <div className="border border-gray-300 dark:border-gray-700 rounded-xl p-4">
             <PermissionsEditor selected={perms} onChange={setPerms} />
           </div>
         )}
@@ -723,7 +723,7 @@ export default function UsersClient({
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-gray-200 dark:border-gray-800">
+                <tr className="border-b border-gray-300 dark:border-gray-800">
                   <th className="text-left px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">
                     {t('title')}
                   </th>
@@ -736,7 +736,7 @@ export default function UsersClient({
                   <th className="px-5 py-3" />
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-200 dark:divide-gray-800">
+              <tbody className="divide-y divide-gray-300 dark:divide-gray-800">
                 {visibleUsers.map((user) => (
                   <tr key={user.id} className="hover:bg-gray-100 dark:hover:bg-gray-800/50 transition-colors">
                     <td className="px-5 py-4">

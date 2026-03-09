@@ -166,7 +166,7 @@ export default async function TruckProfilePage({ params }: { params: Promise<{ i
 
       {/* Service history */}
       <div className="bg-white dark:bg-gray-900 rounded-2xl overflow-hidden">
-        <div className="px-5 py-3 border-b border-gray-200 dark:border-gray-800">
+        <div className="px-5 py-3 border-b border-gray-300 dark:border-gray-800">
           <h2 className="text-sm font-semibold text-gray-900 dark:text-white">
             {t('serviceHistory')} ({truck.serviceOrders.length})
           </h2>
@@ -175,7 +175,7 @@ export default async function TruckProfilePage({ params }: { params: Promise<{ i
         {truck.serviceOrders.length === 0 ? (
           <p className="px-5 py-10 text-sm text-gray-500 text-center">{t('noServiceOrders')}</p>
         ) : (
-          <ul className="divide-y divide-gray-200 dark:divide-gray-800">
+          <ul className="divide-y divide-gray-300 dark:divide-gray-800">
             {truck.serviceOrders.map((svc) => {
               const workDone  = svc.sections.flatMap((s) => s.workCards)
               const partsCost = workDone.flatMap((wc) => wc.parts)

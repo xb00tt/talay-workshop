@@ -137,7 +137,7 @@ function Label({ children }: { children: React.ReactNode }) {
 }
 function ErrorBox({ msg }: { msg: string }) {
   return (
-    <div className="px-3 py-2 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 text-sm">
+    <div className="px-3 py-2 bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/30 rounded-lg text-red-700 dark:text-red-400 text-sm">
       {msg}
     </div>
   )
@@ -162,9 +162,9 @@ function SmallBtn({ onClick, children, variant = 'default', disabled }: {
 }) {
   const colors = {
     default: 'border-gray-300 dark:border-gray-700 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:border-gray-400 dark:hover:border-gray-500',
-    danger:  'border-red-800 text-red-400 hover:text-red-300 hover:border-red-600',
-    success: 'border-green-800 text-green-400 hover:text-green-300 hover:border-green-600',
-    primary: 'border-blue-700 text-blue-400 hover:text-blue-300 hover:border-blue-500',
+    danger:  'border-red-300 dark:border-red-800 text-red-700 dark:text-red-400 hover:text-red-900 dark:hover:text-red-300 hover:border-red-400 dark:hover:border-red-600',
+    success: 'border-green-300 dark:border-green-800 text-green-700 dark:text-green-400 hover:text-green-900 dark:hover:text-green-300 hover:border-green-400 dark:hover:border-green-600',
+    primary: 'border-blue-300 dark:border-blue-700 text-blue-700 dark:text-blue-400 hover:text-blue-900 dark:hover:text-blue-300 hover:border-blue-400 dark:hover:border-blue-500',
   }
   return (
     <button
@@ -599,7 +599,7 @@ function ChecklistItemRow({
   }
 
   return (
-    <div className="flex items-start gap-3 py-2.5 border-b border-gray-200 dark:border-gray-800 last:border-0">
+    <div className="flex items-start gap-3 py-2.5 border-b border-gray-300 dark:border-gray-800 last:border-0">
       <button
         onClick={toggle}
         disabled={disabled || saving}
@@ -658,7 +658,7 @@ function WorkCardRow({
   }
 
   return (
-    <div className="py-3 border-b border-gray-200 dark:border-gray-800 last:border-0">
+    <div className="py-3 border-b border-gray-300 dark:border-gray-800 last:border-0">
       <div className="flex items-start justify-between gap-3">
         <div className="flex-1 min-w-0">
           <p className="text-sm text-gray-900 dark:text-white">{wc.description}</p>
@@ -975,7 +975,7 @@ function SectionCard({
   return (
     <div className="bg-white dark:bg-gray-900 rounded-xl overflow-hidden">
       {/* Section header */}
-      <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200 dark:border-gray-800">
+      <div className="flex items-center justify-between px-4 py-3 border-b border-gray-300 dark:border-gray-800">
         <div className="flex items-center gap-2">
           <h3 className="text-sm font-semibold text-gray-900 dark:text-white">{sec.title}</h3>
           <span className="text-xs px-1.5 py-0.5 rounded-sm bg-gray-100 dark:bg-gray-800 text-gray-500">
@@ -1023,7 +1023,7 @@ function SectionCard({
           const showIntake = ['INTAKE', 'IN_PROGRESS', 'QUALITY_CHECK', 'READY', 'COMPLETED'].includes(serviceStatus)
           const showExit   = ['QUALITY_CHECK', 'READY', 'COMPLETED'].includes(serviceStatus)
           return (
-            <div className="divide-y divide-gray-200 dark:divide-gray-800">
+            <div className="divide-y divide-gray-300 dark:divide-gray-800">
               {showIntake && (
                 <div className="px-0 py-1">
                   <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">{tEquipment('intakeCheck')}</p>
@@ -1081,7 +1081,7 @@ function SectionCard({
 
       {/* Footer */}
       {showAddWorkCard && (
-        <div className="px-4 py-3 border-t border-gray-200 dark:border-gray-800">
+        <div className="px-4 py-3 border-t border-gray-300 dark:border-gray-800">
           <button
             onClick={() => setShowAddWC(true)}
             className="text-sm text-blue-400 hover:text-blue-300 transition-colors"
@@ -1125,27 +1125,27 @@ const PANEL_ICON_BG: Record<string, string> = {
 
 function PanelIcon({ kind }: { kind: string }) {
   if (kind === 'checklist') return (
-    <svg className="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <svg className="w-4 h-4 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
     </svg>
   )
   if (kind === 'equipment') return (
-    <svg className="w-4 h-4 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <svg className="w-4 h-4 text-amber-600 dark:text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
     </svg>
   )
   if (kind === 'feedback') return (
-    <svg className="w-4 h-4 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <svg className="w-4 h-4 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
     </svg>
   )
   if (kind === 'notes') return (
-    <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <svg className="w-4 h-4 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
     </svg>
   )
   return (
-    <svg className="w-4 h-4 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <svg className="w-4 h-4 text-indigo-600 dark:text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
     </svg>
   )
@@ -1160,7 +1160,7 @@ function CollapsiblePanel({
 }) {
   const [open, setOpen] = useState(defaultOpen)
   return (
-    <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 overflow-hidden">
+    <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-300 dark:border-gray-800 overflow-hidden">
       <div
         role="button"
         tabIndex={0}
@@ -1203,7 +1203,411 @@ function CollapsiblePanel({
           </svg>
         </div>
       </div>
-      {open && <div className="border-t border-gray-200 dark:border-gray-800">{children}</div>}
+      {open && <div className="border-t border-gray-300 dark:border-gray-800">{children}</div>}
+    </div>
+  )
+}
+
+// ─── StageTaskCard ────────────────────────────────────────────────────────────
+
+function StageTaskCard({
+  service, warnings, advancing, checklistItems, completedChecklist,
+  activeWorkCards, completedWorkCards, equipmentSection, canReschedule,
+  onMoveToIntake, onAdvance, onReschedule,
+}: {
+  service: FullService; warnings: string[]; advancing: boolean
+  checklistItems: ChecklistItem[]; completedChecklist: ChecklistItem[]
+  activeWorkCards: WorkCard[]; completedWorkCards: WorkCard[]
+  equipmentSection: Section | undefined; canReschedule: boolean
+  onMoveToIntake: () => void; onAdvance: () => void; onReschedule: () => void
+}) {
+  const tService  = useTranslations('service')
+  const tCommon   = useTranslations('common')
+  const tWorkCard = useTranslations('workCard')
+
+  const status = service.status
+
+  type TaskState = 'done' | 'warn' | 'optional'
+  type Task = { label: string; state: TaskState }
+  const tasks: Task[] = []
+
+  if (status === 'INTAKE') {
+    const hasIntakeEq  = service.equipmentCheckItems.some((i) => i.checkType === 'INTAKE')
+    const intakeSkipped = !!equipmentSection?.intakeSkippedAt
+    tasks.push({
+      label: tCommon('equipmentCheck'),
+      state: intakeSkipped || hasIntakeEq ? 'done' : warnings.length > 0 ? 'warn' : 'optional',
+    })
+    tasks.push({
+      label: tService('driverFeedback'),
+      state: service.driverFeedbackItems.length > 0 || !!service.driverFeedbackNotes ? 'done' : 'optional',
+    })
+  }
+
+  if (status === 'IN_PROGRESS') {
+    const allDone = activeWorkCards.length > 0 && completedWorkCards.length === activeWorkCards.length
+    tasks.push({
+      label: `${tCommon('workCards')}: ${completedWorkCards.length}/${activeWorkCards.length}`,
+      state: allDone ? 'done' : warnings.length > 0 ? 'warn' : 'optional',
+    })
+    if (checklistItems.length > 0) {
+      tasks.push({
+        label: `${tCommon('checklist')}: ${completedChecklist.length}/${checklistItems.length}`,
+        state: completedChecklist.length === checklistItems.length ? 'done' : 'optional',
+      })
+    }
+  }
+
+  if (status === 'QUALITY_CHECK') {
+    const hasExitEq   = service.equipmentCheckItems.some((i) => i.checkType === 'EXIT')
+    const exitSkipped = !!equipmentSection?.exitSkippedAt
+    const hasMissing  = service.equipmentCheckItems.some((i) => i.checkType === 'EXIT' && i.status === 'MISSING')
+    tasks.push({
+      label: tCommon('equipmentCheck'),
+      state: exitSkipped || (hasExitEq && !hasMissing) ? 'done' : hasMissing || warnings.length > 0 ? 'warn' : 'optional',
+    })
+    tasks.push({
+      label: `${tCommon('workCards')}: ${completedWorkCards.length}/${activeWorkCards.length}`,
+      state: completedWorkCards.length === activeWorkCards.length ? 'done' : 'optional',
+    })
+  }
+
+  if (status === 'READY') {
+    tasks.push({
+      label: `${completedWorkCards.length}/${activeWorkCards.length} ${tWorkCard('status.COMPLETED').toLowerCase()}`,
+      state: 'done',
+    })
+  }
+
+  const STAGE_GUIDE: Partial<Record<ServiceStatus, string>> = {
+    SCHEDULED:     tService('stageGuidance.SCHEDULED'),
+    INTAKE:        tService('stageGuidance.INTAKE'),
+    IN_PROGRESS:   tService('stageGuidance.IN_PROGRESS'),
+    QUALITY_CHECK: tService('stageGuidance.QUALITY_CHECK'),
+    READY:         tService('stageGuidance.READY'),
+  }
+
+  const NEXT_LABEL: Partial<Record<ServiceStatus, string>> = {
+    INTAKE:        `${tService('advance')} → ${tService('status.IN_PROGRESS')}`,
+    IN_PROGRESS:   `${tService('advance')} → ${tService('status.QUALITY_CHECK')}`,
+    QUALITY_CHECK: `${tService('advance')} → ${tService('status.READY')}`,
+    READY:         tService('moveToCompleted'),
+  }
+
+  const isAdvanceable = !!NEXT_LABEL[status]
+  const isScheduled   = status === 'SCHEDULED'
+
+  return (
+    <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-300 dark:border-gray-800 overflow-hidden">
+      {/* Header */}
+      <div className="px-5 pt-5 pb-4 border-b border-gray-300 dark:border-gray-800/80">
+        <div className="flex items-start justify-between gap-4">
+          <div className="min-w-0">
+            <div className="text-xs font-bold uppercase tracking-widest text-blue-400 mb-1">
+              Step {STAGE_ORDER.indexOf(status) + 1} of {STAGE_ORDER.length}
+            </div>
+            <h2 className="text-xl font-bold text-gray-900 dark:text-white">{tService(`status.${status}`)}</h2>
+            {STAGE_GUIDE[status] && (
+              <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 leading-relaxed">{STAGE_GUIDE[status]}</p>
+            )}
+          </div>
+          {isScheduled && canReschedule && (
+            <button
+              onClick={onReschedule}
+              className="shrink-0 text-xs px-3 py-1.5 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300 rounded-lg transition-colors"
+            >
+              {tService('reschedule')}
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* Task list */}
+      {tasks.length > 0 && (
+        <div className="px-5 py-3 space-y-2 border-b border-gray-300 dark:border-gray-800/80">
+          {tasks.map((t, i) => (
+            <div key={i} className="flex items-center gap-2.5 text-sm">
+              {t.state === 'done' && (
+                <svg className="w-4 h-4 text-green-600 dark:text-green-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+                </svg>
+              )}
+              {t.state === 'warn' && (
+                <svg className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+              )}
+              {t.state === 'optional' && (
+                <div className="w-4 h-4 rounded-full border-2 border-dashed border-gray-400 dark:border-gray-600 shrink-0" />
+              )}
+              <span className={
+                t.state === 'done'     ? 'text-green-700 dark:text-green-400' :
+                t.state === 'warn'     ? 'text-amber-700 dark:text-amber-300' :
+                'text-gray-500 dark:text-gray-400'
+              }>{t.label}</span>
+              {t.state === 'optional' && (
+                <span className="ml-auto text-xs text-gray-500 dark:text-gray-600">{tService('taskOptional')}</span>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Warnings box */}
+      {warnings.length > 0 && (
+        <div className="px-5 py-3 bg-amber-50 dark:bg-amber-900/10 border-b border-amber-200 dark:border-amber-800/20">
+          <ul className="space-y-0.5">
+            {warnings.map((w, i) => (
+              <li key={i} className="flex items-start gap-2 text-sm text-amber-800 dark:text-amber-300">
+                <svg className="w-4 h-4 shrink-0 mt-0.5 text-amber-600 dark:text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+                {w}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {/* Action footer */}
+      <div className="px-5 py-3 flex items-center justify-between gap-3">
+        <div className="text-xs text-gray-500 dark:text-gray-600 flex items-center gap-1.5">
+          <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse inline-block" />
+          {tCommon('live')}
+        </div>
+        <div className="flex items-center gap-2">
+          {isScheduled && (
+            <button
+              onClick={onMoveToIntake}
+              className="px-5 py-2 bg-blue-600 hover:bg-blue-500 text-white text-sm font-semibold rounded-xl transition-colors flex items-center gap-2"
+            >
+              {tService('moveToIntake')}
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
+          )}
+          {isAdvanceable && (
+            <button
+              onClick={onAdvance}
+              disabled={advancing}
+              className={`px-5 py-2 text-white text-sm font-semibold rounded-xl transition-colors disabled:opacity-50 flex items-center gap-2 ${
+                status === 'READY' ? 'bg-green-600 hover:bg-green-500' : 'bg-blue-600 hover:bg-blue-500'
+              }`}
+            >
+              {advancing ? tCommon('loading') : NEXT_LABEL[status]}
+              {!advancing && (
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              )}
+            </button>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// ─── PreviousStepsAccordion ───────────────────────────────────────────────────
+
+function PreviousStepsAccordion({
+  service, openStep, onToggle, completedWorkCards, activeWorkCards,
+}: {
+  service: FullService
+  openStep: ServiceStatus | null
+  onToggle: (s: ServiceStatus | null) => void
+  completedWorkCards: WorkCard[]
+  activeWorkCards: WorkCard[]
+}) {
+  const tService   = useTranslations('service')
+  const tCommon    = useTranslations('common')
+  const tWorkCard  = useTranslations('workCard')
+  const tEquipment = useTranslations('equipment')
+
+  const currentIdx    = STAGE_ORDER.indexOf(service.status)
+  const passedStages: ServiceStatus[] =
+    service.status === 'CANCELLED'
+      ? (['SCHEDULED'] as ServiceStatus[])
+      : currentIdx > 0 ? STAGE_ORDER.slice(0, currentIdx) : []
+
+  if (passedStages.length === 0) return null
+
+  return (
+    <div className="space-y-1">
+      <p className="text-xs font-medium text-gray-400 dark:text-gray-600 uppercase tracking-wider px-1 pt-2">
+        {tService('previousSteps')}
+      </p>
+      {passedStages.map((stage) => {
+        const isOpen = openStep === stage
+        const summaryParts: (string | null)[] = []
+        if (stage === 'SCHEDULED')     summaryParts.push(fmtDate(service.scheduledDate))
+        if (stage === 'INTAKE')        summaryParts.push(service.bayNameSnapshot, service.mileageAtService != null ? `${Math.round(service.mileageAtService).toLocaleString('bg-BG')} km` : null)
+        if (stage === 'IN_PROGRESS')   summaryParts.push(service.startDate ? fmtDate(service.startDate) : null)
+        if (stage === 'QUALITY_CHECK') summaryParts.push(`${completedWorkCards.length}/${activeWorkCards.length}`)
+        if (stage === 'READY')         summaryParts.push(service.bayNameSnapshot)
+        if (stage === 'COMPLETED')     summaryParts.push(service.endDate ? fmtDate(service.endDate) : null)
+        const summary = summaryParts.filter(Boolean).join(' · ')
+
+        return (
+          <div key={stage} className="bg-white dark:bg-gray-900 rounded-xl border border-gray-300 dark:border-gray-800 overflow-hidden">
+            <button
+              className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors"
+              onClick={() => onToggle(isOpen ? null : stage)}
+            >
+              <svg className="w-4 h-4 text-green-600 dark:text-green-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+              </svg>
+              <div className="flex-1 min-w-0">
+                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{tService(`status.${stage}`)}</span>
+                {summary && <span className="ml-2 text-xs text-gray-500 dark:text-gray-500">{summary}</span>}
+              </div>
+              <svg className={`w-3.5 h-3.5 text-gray-400 dark:text-gray-500 shrink-0 transition-transform ${isOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+
+            {isOpen && (
+              <div className="px-4 pb-4 pt-1 border-t border-gray-300 dark:border-gray-800">
+
+                {stage === 'SCHEDULED' && (
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 pt-2">
+                    <div>
+                      <p className="text-xs text-gray-500 dark:text-gray-600 mb-0.5">{tService('scheduledDate')}</p>
+                      <p className="text-sm text-gray-800 dark:text-gray-200 font-medium">{fmtDate(service.scheduledDate)}</p>
+                    </div>
+                  </div>
+                )}
+
+                {stage === 'INTAKE' && (
+                  <div className="space-y-4 pt-2">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                      <div>
+                        <p className="text-xs text-gray-500 dark:text-gray-600 mb-0.5">{tService('bay')}</p>
+                        <p className="text-sm text-gray-800 dark:text-gray-200 font-medium">{service.bayNameSnapshot ?? '—'}</p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-gray-500 dark:text-gray-600 mb-0.5">{tService('driver')}</p>
+                        <p className="text-sm text-gray-800 dark:text-gray-200 font-medium">{service.driverNameSnapshot ?? '—'}</p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-gray-500 dark:text-gray-600 mb-0.5">{tService('mileageAtService')}</p>
+                        <p className="text-sm text-gray-800 dark:text-gray-200 font-medium">
+                          {service.mileageAtService != null ? `${Math.round(service.mileageAtService).toLocaleString('bg-BG')} km` : '—'}
+                        </p>
+                      </div>
+                    </div>
+                    {(service.driverFeedbackItems.length > 0 || service.driverFeedbackNotes) && (
+                      <div>
+                        <p className="text-xs font-semibold text-gray-500 dark:text-gray-500 uppercase tracking-wider mb-2">{tService('driverFeedback')}</p>
+                        {service.driverFeedbackItems.length > 0 && (
+                          <ul className="space-y-1 mb-2">
+                            {service.driverFeedbackItems.map((item) => (
+                              <li key={item.id} className="text-sm text-gray-600 dark:text-gray-300">• {item.description}</li>
+                            ))}
+                          </ul>
+                        )}
+                        {service.driverFeedbackNotes && (
+                          <p className="text-sm text-gray-600 dark:text-gray-400 whitespace-pre-wrap">{service.driverFeedbackNotes}</p>
+                        )}
+                      </div>
+                    )}
+                    {service.equipmentCheckItems.filter((i) => i.checkType === 'INTAKE').length > 0 && (
+                      <div>
+                        <p className="text-xs font-semibold text-gray-500 dark:text-gray-500 uppercase tracking-wider mb-2">{tCommon('equipmentCheck')}</p>
+                        <div className="space-y-1.5">
+                          {service.equipmentCheckItems.filter((i) => i.checkType === 'INTAKE').map((item) => (
+                            <div key={item.id} className="flex items-center gap-2 text-sm">
+                              <span className={item.status === 'PRESENT' ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}>{item.status === 'PRESENT' ? '✓' : '✗'}</span>
+                              <span className={item.status === 'PRESENT' ? 'text-gray-600 dark:text-gray-300' : 'text-red-700 dark:text-red-300'}>{item.itemName}</span>
+                              {item.explanation && <span className="text-xs text-gray-500 dark:text-gray-500">({item.explanation})</span>}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {stage === 'IN_PROGRESS' && (
+                  <div className="space-y-3 pt-2">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <p className="text-xs text-gray-500 dark:text-gray-600 mb-0.5">{tService('startDate')}</p>
+                        <p className="text-sm text-gray-800 dark:text-gray-200 font-medium">{service.startDate ? fmtDate(service.startDate) : '—'}</p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-gray-500 dark:text-gray-600 mb-0.5">{tCommon('workCards')}</p>
+                        <p className="text-sm text-gray-800 dark:text-gray-200 font-medium">{completedWorkCards.length} / {activeWorkCards.length} {tWorkCard('status.COMPLETED').toLowerCase()}</p>
+                      </div>
+                    </div>
+                    {service.sections.filter((s) => s.type !== 'EQUIPMENT_CHECK').map((sec) => (
+                      <div key={sec.id}>
+                        <p className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">{sec.title}</p>
+                        {sec.workCards.length === 0 ? (
+                          <p className="text-sm text-gray-500 dark:text-gray-600">—</p>
+                        ) : (
+                          <div className="space-y-1">
+                            {sec.workCards.map((wc) => (
+                              <div key={wc.id} className="flex items-center justify-between gap-2 text-sm">
+                                <span className="text-gray-600 dark:text-gray-300 truncate">{wc.description}</span>
+                                <span className={`shrink-0 text-xs px-1.5 py-0.5 rounded-sm font-medium ${
+                                  wc.status === 'COMPLETED' ? 'bg-green-900/40 text-green-400' :
+                                  wc.status === 'CANCELLED' ? 'bg-gray-200 dark:bg-gray-800 text-gray-500 dark:text-gray-500' :
+                                  'bg-blue-900/40 text-blue-400'
+                                }`}>{tWorkCard(`status.${wc.status}`)}</span>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {stage === 'QUALITY_CHECK' && (
+                  <div className="space-y-3 pt-2">
+                    <div>
+                      <p className="text-xs text-gray-500 dark:text-gray-600 mb-0.5">{tCommon('workCards')}</p>
+                      <p className="text-sm text-gray-800 dark:text-gray-200 font-medium">{completedWorkCards.length} / {activeWorkCards.length} {tWorkCard('status.COMPLETED').toLowerCase()}</p>
+                    </div>
+                    {service.equipmentCheckItems.filter((i) => i.checkType === 'EXIT').length > 0 && (
+                      <div>
+                        <p className="text-xs font-semibold text-gray-500 dark:text-gray-500 uppercase tracking-wider mb-2">{tCommon('equipmentCheck')} — {tEquipment('exitCheck')}</p>
+                        <div className="space-y-1.5">
+                          {service.equipmentCheckItems.filter((i) => i.checkType === 'EXIT').map((item) => (
+                            <div key={item.id} className="flex items-center gap-2 text-sm">
+                              <span className={item.status === 'PRESENT' ? 'text-green-600 dark:text-green-400' : item.status === 'RESTOCKED' ? 'text-amber-600 dark:text-amber-400' : 'text-red-600 dark:text-red-400'}>
+                                {item.status === 'PRESENT' ? '✓' : item.status === 'RESTOCKED' ? '↻' : '✗'}
+                              </span>
+                              <span className={item.status === 'MISSING' ? 'text-red-700 dark:text-red-300' : 'text-gray-600 dark:text-gray-300'}>{item.itemName}</span>
+                              {item.explanation && <span className="text-xs text-gray-500 dark:text-gray-500">({item.explanation})</span>}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {stage === 'READY' && (
+                  <div className="grid grid-cols-2 gap-4 pt-2">
+                    <div>
+                      <p className="text-xs text-gray-500 dark:text-gray-600 mb-0.5">{tService('bay')}</p>
+                      <p className="text-sm text-gray-800 dark:text-gray-200 font-medium">{service.bayNameSnapshot ?? '—'}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-gray-500 dark:text-gray-600 mb-0.5">{tCommon('workCards')}</p>
+                      <p className="text-sm text-gray-800 dark:text-gray-200 font-medium">{completedWorkCards.length} / {activeWorkCards.length} {tWorkCard('status.COMPLETED').toLowerCase()}</p>
+                    </div>
+                  </div>
+                )}
+
+              </div>
+            )}
+          </div>
+        )
+      })}
     </div>
   )
 }
@@ -1256,9 +1660,7 @@ export default function ServiceOrderClient({
   const [feedbackText,     setFeedbackText]     = useState(initialService.driverFeedbackNotes ?? '')
   const [savingFB,         setSavingFB]         = useState(false)
   const [advancing,        setAdvancing]        = useState(false)
-  const [stageWarnings,    setStageWarnings]    = useState<string[]>([])
-  const [expandedRailStage, setExpandedRailStage] = useState<ServiceStatus | null>(null)
-  const [viewingStage,      setViewingStage]      = useState<ServiceStatus | null>(null)
+  const [openPreviousStep, setOpenPreviousStep] = useState<ServiceStatus | null>(null)
 
   const modalRef = useRef(modal)
   useEffect(() => { modalRef.current = modal }, [modal])
@@ -1278,29 +1680,16 @@ export default function ServiceOrderClient({
 
   const isTerminal = service.status === 'COMPLETED' || service.status === 'CANCELLED'
 
-  // Map of next status labels using translation keys
-  const NEXT_STATUS_LABEL: Partial<Record<ServiceStatus, string>> = {
-    INTAKE:        `${tService('advance')} → ${tService('status.IN_PROGRESS')}`,
-    IN_PROGRESS:   `${tService('advance')} → ${tService('status.QUALITY_CHECK')}`,
-    QUALITY_CHECK: `${tService('advance')} → ${tService('status.READY')}`,
-    READY:         tService('moveToCompleted'),
-  }
-
-  async function advanceStage(force = false) {
+  async function advanceStage() {
     setAdvancing(true)
     try {
       const res  = await fetch(`/api/services/${service.id}/status`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ force }),
+        body: JSON.stringify({ force: warnings.length > 0 }),
       })
       const json = await res.json()
       if (!res.ok) { alert(json.error ?? tErrors('genericShort')); return }
-      if (json.warnings?.length) {
-        setStageWarnings(json.warnings)
-        return
-      }
-      setStageWarnings([])
       setService(json.service as FullService)
     } finally { setAdvancing(false) }
   }
@@ -1416,66 +1805,58 @@ export default function ServiceOrderClient({
 
   const isCancelled = service.status === 'CANCELLED'
 
-  const stageGuidance: Partial<Record<ServiceStatus, string>> = {
-    SCHEDULED:     tService('stageGuidance.SCHEDULED'),
-    INTAKE:        tService('stageGuidance.INTAKE'),
-    IN_PROGRESS:   tService('stageGuidance.IN_PROGRESS'),
-    QUALITY_CHECK: tService('stageGuidance.QUALITY_CHECK'),
-    READY:         tService('stageGuidance.READY'),
-    COMPLETED:     tService('stageGuidance.COMPLETED'),
-    CANCELLED:     tService('stageGuidance.CANCELLED'),
+  const warnings: string[] = []
+  if (service.status === 'INTAKE') {
+    if (equipmentSection && !equipmentSection.intakeSkippedAt &&
+        !service.equipmentCheckItems.some((i) => i.checkType === 'INTAKE')) {
+      warnings.push(tService('warn.eqIntakeNotDone'))
+    }
   }
-
-  // Panel visibility and default-open state per stage
-  const showEqCheck   = service.status !== 'SCHEDULED' && service.status !== 'IN_PROGRESS'
-  const showChecklist = !['SCHEDULED', 'INTAKE'].includes(service.status)
-  const showWorkCards = !['SCHEDULED', 'INTAKE'].includes(service.status)
-  const showFeedback  = service.status !== 'SCHEDULED'
-  const showNotes     = service.status !== 'SCHEDULED'
-  const eqDefaultOpen      = service.status === 'INTAKE' || service.status === 'QUALITY_CHECK'
-  const clDefaultOpen      = service.status === 'IN_PROGRESS' || service.status === 'QUALITY_CHECK'
-  const feedbackDefaultOpen = service.status === 'INTAKE' || service.status === 'IN_PROGRESS'
+  if (service.status === 'IN_PROGRESS') {
+    const hasOpenCards = service.sections.some((s) =>
+      s.workCards.some((wc) => wc.status === 'PENDING' || wc.status === 'ASSIGNED' || wc.status === 'IN_PROGRESS'),
+    )
+    if (hasOpenCards) warnings.push(tService('warn.openWorkCards'))
+  }
+  if (service.status === 'QUALITY_CHECK') {
+    if (equipmentSection && !equipmentSection.exitSkippedAt) {
+      if (!service.equipmentCheckItems.some((i) => i.checkType === 'EXIT')) {
+        warnings.push(tService('warn.eqExitNotDone'))
+      }
+      if (service.equipmentCheckItems.some((i) => i.checkType === 'EXIT' && i.status === 'MISSING')) {
+        warnings.push(tService('warn.eqExitMissing'))
+      }
+    }
+  }
 
   // ── Rail item renderer (closure over component state) ──────────────────────
 
   function RailItem({ stage, isLast }: { stage: ServiceStatus; isLast: boolean }) {
     const railState = resolvedStageState(stage, service.status)
-    const expanded  = expandedRailStage === stage
 
     const summaryLine: Partial<Record<ServiceStatus, string>> = {
       SCHEDULED:     fmtDate(service.scheduledDate),
       INTAKE:        [service.bayNameSnapshot, service.mileageAtService != null ? `${Math.round(service.mileageAtService).toLocaleString('bg-BG')} km` : null].filter(Boolean).join(' · '),
       IN_PROGRESS:   service.startDate ? fmtDate(service.startDate) : '',
-      QUALITY_CHECK: `${completedWorkCards.length}/${activeWorkCards.length} work cards`,
+      QUALITY_CHECK: `${completedWorkCards.length}/${activeWorkCards.length}`,
       READY:         service.bayNameSnapshot ?? '',
       COMPLETED:     service.endDate ? fmtDate(service.endDate) : '',
     }
 
     const dotCls =
-      railState === 'done'   ? 'bg-green-500/20 border-green-500' :
+      railState === 'done'   ? 'bg-green-100 dark:bg-green-500/20 border-green-500' :
       railState === 'active' ? 'bg-blue-600 border-blue-400 shadow-[0_0_0_4px_rgba(59,130,246,0.2)]' :
                                'bg-gray-100 dark:bg-gray-800 border-gray-300 dark:border-gray-700'
     const labelCls =
-      railState === 'done'   ? 'text-green-400' :
-      railState === 'active' ? 'text-blue-400 font-bold' :
-                               'text-gray-600'
-
-    const isViewable  = railState === 'done'
-    const isCurrentLive = railState === 'active' && viewingStage !== null
-    const isViewing   = viewingStage === stage
+      railState === 'done'   ? 'text-green-700 dark:text-green-400' :
+      railState === 'active' ? 'text-blue-700 dark:text-blue-400 font-bold' :
+                               'text-gray-500 dark:text-gray-600'
 
     return (
       <div className="flex flex-col items-start">
-        <div
-          className={`flex items-center gap-3 w-full py-1 rounded ${isViewable || isCurrentLive ? 'cursor-pointer hover:bg-gray-100/60 dark:hover:bg-gray-800/60' : ''} ${isViewing ? 'bg-gray-100/80 dark:bg-gray-800/80' : ''}`}
-          onClick={
-            isViewable    ? () => setViewingStage(isViewing ? null : stage) :
-            isCurrentLive ? () => setViewingStage(null) :
-            undefined
-          }
-        >
+        <div className="flex items-center gap-3 w-full py-1 rounded">
           <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 border-2 transition-all ${dotCls}`}>
-            {railState === 'done'   && <svg className="w-4 h-4 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" /></svg>}
+            {railState === 'done'   && <svg className="w-4 h-4 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" /></svg>}
             {railState === 'active' && <div className="w-2.5 h-2.5 rounded-full bg-white" />}
             {railState === 'locked' && <div className="w-2 h-2 rounded-full bg-gray-600" />}
           </div>
@@ -1483,15 +1864,10 @@ export default function ServiceOrderClient({
             <div className={`text-xs font-semibold leading-tight ${labelCls}`}>
               {tService(`status.${stage}`)}
             </div>
-            {(railState === 'done' || railState === 'active') && summaryLine[stage] && !expanded && (
+            {(railState === 'done' || railState === 'active') && summaryLine[stage] && (
               <div className="text-xs text-gray-500 truncate mt-0.5">{summaryLine[stage]}</div>
             )}
           </div>
-          {isViewable && (
-            <svg className={`w-3.5 h-3.5 text-gray-600 shrink-0 transition-transform ${isViewing ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-            </svg>
-          )}
         </div>
         {!isLast && (
           <div className={`w-0.5 ml-[15px] my-0.5 ${railState === 'done' ? 'bg-green-500/40' : 'bg-gray-300 dark:bg-gray-700'}`} style={{ minHeight: 12 }} />
@@ -1506,9 +1882,9 @@ export default function ServiceOrderClient({
     <div className="flex overflow-hidden" style={{ height: '100dvh' }}>
 
       {/* ═══ Stage Rail (desktop) ═══ */}
-      <div className="hidden lg:flex flex-col w-56 shrink-0 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 overflow-y-auto">
+      <div className="hidden lg:flex flex-col w-56 shrink-0 bg-white dark:bg-gray-900 border-r border-gray-300 dark:border-gray-800 overflow-y-auto">
         {/* Truck mini-card */}
-        <div className="p-4 border-b border-gray-200 dark:border-gray-800 shrink-0">
+        <div className="p-4 border-b border-gray-300 dark:border-gray-800 shrink-0">
           <div className="text-xs text-gray-500 mb-1">#{service.id}</div>
           <div className="font-mono text-sm font-bold text-gray-900 dark:text-white">{service.truckPlateSnapshot}</div>
           <div className="text-xs text-gray-500 dark:text-gray-400">{service.truck.make} {service.truck.model}{service.truck.year ? ` · ${service.truck.year}` : ''}</div>
@@ -1547,7 +1923,7 @@ export default function ServiceOrderClient({
       <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
 
         {/* ── Top bar (breadcrumb + actions) ── */}
-        <div className="shrink-0 bg-white/95 dark:bg-gray-900/95 border-b border-gray-200 dark:border-gray-800 px-4 lg:px-6 py-3 flex items-center justify-between gap-3">
+        <div className="shrink-0 bg-white/95 dark:bg-gray-900/95 border-b border-gray-300 dark:border-gray-800 px-4 lg:px-6 py-3 flex items-center justify-between gap-3">
           <nav className="flex items-center gap-2 text-sm min-w-0">
             <Link href="/services" className="text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors hidden sm:inline">
               {tService('backToOrders').replace('←', '').trim()}
@@ -1597,7 +1973,7 @@ export default function ServiceOrderClient({
         </div>
 
         {/* ── Mobile progress bar ── */}
-        <div className="lg:hidden shrink-0 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 px-4 py-2.5">
+        <div className="lg:hidden shrink-0 bg-white dark:bg-gray-900 border-b border-gray-300 dark:border-gray-800 px-4 py-2.5">
           <div className="flex gap-1 mb-1.5">
             {STAGE_ORDER.map((stage) => {
               const s = resolvedStageState(stage, service.status)
@@ -1611,46 +1987,6 @@ export default function ServiceOrderClient({
 
         {/* ── Scrollable body ── */}
         <div className="flex-1 overflow-y-auto bg-gray-50 dark:bg-gray-950">
-
-          {/* Stage header */}
-          <div className="px-4 lg:px-6 pt-5 pb-4 border-b border-gray-200 dark:border-gray-800">
-            <div className="flex items-start justify-between gap-4">
-              <div className="min-w-0">
-                {!isCancelled && service.status !== 'COMPLETED' && (
-                  <div className="text-xs font-bold uppercase tracking-widest text-blue-400 mb-1">
-                    Step {STAGE_ORDER.indexOf(service.status) + 1} of {STAGE_ORDER.length}
-                  </div>
-                )}
-                <h1 className="text-xl font-bold text-gray-900 dark:text-white">{tService(`status.${service.status}`)}</h1>
-                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 max-w-xl leading-relaxed">
-                  {stageGuidance[service.status]}
-                </p>
-              </div>
-              {/* Mini counters */}
-              {(checklistItems.length > 0 || activeWorkCards.length > 0) && !isCancelled && (
-                <div className="flex gap-2 shrink-0">
-                  {checklistItems.length > 0 && showChecklist && (
-                    <div className="bg-gray-100 dark:bg-gray-800 rounded-lg px-3 py-2 border border-gray-200 dark:border-gray-700 text-center min-w-[56px]">
-                      <div className="text-sm font-bold text-gray-900 dark:text-white leading-tight">
-                        {completedChecklist.length}<span className="text-gray-500 text-xs font-normal">/{checklistItems.length}</span>
-                      </div>
-                      <div className="text-xs text-gray-500 mt-0.5">{tCommon('checklist')}</div>
-                    </div>
-                  )}
-                  {activeWorkCards.length > 0 && (
-                    <div className="bg-gray-100 dark:bg-gray-800 rounded-lg px-3 py-2 border border-gray-200 dark:border-gray-700 text-center min-w-[56px]">
-                      <div className="text-sm font-bold text-gray-900 dark:text-white leading-tight">
-                        {completedWorkCards.length}<span className="text-gray-500 text-xs font-normal">/{activeWorkCards.length}</span>
-                      </div>
-                      <div className="text-xs text-gray-500 mt-0.5">{tCommon('workCards')}</div>
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Panels */}
           <div className="px-4 lg:px-6 py-5 space-y-4">
 
             {/* Cancellation banner */}
@@ -1661,278 +1997,88 @@ export default function ServiceOrderClient({
               </div>
             )}
 
-            {/* ── Read-only stage view ── */}
-            {viewingStage && (
-              <div>
-                {/* Banner */}
-                <div className="flex items-center justify-between px-4 py-2.5 bg-gray-100/60 dark:bg-gray-800/60 border border-gray-300 dark:border-gray-700 rounded-xl mb-4">
-                  <span className="text-xs text-gray-500 dark:text-gray-400">
-                    Преглед само за четене: <span className="text-gray-900 dark:text-white font-semibold">{tService(`status.${viewingStage}`)}</span>
-                  </span>
-                  <button onClick={() => setViewingStage(null)} className="text-xs text-gray-500 hover:text-gray-900 dark:hover:text-white transition-colors">✕ Затвори</button>
+            {/* Completed summary */}
+            {service.status === 'COMPLETED' && (
+              <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-300 dark:border-gray-800 p-5">
+                <div className="flex items-center gap-2 mb-4">
+                  <svg className="w-5 h-5 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <h2 className="text-base font-bold text-gray-900 dark:text-white">{tService('status.COMPLETED')}</h2>
                 </div>
-
-                {/* SCHEDULED read-only */}
-                {viewingStage === 'SCHEDULED' && (
-                  <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 p-5 space-y-3">
-                    <div className="flex items-center gap-2">
-                      <span className="font-mono text-lg font-bold text-gray-900 dark:text-white">{service.truckPlateSnapshot}</span>
-                      {service.truck.isAdr && <span className="px-1.5 py-0.5 rounded-sm text-xs font-bold bg-orange-500/20 text-orange-400 border border-orange-500/30">ADR</span>}
-                    </div>
-                    <p className="text-sm text-gray-400">{service.truck.make} {service.truck.model}{service.truck.year ? ` · ${service.truck.year}` : ''}</p>
-                    <div>
-                      <p className="text-xs text-gray-500 dark:text-gray-600 mb-0.5">{tService('scheduledDate')}</p>
-                      <p className="text-sm text-gray-800 dark:text-gray-200 font-medium">{fmtDate(service.scheduledDate)}</p>
-                    </div>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                  <div>
+                    <p className="text-xs text-gray-500 dark:text-gray-600 mb-0.5">{tService('endDate')}</p>
+                    <p className="text-sm text-gray-800 dark:text-gray-200 font-medium">{service.endDate ? fmtDate(service.endDate) : '—'}</p>
                   </div>
-                )}
-
-                {/* INTAKE read-only */}
-                {viewingStage === 'INTAKE' && (
-                  <div className="space-y-4">
-                    {/* Intake info card */}
-                    <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 p-5">
-                      <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">{tService('status.INTAKE')}</p>
-                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                        <div>
-                          <p className="text-xs text-gray-500 dark:text-gray-600 mb-0.5">{tService('bay')}</p>
-                          <p className="text-sm text-gray-800 dark:text-gray-200 font-medium">{service.bayNameSnapshot ?? '—'}</p>
-                        </div>
-                        <div>
-                          <p className="text-xs text-gray-500 dark:text-gray-600 mb-0.5">{tService('driver')}</p>
-                          <p className="text-sm text-gray-800 dark:text-gray-200 font-medium">{service.driverNameSnapshot ?? '—'}</p>
-                        </div>
-                        <div>
-                          <p className="text-xs text-gray-500 dark:text-gray-600 mb-0.5">{tService('mileageAtService')}</p>
-                          <p className="text-sm text-gray-800 dark:text-gray-200 font-medium">
-                            {service.mileageAtService != null ? `${Math.round(service.mileageAtService).toLocaleString('bg-BG')} ${tCommon('kmUnit')}` : '—'}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Driver feedback read-only */}
-                    {(service.driverFeedbackItems.length > 0 || service.driverFeedbackNotes) && (
-                      <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 p-5">
-                        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">{tService('driverFeedback')}</p>
-                        {service.driverFeedbackItems.length > 0 && (
-                          <ul className="space-y-1.5 mb-3">
-                            {service.driverFeedbackItems.map((item) => (
-                              <li key={item.id} className="flex items-start gap-2 text-sm text-gray-600 dark:text-gray-300">
-                                <span className="text-gray-600 mt-0.5">•</span>
-                                <span>{item.description}</span>
-                              </li>
-                            ))}
-                          </ul>
-                        )}
-                        {service.driverFeedbackNotes && (
-                          <p className="text-sm text-gray-400 whitespace-pre-wrap">{service.driverFeedbackNotes}</p>
-                        )}
-                      </div>
-                    )}
-
-                    {/* Equipment check intake read-only */}
-                    {service.equipmentCheckItems.filter((i) => i.checkType === 'INTAKE').length > 0 && (
-                      <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 p-5">
-                        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">{tCommon('equipmentCheck')} — {tService('status.INTAKE')}</p>
-                        <div className="space-y-1.5">
-                          {service.equipmentCheckItems.filter((i) => i.checkType === 'INTAKE').map((item) => (
-                            <div key={item.id} className="flex items-center gap-2 text-sm">
-                              <span className={item.status === 'PRESENT' ? 'text-green-400' : 'text-red-400'}>
-                                {item.status === 'PRESENT' ? '✓' : '✗'}
-                              </span>
-                              <span className={item.status === 'PRESENT' ? 'text-gray-600 dark:text-gray-300' : 'text-red-300'}>{item.itemName}</span>
-                              {item.explanation && <span className="text-xs text-gray-500">({item.explanation})</span>}
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
+                  <div>
+                    <p className="text-xs text-gray-500 dark:text-gray-600 mb-0.5">{tCommon('workCards')}</p>
+                    <p className="text-sm text-gray-800 dark:text-gray-200 font-medium">{completedWorkCards.length} / {activeWorkCards.length} {tWorkCard('status.COMPLETED').toLowerCase()}</p>
                   </div>
-                )}
-
-                {/* IN_PROGRESS read-only */}
-                {viewingStage === 'IN_PROGRESS' && (
-                  <div className="space-y-4">
-                    <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 p-5">
-                      <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">{tService('status.IN_PROGRESS')}</p>
-                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                        <div>
-                          <p className="text-xs text-gray-500 dark:text-gray-600 mb-0.5">{tService('startDate')}</p>
-                          <p className="text-sm text-gray-800 dark:text-gray-200 font-medium">{service.startDate ? fmtDate(service.startDate) : '—'}</p>
-                        </div>
-                        <div>
-                          <p className="text-xs text-gray-500 dark:text-gray-600 mb-0.5">{tCommon('workCards')}</p>
-                          <p className="text-sm text-gray-800 dark:text-gray-200 font-medium">{completedWorkCards.length} / {activeWorkCards.length} {tWorkCard('status.COMPLETED').toLowerCase()}</p>
-                        </div>
-                      </div>
-                    </div>
-                    {service.sections.filter((s) => s.type !== 'EQUIPMENT_CHECK').map((sec) => (
-                      <div key={sec.id} className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 p-5">
-                        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">{sec.title}</p>
-                        {sec.workCards.length === 0 ? (
-                          <p className="text-sm text-gray-600">—</p>
-                        ) : (
-                          <div className="space-y-1.5">
-                            {sec.workCards.map((wc) => (
-                              <div key={wc.id} className="flex items-center justify-between gap-2 text-sm">
-                                <span className="text-gray-600 dark:text-gray-300 truncate">{wc.description}</span>
-                                <span className={`shrink-0 text-xs px-1.5 py-0.5 rounded-sm font-medium ${
-                                  wc.status === 'COMPLETED' ? 'bg-green-900/40 text-green-400' :
-                                  wc.status === 'CANCELLED' ? 'bg-gray-800 text-gray-500' :
-                                  'bg-blue-900/40 text-blue-400'
-                                }`}>{tWorkCard(`status.${wc.status}`)}</span>
-                              </div>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                )}
-
-                {/* QUALITY_CHECK read-only */}
-                {viewingStage === 'QUALITY_CHECK' && (
-                  <div className="space-y-4">
-                    <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 p-5">
-                      <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">{tService('status.QUALITY_CHECK')}</p>
-                      <div className="grid grid-cols-2 gap-4">
-                        <div>
-                          <p className="text-xs text-gray-500 dark:text-gray-600 mb-0.5">{tCommon('workCards')}</p>
-                          <p className="text-sm text-gray-800 dark:text-gray-200 font-medium">{completedWorkCards.length} / {activeWorkCards.length} {tWorkCard('status.COMPLETED').toLowerCase()}</p>
-                        </div>
-                      </div>
-                    </div>
-                    {/* Equipment check exit */}
-                    {service.equipmentCheckItems.filter((i) => i.checkType === 'EXIT').length > 0 && (
-                      <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 p-5">
-                        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">{tCommon('equipmentCheck')} — {tEquipment('exitCheck')}</p>
-                        <div className="space-y-1.5">
-                          {service.equipmentCheckItems.filter((i) => i.checkType === 'EXIT').map((item) => (
-                            <div key={item.id} className="flex items-center gap-2 text-sm">
-                              <span className={item.status === 'PRESENT' ? 'text-green-400' : item.status === 'RESTOCKED' ? 'text-amber-400' : 'text-red-400'}>
-                                {item.status === 'PRESENT' ? '✓' : item.status === 'RESTOCKED' ? '↻' : '✗'}
-                              </span>
-                              <span className={item.status === 'MISSING' ? 'text-red-300' : 'text-gray-600 dark:text-gray-300'}>{item.itemName}</span>
-                              {item.explanation && <span className="text-xs text-gray-500">({item.explanation})</span>}
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                )}
-
-                {/* READY read-only */}
-                {viewingStage === 'READY' && (
-                  <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 p-5">
-                    <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">{tService('status.READY')}</p>
-                    <div className="grid grid-cols-2 gap-4">
+                  {(() => {
+                    const cost = allWorkCards.flatMap((wc) => wc.parts).reduce((s, p) => s + (p.unitCost ?? 0) * p.quantity, 0)
+                    return cost > 0 ? (
                       <div>
-                        <p className="text-xs text-gray-500 dark:text-gray-600 mb-0.5">{tService('bay')}</p>
-                        <p className="text-sm text-gray-800 dark:text-gray-200 font-medium">{service.bayNameSnapshot ?? '—'}</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-600 mb-0.5">{tService('totalPartsCost')}</p>
+                        <p className="text-sm text-gray-800 dark:text-gray-200 font-medium">{cost.toFixed(2)} €</p>
                       </div>
-                      <div>
-                        <p className="text-xs text-gray-500 dark:text-gray-600 mb-0.5">{tCommon('workCards')}</p>
-                        <p className="text-sm text-gray-800 dark:text-gray-200 font-medium">{completedWorkCards.length} / {activeWorkCards.length} {tWorkCard('status.COMPLETED').toLowerCase()}</p>
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {/* COMPLETED read-only */}
-                {viewingStage === 'COMPLETED' && (
-                  <div className="space-y-4">
-                    <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 p-5">
-                      <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">{tService('status.COMPLETED')}</p>
-                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                        <div>
-                          <p className="text-xs text-gray-500 dark:text-gray-600 mb-0.5">{tService('endDate')}</p>
-                          <p className="text-sm text-gray-800 dark:text-gray-200 font-medium">{service.endDate ? fmtDate(service.endDate) : '—'}</p>
-                        </div>
-                        <div>
-                          <p className="text-xs text-gray-500 dark:text-gray-600 mb-0.5">{tCommon('workCards')}</p>
-                          <p className="text-sm text-gray-800 dark:text-gray-200 font-medium">{completedWorkCards.length} / {activeWorkCards.length} {tWorkCard('status.COMPLETED').toLowerCase()}</p>
-                        </div>
-                        {(() => {
-                          const cost = allWorkCards.flatMap((wc) => wc.parts).reduce((s, p) => s + (p.unitCost ?? 0) * p.quantity, 0)
-                          return cost > 0 ? (
-                            <div>
-                              <p className="text-xs text-gray-500 dark:text-gray-600 mb-0.5">{tService('totalPartsCost')}</p>
-                              <p className="text-sm text-gray-800 dark:text-gray-200 font-medium">{cost.toFixed(2)} €</p>
-                            </div>
-                          ) : null
-                        })()}
-                      </div>
-                    </div>
-                  </div>
-                )}
-
+                    ) : null
+                  })()}
+                </div>
               </div>
             )}
 
-            {/* ── Normal panels (hidden when viewing a past stage) ── */}
-            {!viewingStage && <>
-
-            {/* SCHEDULED: truck info + preview */}
-            {service.status === 'SCHEDULED' && (
-              <>
-                <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 p-5">
-                  <div className="flex flex-wrap items-start justify-between gap-3 mb-4">
-                    <div>
-                      <div className="flex items-center gap-2 mb-1">
-                        <span className="font-mono text-xl font-bold text-gray-900 dark:text-white">{service.truckPlateSnapshot}</span>
-                        {service.truck.isAdr && (
-                          <span className="px-1.5 py-0.5 rounded-sm text-xs font-bold bg-orange-500/20 text-orange-400 border border-orange-500/30">ADR</span>
-                        )}
-                      </div>
-                      <p className="text-sm text-gray-400">{service.truck.make} {service.truck.model}{service.truck.year ? ` · ${service.truck.year}` : ''}</p>
-                    </div>
-                    {canReschedule && (
-                      <button
-                        onClick={() => setModal('reschedule')}
-                        className="text-xs px-3 py-1.5 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300 rounded-lg transition-colors"
-                      >
-                        {tService('reschedule')}
-                      </button>
-                    )}
-                  </div>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                    <div>
-                      <p className="text-xs text-gray-500 dark:text-gray-600 mb-0.5">{tService('scheduledDate')}</p>
-                      <p className="text-sm text-gray-800 dark:text-gray-200 font-medium">{fmtDate(service.scheduledDate)}</p>
-                    </div>
-                    {service.mileageAtService !== null && (
-                      <div>
-                        <p className="text-xs text-gray-500 dark:text-gray-600 mb-0.5">{tService('mileageAtService')}</p>
-                        <p className="text-sm text-gray-800 dark:text-gray-200">{Math.round(service.mileageAtService).toLocaleString('bg-BG')} {tCommon('kmUnit')}</p>
-                      </div>
-                    )}
-                  </div>
-                </div>
-                <div className="bg-blue-900/20 border border-blue-800/40 rounded-xl px-5 py-4">
-                  <p className="text-sm font-semibold text-blue-300 mb-1">↓ {tService('status.INTAKE')}</p>
-                  <p className="text-sm text-gray-400">{tService('moveToIntakeDesc')}</p>
-                </div>
-              </>
+            {/* Stage task card (active stages only) */}
+            {!isTerminal && (
+              <StageTaskCard
+                service={service}
+                warnings={warnings}
+                advancing={advancing}
+                checklistItems={checklistItems}
+                completedChecklist={completedChecklist}
+                activeWorkCards={activeWorkCards}
+                completedWorkCards={completedWorkCards}
+                equipmentSection={equipmentSection}
+                canReschedule={canReschedule}
+                onMoveToIntake={() => setModal('intake')}
+                onAdvance={advanceStage}
+                onReschedule={() => setModal('reschedule')}
+              />
             )}
 
-            {/* Equipment Check */}
-            {showEqCheck && equipmentSection && (
+            {/* SCHEDULED: truck info */}
+            {service.status === 'SCHEDULED' && (
+              <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-300 dark:border-gray-800 p-5">
+                <div className="flex items-center gap-2 mb-3">
+                  <span className="font-mono text-lg font-bold text-gray-900 dark:text-white">{service.truckPlateSnapshot}</span>
+                  {service.truck.isAdr && (
+                    <span className="px-1.5 py-0.5 rounded-sm text-xs font-bold bg-orange-500/20 text-orange-400 border border-orange-500/30">ADR</span>
+                  )}
+                </div>
+                <p className="text-sm text-gray-500 dark:text-gray-400 mb-3">{service.truck.make} {service.truck.model}{service.truck.year ? ` · ${service.truck.year}` : ''}</p>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                  <div>
+                    <p className="text-xs text-gray-500 dark:text-gray-600 mb-0.5">{tService('scheduledDate')}</p>
+                    <p className="text-sm text-gray-800 dark:text-gray-200 font-medium">{fmtDate(service.scheduledDate)}</p>
+                  </div>
+                  {service.mileageAtService !== null && (
+                    <div>
+                      <p className="text-xs text-gray-500 dark:text-gray-600 mb-0.5">{tService('mileageAtService')}</p>
+                      <p className="text-sm text-gray-800 dark:text-gray-200">{Math.round(service.mileageAtService).toLocaleString('bg-BG')} {tCommon('kmUnit')}</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* INTAKE: equipment check + driver feedback */}
+            {service.status === 'INTAKE' && equipmentSection && (
               <CollapsiblePanel
-                key={`eq-${service.status}`}
+                key="eq-intake"
                 title={tCommon('equipmentCheck')}
                 kind="equipment"
-                defaultOpen={eqDefaultOpen}
-                badge={
-                  equipmentSection.intakeSkippedAt && equipmentSection.exitSkippedAt
-                    ? tCommon('skipped')
-                    : equipmentSection.intakeSkippedAt
-                    ? `Intake ${tCommon('skipped').toLowerCase()}`
-                    : equipmentSection.exitSkippedAt
-                    ? `Exit ${tCommon('skipped').toLowerCase()}`
-                    : undefined
-                }
+                defaultOpen
+                badge={equipmentSection.intakeSkippedAt ? tCommon('skipped') : undefined}
               >
                 <div className="px-4 py-3">
                   <SectionCard
@@ -1961,23 +2107,20 @@ export default function ServiceOrderClient({
               </CollapsiblePanel>
             )}
 
-            {/* Driver Feedback */}
-            {showFeedback && (
+            {service.status === 'INTAKE' && (
               <CollapsiblePanel
                 title={tService('driverFeedback')}
                 kind="feedback"
-                defaultOpen={feedbackDefaultOpen}
+                defaultOpen
                 badge={service.driverFeedbackItems.length > 0 ? service.driverFeedbackItems.length : undefined}
                 headerRight={
-                  !isTerminal ? (
-                    <button
-                      type="button"
-                      onClick={(e) => { e.stopPropagation(); setModal('addFeedback') }}
-                      className="text-xs px-2 py-1 bg-blue-600 hover:bg-blue-500 text-white rounded-sm transition-colors"
-                    >
-                      + {tCommon('add')}
-                    </button>
-                  ) : undefined
+                  <button
+                    type="button"
+                    onClick={(e) => { e.stopPropagation(); setModal('addFeedback') }}
+                    className="text-xs px-2 py-1 bg-blue-600 hover:bg-blue-500 text-white rounded-sm transition-colors"
+                  >
+                    + {tCommon('add')}
+                  </button>
                 }
               >
                 <div className="px-5 py-4 space-y-3">
@@ -1988,9 +2131,7 @@ export default function ServiceOrderClient({
                       {service.driverFeedbackItems.map((item) => (
                         <li key={item.id} className="flex items-start justify-between gap-2">
                           <p className="text-sm text-gray-600 dark:text-gray-300">• {item.description}</p>
-                          {!isTerminal && (
-                            <button onClick={() => deleteFeedbackItem(item.id)} className="text-gray-700 hover:text-red-400 transition-colors shrink-0 text-lg leading-none">×</button>
-                          )}
+                          <button onClick={() => deleteFeedbackItem(item.id)} className="text-gray-700 hover:text-red-400 transition-colors shrink-0 text-lg leading-none">×</button>
                         </li>
                       ))}
                     </ul>
@@ -2002,13 +2143,12 @@ export default function ServiceOrderClient({
                       value={feedbackText}
                       onChange={(e) => setFeedbackText(e.target.value)}
                       placeholder={tService('feedbackNotesPlaceholder')}
-                      disabled={isTerminal}
                     />
-                    {!isTerminal && feedbackText !== (service.driverFeedbackNotes ?? '') && (
+                    {feedbackText !== (service.driverFeedbackNotes ?? '') && (
                       <button
                         onClick={saveFeedbackNotes}
                         disabled={savingFB}
-                        className="mt-2 px-3 py-1.5 text-sm bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-lg transition-colors disabled:opacity-50"
+                        className="mt-2 px-3 py-1.5 text-sm bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg transition-colors disabled:opacity-50"
                       >
                         {savingFB ? tCommon('saving') : tService('saveFeedbackNotes')}
                       </button>
@@ -2018,74 +2158,123 @@ export default function ServiceOrderClient({
               </CollapsiblePanel>
             )}
 
-            {/* Checklist */}
-            {showChecklist && checklistSection && (
-              <CollapsiblePanel
-                key={`cl-${service.status}`}
-                title={tCommon('checklist')}
-                kind="checklist"
-                defaultOpen={clDefaultOpen}
-                progress={{ done: completedChecklist.length, total: checklistItems.length }}
-              >
-                <div className="px-5 py-3">
-                  {checklistItems.length === 0 ? (
-                    <p className="py-2 text-sm text-gray-600">{tCommon('noItems')}</p>
-                  ) : (
-                    checklistItems.map((item) => (
-                      <ChecklistItemRow
-                        key={item.id}
-                        item={item}
+            {/* IN_PROGRESS / QUALITY_CHECK / READY / COMPLETED: active panels */}
+            {['IN_PROGRESS', 'QUALITY_CHECK', 'READY', 'COMPLETED'].includes(service.status) && (
+              <>
+                {/* Checklist */}
+                {checklistSection && (
+                  <CollapsiblePanel
+                    key={`cl-${service.status}`}
+                    title={tCommon('checklist')}
+                    kind="checklist"
+                    defaultOpen={service.status === 'IN_PROGRESS' || service.status === 'QUALITY_CHECK'}
+                    progress={{ done: completedChecklist.length, total: checklistItems.length }}
+                  >
+                    <div className="px-5 py-3">
+                      {checklistItems.length === 0 ? (
+                        <p className="py-2 text-sm text-gray-600">{tCommon('noItems')}</p>
+                      ) : (
+                        checklistItems.map((item) => (
+                          <ChecklistItemRow
+                            key={item.id}
+                            item={item}
+                            serviceId={service.id}
+                            sectionId={checklistSection.id}
+                            disabled={isTerminal}
+                            userName={userName}
+                            onToggled={(u) => checklistItemToggled(checklistSection.id, u)}
+                          />
+                        ))
+                      )}
+                    </div>
+                  </CollapsiblePanel>
+                )}
+
+                {/* Equipment check (both phases) */}
+                {equipmentSection && (
+                  <CollapsiblePanel
+                    key={`eq-${service.status}`}
+                    title={tCommon('equipmentCheck')}
+                    kind="equipment"
+                    defaultOpen={service.status === 'QUALITY_CHECK'}
+                    badge={
+                      equipmentSection.intakeSkippedAt && equipmentSection.exitSkippedAt
+                        ? tCommon('skipped')
+                        : equipmentSection.intakeSkippedAt
+                        ? `Intake ${tCommon('skipped').toLowerCase()}`
+                        : equipmentSection.exitSkippedAt
+                        ? `Exit ${tCommon('skipped').toLowerCase()}`
+                        : undefined
+                    }
+                  >
+                    <div className="px-4 py-3">
+                      <SectionCard
+                        sec={equipmentSection}
                         serviceId={service.id}
-                        sectionId={checklistSection.id}
-                        disabled={isTerminal}
+                        mechanics={mechanics}
                         userName={userName}
-                        onToggled={(u) => checklistItemToggled(checklistSection.id, u)}
+                        canCreateWC={canCreateWorkCard}
+                        canCancelWC={canCancelWorkCard}
+                        canReopenWC={canReopenWorkCard}
+                        canCompleteWC={canCompleteWorkCard}
+                        serviceTerminal={isTerminal}
+                        serviceStatus={service.status}
+                        isAdr={service.truck.isAdr}
+                        equipmentItems={equipmentItems}
+                        adrEquipmentItems={adrEquipmentItems}
+                        equipmentCheckItems={service.equipmentCheckItems}
+                        onSectionDeleted={() => sectionDeleted(equipmentSection.id)}
+                        onChecklistItemToggled={(u) => checklistItemToggled(equipmentSection.id, u)}
+                        onWorkCardAdded={(wc) => workCardAdded(equipmentSection.id, wc)}
+                        onWorkCardUpdated={(wc) => workCardUpdated(equipmentSection.id, wc)}
+                        onEquipmentCheckSaved={(items, phase) => equipmentCheckSaved(items, phase)}
+                        onEquipmentCheckSkipped={(phase, note) => equipmentCheckSkipped(phase, note)}
                       />
-                    ))
-                  )}
-                </div>
-              </CollapsiblePanel>
+                    </div>
+                  </CollapsiblePanel>
+                )}
+
+                {/* Work card sections */}
+                {workCardSections.map((sec) => (
+                  <SectionCard
+                    key={sec.id}
+                    sec={sec}
+                    serviceId={service.id}
+                    mechanics={mechanics}
+                    userName={userName}
+                    canCreateWC={canCreateWorkCard}
+                    canCancelWC={canCancelWorkCard}
+                    canReopenWC={canReopenWorkCard}
+                    canCompleteWC={canCompleteWorkCard}
+                    serviceTerminal={isTerminal}
+                    serviceStatus={service.status}
+                    isAdr={service.truck.isAdr}
+                    equipmentItems={equipmentItems}
+                    adrEquipmentItems={adrEquipmentItems}
+                    equipmentCheckItems={service.equipmentCheckItems}
+                    onSectionDeleted={() => sectionDeleted(sec.id)}
+                    onChecklistItemToggled={(u) => checklistItemToggled(sec.id, u)}
+                    onWorkCardAdded={(wc) => workCardAdded(sec.id, wc)}
+                    onWorkCardUpdated={(wc) => workCardUpdated(sec.id, wc)}
+                    onEquipmentCheckSaved={(items, phase) => equipmentCheckSaved(items, phase)}
+                    onEquipmentCheckSkipped={(phase, note) => equipmentCheckSkipped(phase, note)}
+                  />
+                ))}
+
+                {/* Add section */}
+                {!isTerminal && (
+                  <button
+                    onClick={() => setModal('addSection')}
+                    className="w-full py-3 border border-dashed border-gray-700 hover:border-gray-500 text-sm text-gray-500 hover:text-gray-300 rounded-xl transition-colors"
+                  >
+                    + {tSection('addSection')}
+                  </button>
+                )}
+              </>
             )}
 
-            {/* Work card sections */}
-            {showWorkCards && workCardSections.map((sec) => (
-              <SectionCard
-                key={sec.id}
-                sec={sec}
-                serviceId={service.id}
-                mechanics={mechanics}
-                userName={userName}
-                canCreateWC={canCreateWorkCard}
-                canCancelWC={canCancelWorkCard}
-                canReopenWC={canReopenWorkCard}
-                canCompleteWC={canCompleteWorkCard}
-                serviceTerminal={isTerminal}
-                serviceStatus={service.status}
-                isAdr={service.truck.isAdr}
-                equipmentItems={equipmentItems}
-                adrEquipmentItems={adrEquipmentItems}
-                equipmentCheckItems={service.equipmentCheckItems}
-                onSectionDeleted={() => sectionDeleted(sec.id)}
-                onChecklistItemToggled={(u) => checklistItemToggled(sec.id, u)}
-                onWorkCardAdded={(wc) => workCardAdded(sec.id, wc)}
-                onWorkCardUpdated={(wc) => workCardUpdated(sec.id, wc)}
-                onEquipmentCheckSaved={(items, phase) => equipmentCheckSaved(items, phase)}
-                onEquipmentCheckSkipped={(phase, note) => equipmentCheckSkipped(phase, note)}
-              />
-            ))}
-
-            {/* Add section */}
-            {!isTerminal && service.status !== 'SCHEDULED' && service.status !== 'INTAKE' && (
-              <button
-                onClick={() => setModal('addSection')}
-                className="w-full py-3 border border-dashed border-gray-700 hover:border-gray-500 text-sm text-gray-500 hover:text-gray-300 rounded-xl transition-colors"
-              >
-                + {tSection('addSection')}
-              </button>
-            )}
-
-            {/* Notes & Photos */}
-            {showNotes && (
+            {/* Notes & Photos — all stages except SCHEDULED */}
+            {service.status !== 'SCHEDULED' && (
               <CollapsiblePanel
                 title={tCommon('notesAndPhotos')}
                 kind="notes"
@@ -2111,70 +2300,17 @@ export default function ServiceOrderClient({
               </CollapsiblePanel>
             )}
 
-            </>}{/* end !viewingStage */}
+            {/* Previous Steps Accordion */}
+            <PreviousStepsAccordion
+              service={service}
+              openStep={openPreviousStep}
+              onToggle={(s) => setOpenPreviousStep(s)}
+              completedWorkCards={completedWorkCards}
+              activeWorkCards={activeWorkCards}
+            />
 
           </div>
         </div>
-
-        {/* ── Bottom Action Bar ── */}
-        {!isTerminal && (
-          <div className="shrink-0 bg-gray-900/95 backdrop-blur-sm border-t border-gray-800 px-4 lg:px-6 py-4">
-            {/* Warnings */}
-            {stageWarnings.length > 0 && (
-              <div className="flex items-start gap-3 mb-4 p-3 bg-amber-900/20 border border-amber-800/40 rounded-lg">
-                <svg className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                </svg>
-                <div className="flex-1 min-w-0">
-                  <ul className="text-sm text-amber-300 space-y-0.5">
-                    {stageWarnings.map((w, i) => <li key={i}>{w}</li>)}
-                  </ul>
-                  <div className="flex gap-2 mt-2">
-                    <button
-                      onClick={() => { setStageWarnings([]); advanceStage(true) }}
-                      disabled={advancing}
-                      className="px-3 py-1.5 text-xs bg-amber-600 hover:bg-amber-500 text-white rounded-lg transition-colors disabled:opacity-50"
-                    >
-                      {tService('continueAnyway')}
-                    </button>
-                    <button onClick={() => setStageWarnings([])} className="px-3 py-1.5 text-xs text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors">
-                      {tCommon('cancel')}
-                    </button>
-                  </div>
-                </div>
-              </div>
-            )}
-            {!viewingStage && <div className="flex items-center justify-between gap-3">
-              <div className="text-xs text-gray-600 flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse inline-block" />
-                {tCommon('live')}
-              </div>
-              <div className="flex items-center gap-2">
-                {service.status === 'SCHEDULED' && (
-                  <button
-                    onClick={() => setModal('intake')}
-                    className="px-5 py-2 bg-blue-600 hover:bg-blue-500 text-white text-sm font-semibold rounded-xl transition-colors flex items-center gap-2"
-                  >
-                    {tService('moveToIntake')}
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
-                  </button>
-                )}
-                {NEXT_STATUS_LABEL[service.status] && (
-                  <button
-                    onClick={() => advanceStage(false)}
-                    disabled={advancing}
-                    className={`px-5 py-2 text-white text-sm font-semibold rounded-xl transition-colors disabled:opacity-50 flex items-center gap-2 ${
-                      service.status === 'READY' ? 'bg-green-600 hover:bg-green-500' : 'bg-blue-600 hover:bg-blue-500'
-                    }`}
-                  >
-                    {advancing ? tCommon('loading') : NEXT_STATUS_LABEL[service.status]}
-                    {!advancing && <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>}
-                  </button>
-                )}
-              </div>
-            </div>}{/* end !viewingStage action bar */}
-          </div>
-        )}
 
       </div>
 

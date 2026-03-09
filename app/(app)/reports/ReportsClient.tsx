@@ -219,21 +219,21 @@ export default function ReportsClient({ trucks, canExport }: { trucks: TruckOpti
             <label className="block text-xs text-gray-500 mb-1">{t('dateFrom')}</label>
             <input
               type="date" value={from} onChange={(e) => setFrom(e.target.value)}
-              className="bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-2 text-gray-900 dark:text-white text-sm focus:outline-hidden focus:ring-2 focus:ring-blue-500"
+              className="bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-xl px-3 py-2 text-gray-900 dark:text-white text-sm focus:outline-hidden focus:ring-2 focus:ring-blue-500"
             />
           </div>
           <div>
             <label className="block text-xs text-gray-500 mb-1">{t('dateTo')}</label>
             <input
               type="date" value={to} onChange={(e) => setTo(e.target.value)}
-              className="bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-2 text-gray-900 dark:text-white text-sm focus:outline-hidden focus:ring-2 focus:ring-blue-500"
+              className="bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-xl px-3 py-2 text-gray-900 dark:text-white text-sm focus:outline-hidden focus:ring-2 focus:ring-blue-500"
             />
           </div>
           <div>
             <label className="block text-xs text-gray-500 mb-1">{t('truckOptional')}</label>
             <select
               value={truckId} onChange={(e) => setTruckId(e.target.value)}
-              className="bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-2 text-gray-900 dark:text-white text-sm focus:outline-hidden focus:ring-2 focus:ring-blue-500"
+              className="bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-xl px-3 py-2 text-gray-900 dark:text-white text-sm focus:outline-hidden focus:ring-2 focus:ring-blue-500"
             >
               <option value="">{t('selectAllTrucks')}</option>
               {trucks.map((tr) => (
@@ -249,7 +249,7 @@ export default function ReportsClient({ trucks, canExport }: { trucks: TruckOpti
             {loading ? t('generating') : t('generate')}
           </button>
         </div>
-        {error && <p className="mt-3 text-red-400 text-sm">{error}</p>}
+        {error && <p className="mt-3 text-red-700 dark:text-red-400 text-sm">{error}</p>}
       </div>
 
       {data && (
@@ -275,14 +275,14 @@ export default function ReportsClient({ trucks, canExport }: { trucks: TruckOpti
                 <button
                   onClick={exportPdf}
                   disabled={exportingPdf}
-                  className="px-4 py-2 text-sm border border-red-700 text-red-400 hover:bg-red-700/20 rounded-xl transition-colors disabled:opacity-50"
+                  className="px-4 py-2 text-sm border border-red-300 dark:border-red-700 text-red-700 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-700/20 rounded-xl transition-colors disabled:opacity-50"
                 >
                   {exportingPdf ? t('exporting') : t('downloadPdf')}
                 </button>
                 <button
                   onClick={exportExcel}
                   disabled={exporting}
-                  className="px-4 py-2 text-sm border border-green-700 text-green-400 hover:bg-green-700/20 rounded-xl transition-colors disabled:opacity-50"
+                  className="px-4 py-2 text-sm border border-green-300 dark:border-green-700 text-green-700 dark:text-green-400 hover:bg-green-50 dark:hover:bg-green-700/20 rounded-xl transition-colors disabled:opacity-50"
                 >
                   {exporting ? t('exporting') : t('downloadExcel')}
                 </button>
@@ -290,14 +290,14 @@ export default function ReportsClient({ trucks, canExport }: { trucks: TruckOpti
             )}
             <button
               onClick={printReport}
-              className="px-4 py-2 text-sm border border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition-colors print:hidden"
+              className="px-4 py-2 text-sm border border-gray-300 dark:border-gray-700 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition-colors print:hidden"
             >
               {tCommon('print')}
             </button>
           </div>
 
           {/* Tab navigation */}
-          <div className="flex gap-1 border-b border-gray-200 dark:border-gray-800">
+          <div className="flex gap-1 border-b border-gray-300 dark:border-gray-800">
             {(['services', 'trucks', 'parts'] as const).map((tabKey) => {
               const labels = {
                 services: t('tabServices'),
@@ -310,7 +310,7 @@ export default function ReportsClient({ trucks, canExport }: { trucks: TruckOpti
                   onClick={() => setTab(tabKey)}
                   className={`px-4 py-2 text-sm font-medium transition-colors border-b-2 -mb-px ${
                     tab === tabKey
-                      ? 'border-blue-500 text-blue-400'
+                      ? 'border-blue-500 text-blue-700 dark:text-blue-400'
                       : 'border-transparent text-gray-500 hover:text-gray-600 dark:hover:text-gray-300'
                   }`}
                 >
@@ -326,7 +326,7 @@ export default function ReportsClient({ trucks, canExport }: { trucks: TruckOpti
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
-                    <tr className="border-b border-gray-200 dark:border-gray-800">
+                    <tr className="border-b border-gray-300 dark:border-gray-800">
                       {[
                         t('colPlate'), t('colMakeModel'), t('colDate'),
                         t('colDays'), t('colMileage'), t('colWorkCards'), t('colPartsCost'),
@@ -337,20 +337,20 @@ export default function ReportsClient({ trucks, canExport }: { trucks: TruckOpti
                       ))}
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-gray-200 dark:divide-gray-800">
+                  <tbody className="divide-y divide-gray-300 dark:divide-gray-800">
                     {data.rows.length === 0 ? (
                       <tr><td colSpan={7} className="px-4 py-8 text-center text-gray-500 text-sm">{t('noServices')}</td></tr>
                     ) : data.rows.map((row) => (
                       <tr key={row.serviceId} className="hover:bg-gray-100 dark:hover:bg-gray-800/50 transition-colors">
                         <td className="px-4 py-3 font-mono text-gray-900 dark:text-white">{row.plate}</td>
-                        <td className="px-4 py-3 text-gray-400">{row.make} {row.model}</td>
-                        <td className="px-4 py-3 text-gray-400 whitespace-nowrap">{fmtDate(row.endDate)}</td>
-                        <td className="px-4 py-3 text-gray-400 tabular-nums">{fmt(row.daysInWorkshop, 1)}</td>
-                        <td className="px-4 py-3 text-gray-400 tabular-nums">
+                        <td className="px-4 py-3 text-gray-600 dark:text-gray-400">{row.make} {row.model}</td>
+                        <td className="px-4 py-3 text-gray-600 dark:text-gray-400 whitespace-nowrap">{fmtDate(row.endDate)}</td>
+                        <td className="px-4 py-3 text-gray-600 dark:text-gray-400 tabular-nums">{fmt(row.daysInWorkshop, 1)}</td>
+                        <td className="px-4 py-3 text-gray-600 dark:text-gray-400 tabular-nums">
                           {row.mileageAtService !== null ? Math.round(row.mileageAtService).toLocaleString('bg-BG') : '—'}
                         </td>
-                        <td className="px-4 py-3 text-gray-400 tabular-nums">{row.workCardCount}</td>
-                        <td className="px-4 py-3 text-gray-400 tabular-nums">
+                        <td className="px-4 py-3 text-gray-600 dark:text-gray-400 tabular-nums">{row.workCardCount}</td>
+                        <td className="px-4 py-3 text-gray-600 dark:text-gray-400 tabular-nums">
                           {row.partsCost > 0 ? `${fmt(row.partsCost)} €` : '—'}
                         </td>
                       </tr>
@@ -367,7 +367,7 @@ export default function ReportsClient({ trucks, canExport }: { trucks: TruckOpti
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
-                    <tr className="border-b border-gray-200 dark:border-gray-800">
+                    <tr className="border-b border-gray-300 dark:border-gray-800">
                       {[
                         t('colPlate'), t('colMakeModel'), t('colServices'),
                         t('colTotalDays'), t('colPartsCost'),
@@ -378,16 +378,16 @@ export default function ReportsClient({ trucks, canExport }: { trucks: TruckOpti
                       ))}
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-gray-200 dark:divide-gray-800">
+                  <tbody className="divide-y divide-gray-300 dark:divide-gray-800">
                     {data.truckSummary.length === 0 ? (
                       <tr><td colSpan={5} className="px-4 py-8 text-center text-gray-500 text-sm">{t('noData')}</td></tr>
                     ) : data.truckSummary.map((tr) => (
                       <tr key={tr.truckId} className="hover:bg-gray-100 dark:hover:bg-gray-800/50 transition-colors">
                         <td className="px-4 py-3 font-mono text-gray-900 dark:text-white">{tr.plate}</td>
-                        <td className="px-4 py-3 text-gray-400">{tr.make} {tr.model}</td>
-                        <td className="px-4 py-3 text-gray-400 tabular-nums">{tr.serviceCount}</td>
-                        <td className="px-4 py-3 text-gray-400 tabular-nums">{fmt(tr.totalDays, 1)}</td>
-                        <td className="px-4 py-3 text-gray-400 tabular-nums">
+                        <td className="px-4 py-3 text-gray-600 dark:text-gray-400">{tr.make} {tr.model}</td>
+                        <td className="px-4 py-3 text-gray-600 dark:text-gray-400 tabular-nums">{tr.serviceCount}</td>
+                        <td className="px-4 py-3 text-gray-600 dark:text-gray-400 tabular-nums">{fmt(tr.totalDays, 1)}</td>
+                        <td className="px-4 py-3 text-gray-600 dark:text-gray-400 tabular-nums">
                           {tr.totalPartsCost > 0 ? `${fmt(tr.totalPartsCost)} €` : '—'}
                         </td>
                       </tr>
@@ -404,7 +404,7 @@ export default function ReportsClient({ trucks, canExport }: { trucks: TruckOpti
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
-                    <tr className="border-b border-gray-200 dark:border-gray-800">
+                    <tr className="border-b border-gray-300 dark:border-gray-800">
                       {[t('colParts'), t('colTotalQty'), t('colExpense')].map((h) => (
                         <th key={h} className="text-left px-4 py-3 text-xs text-gray-500 font-semibold uppercase tracking-wider whitespace-nowrap">
                           {h}
@@ -412,14 +412,14 @@ export default function ReportsClient({ trucks, canExport }: { trucks: TruckOpti
                       ))}
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-gray-200 dark:divide-gray-800">
+                  <tbody className="divide-y divide-gray-300 dark:divide-gray-800">
                     {data.partsSummary.length === 0 ? (
                       <tr><td colSpan={3} className="px-4 py-8 text-center text-gray-500 text-sm">{t('noPartsUsed')}</td></tr>
                     ) : data.partsSummary.map((p, i) => (
                       <tr key={i} className="hover:bg-gray-100 dark:hover:bg-gray-800/50 transition-colors">
                         <td className="px-4 py-3 text-gray-700 dark:text-gray-200">{p.name}</td>
-                        <td className="px-4 py-3 text-gray-400 tabular-nums">{fmt(p.totalQty, 3)}</td>
-                        <td className="px-4 py-3 text-gray-400 tabular-nums">
+                        <td className="px-4 py-3 text-gray-600 dark:text-gray-400 tabular-nums">{fmt(p.totalQty, 3)}</td>
+                        <td className="px-4 py-3 text-gray-600 dark:text-gray-400 tabular-nums">
                           {p.totalCost > 0 ? `${fmt(p.totalCost)} €` : '—'}
                         </td>
                       </tr>

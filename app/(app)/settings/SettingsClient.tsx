@@ -193,7 +193,7 @@ function CompanySection({ initial }: { initial: CompanySettings }) {
               <img
                 src={`/api/uploads/${logoPath}`}
                 alt="Logo"
-                className="h-14 w-auto rounded-lg border border-gray-200 dark:border-gray-700 object-contain bg-gray-100 dark:bg-gray-800 p-1"
+                className="h-14 w-auto rounded-lg border border-gray-300 dark:border-gray-700 object-contain bg-gray-100 dark:bg-gray-800 p-1"
               />
             ) : (
               <div className="h-14 w-24 rounded-lg border border-dashed border-gray-300 dark:border-gray-600 flex items-center justify-center text-xs text-gray-400 dark:text-gray-600">

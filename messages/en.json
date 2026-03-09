@@ -216,7 +216,16 @@
       "CANCELLED": "This service was cancelled."
     },
     "daysInShop": "{days} days in service",
-    "enteredToday": "Entered today"
+    "enteredToday": "Entered today",
+    "previousSteps": "Previous steps",
+    "taskOptional": "Optional",
+    "totalPartsCost": "Parts cost",
+    "warn": {
+      "eqIntakeNotDone": "Intake equipment check has not been completed.",
+      "openWorkCards": "There are unfinished work cards.",
+      "eqExitNotDone": "Exit equipment check has not been completed.",
+      "eqExitMissing": "There are missing items in the exit equipment check."
+    }
   },
   "section": {
     "type": {

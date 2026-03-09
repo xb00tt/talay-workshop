@@ -119,6 +119,40 @@ describe('PATCH /api/services/[id] — cancellation', () => {
 
     expect(res.status).toBe(404)
   })
+
+  it('returns 422 when cancelling a COMPLETED service', async () => {
+    vi.mocked(getServerSession).mockResolvedValue(session('MANAGER'))
+    const truck = await db.truck.create({
+      data: { plateNumber: `CC${Date.now()}`, make: 'Volvo', model: 'FH', isAdr: false, isActive: true },
+    })
+    const service = await db.serviceOrder.create({
+      data: { truckId: truck.id, truckPlateSnapshot: truck.plateNumber, scheduledDate: new Date(), status: 'COMPLETED', endDate: new Date() },
+    })
+
+    const res = await patchService(
+      patchReq(service.id, { status: 'CANCELLED', cancellationReason: 'Тест' }),
+      routeParams(service.id),
+    )
+
+    expect(res.status).toBe(422)
+  })
+
+  it('returns 422 when cancelling an already-cancelled service', async () => {
+    vi.mocked(getServerSession).mockResolvedValue(session('MANAGER'))
+    const truck = await db.truck.create({
+      data: { plateNumber: `CA${Date.now()}`, make: 'DAF', model: 'CF', isAdr: false, isActive: true },
+    })
+    const service = await db.serviceOrder.create({
+      data: { truckId: truck.id, truckPlateSnapshot: truck.plateNumber, scheduledDate: new Date(), status: 'CANCELLED', cancellationReason: 'Вече отменена.' },
+    })
+
+    const res = await patchService(
+      patchReq(service.id, { status: 'CANCELLED', cancellationReason: 'Отново' }),
+      routeParams(service.id),
+    )
+
+    expect(res.status).toBe(422)
+  })
 })
 
 // ─── Service reschedule ───────────────────────────────────────────────────────

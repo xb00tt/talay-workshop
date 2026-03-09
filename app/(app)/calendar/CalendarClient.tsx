@@ -25,13 +25,13 @@ interface TruckOption {
 // ─── Constants ────────────────────────────────────────────────────────────────
 
 const STATUS_COLOR: Record<ServiceStatus, string> = {
-  SCHEDULED:     'bg-amber-600/30 text-amber-300',
-  INTAKE:        'bg-blue-600/30 text-blue-300',
-  IN_PROGRESS:   'bg-indigo-600/30 text-indigo-300',
-  QUALITY_CHECK: 'bg-purple-600/30 text-purple-300',
-  READY:         'bg-green-600/30 text-green-300',
-  COMPLETED:     'bg-gray-600/30 text-gray-400',
-  CANCELLED:     'bg-red-600/30 text-red-400',
+  SCHEDULED:     'bg-amber-100 text-amber-800 dark:bg-amber-600/30 dark:text-amber-300',
+  INTAKE:        'bg-blue-100 text-blue-800 dark:bg-blue-600/30 dark:text-blue-300',
+  IN_PROGRESS:   'bg-indigo-100 text-indigo-800 dark:bg-indigo-600/30 dark:text-indigo-300',
+  QUALITY_CHECK: 'bg-purple-100 text-purple-800 dark:bg-purple-600/30 dark:text-purple-300',
+  READY:         'bg-green-100 text-green-800 dark:bg-green-600/30 dark:text-green-300',
+  COMPLETED:     'bg-gray-100 text-gray-600 dark:bg-gray-600/30 dark:text-gray-400',
+  CANCELLED:     'bg-red-100 text-red-700 dark:bg-red-600/30 dark:text-red-400',
 }
 
 // ─── CreateServiceModal ───────────────────────────────────────────────────────
@@ -90,7 +90,7 @@ function CreateServiceModal({
             <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">{t('selectTruckLabel')}</label>
             <select
               value={truckId} onChange={(e) => setTruckId(e.target.value)}
-              className="w-full bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-2 text-gray-900 dark:text-white text-sm focus:outline-hidden focus:ring-2 focus:ring-blue-500"
+              className="w-full bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-xl px-3 py-2 text-gray-900 dark:text-white text-sm focus:outline-hidden focus:ring-2 focus:ring-blue-500"
               autoFocus
             >
               <option value="">{t('selectTruckPlaceholder')}</option>
@@ -158,7 +158,7 @@ function MonthView({
       </div>
 
       {/* Cells */}
-      <div className="grid grid-cols-7 gap-px bg-gray-200 dark:bg-gray-800 border border-gray-200 dark:border-gray-800 rounded-xl overflow-hidden">
+      <div className="grid grid-cols-7 gap-px bg-gray-200 dark:bg-gray-800 border border-gray-300 dark:border-gray-800 rounded-xl overflow-hidden">
         {cells.map((day, i) => {
           if (!day) return <div key={i} className="bg-gray-50 dark:bg-gray-950 min-h-[80px]" />
 
@@ -172,7 +172,7 @@ function MonthView({
               className={`bg-white dark:bg-gray-900 min-h-[80px] p-1 flex flex-col ${canCreate ? 'cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800/70' : ''} ${isToday ? 'ring-1 ring-blue-500 ring-inset' : ''}`}
               onClick={() => canCreate && onDayClick(ds)}
             >
-              <span className={`text-xs font-medium mb-1 self-end ${isToday ? 'text-blue-400' : 'text-gray-500'}`}>
+              <span className={`text-xs font-medium mb-1 self-end ${isToday ? 'text-blue-600 dark:text-blue-400' : 'text-gray-500'}`}>
                 {day}
               </span>
               <div className="space-y-0.5 flex-1">
@@ -223,7 +223,7 @@ function WeekView({
   const today = new Date().toISOString().slice(0, 10)
 
   return (
-    <div className="grid grid-cols-7 gap-px bg-gray-200 dark:bg-gray-800 border border-gray-200 dark:border-gray-800 rounded-xl overflow-hidden">
+    <div className="grid grid-cols-7 gap-px bg-gray-200 dark:bg-gray-800 border border-gray-300 dark:border-gray-800 rounded-xl overflow-hidden">
       {days.map((day) => {
         const ds      = day.toISOString().slice(0, 10)
         const daySvcs = services.filter((s) => s.scheduledDate === ds)
@@ -237,7 +237,7 @@ function WeekView({
           >
             <div className="mb-2">
               <p className="text-xs text-gray-500">{DAYS[(day.getDay() + 6) % 7]}</p>
-              <p className={`text-sm font-semibold ${isToday ? 'text-blue-400' : 'text-gray-900 dark:text-white'}`}>
+              <p className={`text-sm font-semibold ${isToday ? 'text-blue-600 dark:text-blue-400' : 'text-gray-900 dark:text-white'}`}>
                 {day.getDate()}.{String(day.getMonth() + 1).padStart(2, '0')}
               </p>
             </div>
@@ -353,7 +353,7 @@ export default function CalendarClient({
             ›
           </button>
           <button onClick={goToday}
-            className="px-3 py-1.5 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 border border-gray-200 dark:border-gray-700 hover:border-gray-400 dark:hover:border-gray-500 rounded-lg transition-colors">
+            className="px-3 py-1.5 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 border border-gray-300 dark:border-gray-700 hover:border-gray-400 dark:hover:border-gray-500 rounded-lg transition-colors">
             {t('today')}
           </button>
         </div>

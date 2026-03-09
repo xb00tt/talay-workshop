@@ -139,7 +139,7 @@ export default async function WorkCardPrintPage({
             </thead>
             <tbody>
               {workCard.parts.map((p) => (
-                <tr key={p.id} className="border-b border-gray-200">
+                <tr key={p.id} className="border-b border-gray-300">
                   <td className="py-1">{p.name}</td>
                   <td className="py-1 text-gray-500">{p.partNumber ?? '—'}</td>
                   <td className="py-1 text-right">{p.quantity}</td>
@@ -147,7 +147,7 @@ export default async function WorkCardPrintPage({
                 </tr>
               ))}
               {Array.from({ length: blankRows }).map((_, i) => (
-                <tr key={`b${i}`} className="border-b border-gray-200 h-8"><td /><td /><td /><td /></tr>
+                <tr key={`b${i}`} className="border-b border-gray-300 h-8"><td /><td /><td /><td /></tr>
               ))}
             </tbody>
           </table>
@@ -206,7 +206,7 @@ function PRow({ label, value }: { label: string; value: string }) {
 function PSec({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div className="mb-5">
-      <h3 className="text-xs font-bold uppercase tracking-wider text-gray-500 border-b border-gray-200 pb-1 mb-2">{title}</h3>
+      <h3 className="text-xs font-bold uppercase tracking-wider text-gray-500 border-b border-gray-300 pb-1 mb-2">{title}</h3>
       {children}
     </div>
   )

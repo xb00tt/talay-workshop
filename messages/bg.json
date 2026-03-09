@@ -216,7 +216,16 @@
       "CANCELLED": "Тази поръчка е анулирана."
     },
     "daysInShop": "{days} дни в сервиз",
-    "enteredToday": "Влязъл днес"
+    "enteredToday": "Влязъл днес",
+    "previousSteps": "Предишни стъпки",
+    "taskOptional": "По избор",
+    "totalPartsCost": "Стойност на части",
+    "warn": {
+      "eqIntakeNotDone": "Проверката на оборудване при приемане не е попълнена.",
+      "openWorkCards": "Има незавършени работни карти.",
+      "eqExitNotDone": "Проверката на оборудване при изход не е попълнена.",
+      "eqExitMissing": "Има липсващо оборудване в изходната проверка."
+    }
   },
   "section": {
     "type": {

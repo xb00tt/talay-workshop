@@ -47,10 +47,10 @@ interface MileageAlert {
 // ─── Status config ───────────────────────────────────────────────────────────
 
 const STATUS_COLOR: Record<string, string> = {
-  INTAKE:        'bg-blue-600/20 text-blue-400 border-blue-500/30',
-  IN_PROGRESS:   'bg-indigo-600/20 text-indigo-400 border-indigo-500/30',
-  QUALITY_CHECK: 'bg-purple-600/20 text-purple-400 border-purple-500/30',
-  READY:         'bg-green-600/20 text-green-400 border-green-500/30',
+  INTAKE:        'bg-blue-100 text-blue-800 border-blue-300 dark:bg-blue-600/20 dark:text-blue-400 dark:border-blue-500/30',
+  IN_PROGRESS:   'bg-indigo-100 text-indigo-800 border-indigo-300 dark:bg-indigo-600/20 dark:text-indigo-400 dark:border-indigo-500/30',
+  QUALITY_CHECK: 'bg-purple-100 text-purple-800 border-purple-300 dark:bg-purple-600/20 dark:text-purple-400 dark:border-purple-500/30',
+  READY:         'bg-green-100 text-green-800 border-green-300 dark:bg-green-600/20 dark:text-green-400 dark:border-green-500/30',
 }
 
 const BAY_BORDER: Record<string, string> = {
@@ -82,7 +82,7 @@ function fmtKm(km: number, kmUnit: string) {
 // ─── Sub-components ──────────────────────────────────────────────────────────
 
 function StatusBadge({ status, label }: { status: string; label: string }) {
-  const color = STATUS_COLOR[status] ?? 'bg-gray-600/20 text-gray-400 border-gray-500/30'
+  const color = STATUS_COLOR[status] ?? 'bg-gray-100 text-gray-600 border-gray-300 dark:bg-gray-600/20 dark:text-gray-400 dark:border-gray-500/30'
   return (
     <span className={`inline-flex items-center px-2 py-0.5 rounded-sm text-xs font-medium border ${color}`}>
       {label}
@@ -103,7 +103,7 @@ function BayCard({
 }) {
   if (!bay.service) {
     return (
-      <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-4 min-h-[128px] flex flex-col">
+      <div className="bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-800 rounded-xl p-4 min-h-[128px] flex flex-col">
         <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-auto">{bay.name}</p>
         <p className="text-sm text-gray-600 mt-3">{freeLabel}</p>
       </div>
@@ -180,7 +180,7 @@ export default function DashboardClient({
         {mileageAlerts.length > 0 && (
           <div className="flex items-center gap-2 px-3 py-1.5 bg-amber-500/10 border border-amber-500/30 rounded-full">
             <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse shrink-0" />
-            <span className="text-sm text-amber-400 font-medium">
+            <span className="text-sm text-amber-700 dark:text-amber-400 font-medium">
               {mileageAlerts.length === 1
                 ? t('truckRequiresService', { count: mileageAlerts.length })
                 : t('trucksRequireService', { count: mileageAlerts.length })}
@@ -223,7 +223,7 @@ export default function DashboardClient({
               <Link
                 key={s.id}
                 href={`/services/${s.id}`}
-                className="block bg-white dark:bg-gray-900 border border-gray-300/50 dark:border-gray-700/50 rounded-xl p-4 hover:border-gray-300 dark:hover:border-gray-600 transition-colors"
+                className="block bg-white dark:bg-gray-900 border border-gray-300/50 dark:border-gray-700/50 rounded-xl p-4 hover:border-gray-400 dark:hover:border-gray-600 transition-colors"
               >
                 <div className="flex items-start justify-between mb-1">
                   <p className="font-mono font-semibold text-gray-900 dark:text-white">{s.truckPlateSnapshot}</p>
@@ -249,7 +249,7 @@ export default function DashboardClient({
             {upcoming.length === 0 ? (
               <p className="px-5 py-10 text-sm text-gray-500 text-center">{t('noUpcomingScheduled')}</p>
             ) : (
-              <ul className="divide-y divide-gray-200 dark:divide-gray-800">
+              <ul className="divide-y divide-gray-300 dark:divide-gray-800">
                 {upcoming.map((s) => (
                   <li key={s.id}>
                     <Link
@@ -278,7 +278,7 @@ export default function DashboardClient({
             {mileageAlerts.length === 0 ? (
               <p className="px-5 py-10 text-sm text-gray-500 text-center">{t('noMileageAlerts')}</p>
             ) : (
-              <ul className="divide-y divide-gray-200 dark:divide-gray-800">
+              <ul className="divide-y divide-gray-300 dark:divide-gray-800">
                 {mileageAlerts.map((truck) => {
                   const kmSince = truck.lastServiceMileage !== null
                     ? truck.currentMileage - truck.lastServiceMileage
@@ -295,7 +295,7 @@ export default function DashboardClient({
                           <p className="text-xs text-gray-500">{truck.make} {truck.model}</p>
                         </div>
                         <div className="text-right">
-                          <p className="text-sm text-amber-400 font-medium">{fmtKm(kmSince, kmUnit)}</p>
+                          <p className="text-sm text-amber-700 dark:text-amber-400 font-medium">{fmtKm(kmSince, kmUnit)}</p>
                           <p className="text-xs text-gray-500">{t('overLimit', { km: fmtKm(overBy, kmUnit).trimStart() })}</p>
                         </div>
                       </Link>

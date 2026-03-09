@@ -39,13 +39,13 @@ interface Truck {
 // ─── Status colours ─────────────────────────────────────────────────────────────
 
 const STATUS_BADGE: Record<ServiceStatus, string> = {
-  SCHEDULED:     'bg-amber-600/20 text-amber-400',
-  INTAKE:        'bg-blue-600/20 text-blue-400',
-  IN_PROGRESS:   'bg-indigo-600/20 text-indigo-400',
-  QUALITY_CHECK: 'bg-purple-600/20 text-purple-400',
-  READY:         'bg-green-600/20 text-green-400',
-  COMPLETED:     'bg-gray-600/20 text-gray-400',
-  CANCELLED:     'bg-red-600/20 text-red-400',
+  SCHEDULED:     'bg-amber-100 text-amber-800 dark:bg-amber-600/20 dark:text-amber-400',
+  INTAKE:        'bg-blue-100 text-blue-800 dark:bg-blue-600/20 dark:text-blue-400',
+  IN_PROGRESS:   'bg-indigo-100 text-indigo-800 dark:bg-indigo-600/20 dark:text-indigo-400',
+  QUALITY_CHECK: 'bg-purple-100 text-purple-800 dark:bg-purple-600/20 dark:text-purple-400',
+  READY:         'bg-green-100 text-green-800 dark:bg-green-600/20 dark:text-green-400',
+  COMPLETED:     'bg-gray-100 text-gray-600 dark:bg-gray-600/20 dark:text-gray-400',
+  CANCELLED:     'bg-red-100 text-red-700 dark:bg-red-600/20 dark:text-red-400',
 }
 
 const STATUS_STRIPE: Record<ServiceStatus, string> = {
@@ -64,8 +64,8 @@ const OPEN_BTN: Record<ServiceStatus, string> = {
   IN_PROGRESS:   'bg-blue-600 hover:bg-blue-500 text-white',
   QUALITY_CHECK: 'bg-purple-600 hover:bg-purple-500 text-white',
   READY:         'bg-green-600 hover:bg-green-500 text-white',
-  COMPLETED:     'bg-gray-800 hover:bg-gray-700 text-gray-300',
-  CANCELLED:     'bg-gray-800 hover:bg-gray-700 text-gray-400',
+  COMPLETED:     'bg-gray-200 hover:bg-gray-300 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300',
+  CANCELLED:     'bg-gray-200 hover:bg-gray-300 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-400',
 }
 
 const ALL_STATUSES: ServiceStatus[] = [
@@ -121,7 +121,7 @@ function Label({ children }: { children: React.ReactNode }) {
 
 function ErrorBox({ msg }: { msg: string }) {
   return (
-    <div className="px-3 py-2 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 text-sm">
+    <div className="px-3 py-2 bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/30 rounded-lg text-red-700 dark:text-red-400 text-sm">
       {msg}
     </div>
   )
@@ -333,7 +333,7 @@ function ServiceCard({
   }
 
   return (
-    <div className="flex bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 overflow-hidden hover:border-gray-300 dark:hover:border-gray-700 transition-colors group">
+    <div className="flex bg-white dark:bg-gray-900 rounded-xl border border-gray-300 dark:border-gray-800 overflow-hidden hover:border-gray-400 dark:hover:border-gray-700 transition-colors group">
       {/* Status stripe */}
       <div className={`w-1 shrink-0 ${STATUS_STRIPE[s.status]}`} />
 
@@ -398,7 +398,7 @@ function ServiceCard({
       </div>
 
       {/* Actions */}
-      <div className="flex items-center gap-2 px-4 py-4 border-l border-gray-200 dark:border-gray-800 shrink-0">
+      <div className="flex items-center gap-2 px-4 py-4 border-l border-gray-300 dark:border-gray-800 shrink-0">
         {/* Reschedule icon button — SCHEDULED only */}
         {canReschedule && s.status === 'SCHEDULED' && (
           <button
@@ -547,7 +547,7 @@ export default function ServicesClient({
             />
           ))}
           {services.length === 0 && (
-            <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 px-5 py-12 text-center text-gray-500">
+            <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-300 dark:border-gray-800 px-5 py-12 text-center text-gray-500">
               {t('noResults')}
             </div>
           )}

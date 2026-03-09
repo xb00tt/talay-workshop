@@ -97,12 +97,12 @@ export default function AuditLogClient() {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder={t('searchPlaceholder')}
-          className="flex-1 bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-2 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-600 text-sm focus:outline-hidden focus:ring-2 focus:ring-blue-500"
+          className="flex-1 bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-xl px-4 py-2 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-600 text-sm focus:outline-hidden focus:ring-2 focus:ring-blue-500"
         />
         <button
           type="submit"
           disabled={loading}
-          className="px-4 py-2 text-sm bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300 rounded-xl transition-colors disabled:opacity-50 border border-gray-200 dark:border-gray-700"
+          className="px-4 py-2 text-sm bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300 rounded-xl transition-colors disabled:opacity-50 border border-gray-300 dark:border-gray-700"
         >
           {tCommon('search')}
         </button>
@@ -118,7 +118,7 @@ export default function AuditLogClient() {
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-gray-200 dark:border-gray-800">
+                <tr className="border-b border-gray-300 dark:border-gray-800">
                   <th className="text-left px-4 py-3 text-xs text-gray-500 font-semibold uppercase tracking-wider">{t('timestamp')}</th>
                   <th className="text-left px-4 py-3 text-xs text-gray-500 font-semibold uppercase tracking-wider">{t('user')}</th>
                   <th className="text-left px-4 py-3 text-xs text-gray-500 font-semibold uppercase tracking-wider">{t('action')}</th>
@@ -126,7 +126,7 @@ export default function AuditLogClient() {
                   <th className="px-4 py-3" />
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-200 dark:divide-gray-800">
+              <tbody className="divide-y divide-gray-300 dark:divide-gray-800">
                 {data.logs.map((entry) => (
                   <>
                     <tr
@@ -139,7 +139,7 @@ export default function AuditLogClient() {
                       </td>
                       <td className="px-4 py-3 text-gray-600 dark:text-gray-300">{entry.userNameSnapshot}</td>
                       <td className="px-4 py-3">
-                        <span className="font-mono text-xs bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded-sm text-blue-300">
+                        <span className="font-mono text-xs bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded-sm text-blue-700 dark:text-blue-300">
                           {entry.action}
                         </span>
                       </td>
@@ -148,7 +148,7 @@ export default function AuditLogClient() {
                           const href = entityLink(entry.entityType, entry.entityId)
                           const label = `${entry.entityType} #${entry.entityId}`
                           return href ? (
-                            <Link href={href} className="text-blue-400 hover:text-blue-300 hover:underline transition-colors" onClick={(e) => e.stopPropagation()}>
+                            <Link href={href} className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 hover:underline transition-colors" onClick={(e) => e.stopPropagation()}>
                               {label}
                             </Link>
                           ) : <span>{label}</span>

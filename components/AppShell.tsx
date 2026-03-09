@@ -118,7 +118,7 @@ function UserMenu({ userName, userRole }: { userName: string; userRole: string }
   }, [])
 
   return (
-    <div ref={ref} className="relative border-t border-gray-200 dark:border-gray-800 px-3 py-2">
+    <div ref={ref} className="relative border-t border-gray-300 dark:border-gray-800 px-3 py-2">
       <button
         onClick={() => setOpen((v) => !v)}
         className="w-full flex items-center gap-3 px-2 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
@@ -180,7 +180,7 @@ function SidebarContent({
   return (
     <div className="flex flex-col h-full">
       {/* Logo */}
-      <div className="px-4 py-5 border-b border-gray-200 dark:border-gray-800">
+      <div className="px-4 py-5 border-b border-gray-300 dark:border-gray-800">
         <div className="flex items-center gap-2.5">
           <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center shrink-0">
             <Ico name="wrench" className="w-4 h-4 text-gray-900 dark:text-white" />
@@ -237,7 +237,7 @@ export default function AppShell({
   return (
     <div className="flex min-h-screen">
       {/* Desktop sidebar */}
-      <aside className="hidden lg:flex lg:flex-col w-60 bg-white dark:bg-gray-900 fixed inset-y-0 left-0 z-30">
+      <aside className="hidden lg:flex lg:flex-col w-60 bg-white dark:bg-gray-900 border-r border-gray-300 dark:border-gray-800 fixed inset-y-0 left-0 z-30">
         <SidebarContent pathname={pathname} userName={userName} userRole={userRole} />
       </aside>
 
@@ -251,7 +251,7 @@ export default function AppShell({
 
       {/* Mobile sidebar drawer */}
       <aside
-        className={`lg:hidden fixed inset-y-0 left-0 w-60 bg-white dark:bg-gray-900 z-50 transform transition-transform duration-200 ${
+        className={`lg:hidden fixed inset-y-0 left-0 w-60 bg-white dark:bg-gray-900 border-r border-gray-300 dark:border-gray-800 z-50 transform transition-transform duration-200 ${
           open ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
@@ -272,7 +272,7 @@ export default function AppShell({
       {/* Main content */}
       <div className="flex-1 lg:ml-60 flex flex-col min-h-screen">
         {/* Mobile top bar */}
-        <header className="lg:hidden sticky top-0 z-20 bg-gray-50/80 dark:bg-gray-950/80 backdrop-blur-xs border-b border-gray-200 dark:border-gray-800 px-4 py-3 flex items-center justify-between">
+        <header className="lg:hidden sticky top-0 z-20 bg-gray-50/80 dark:bg-gray-950/80 backdrop-blur-xs border-b border-gray-300 dark:border-gray-800 px-4 py-3 flex items-center justify-between">
           <button onClick={() => setOpen(true)} className="text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white">
             <Ico name="bars" />
           </button>

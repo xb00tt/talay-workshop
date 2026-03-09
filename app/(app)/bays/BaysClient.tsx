@@ -206,17 +206,17 @@ export default function BaysClient({
           <div className="space-y-4">
             {active.length > 0 && (
               <div className="bg-white dark:bg-gray-900 rounded-2xl overflow-hidden">
-                <div className="px-5 py-3 border-b border-gray-200 dark:border-gray-800">
+                <div className="px-5 py-3 border-b border-gray-300 dark:border-gray-800">
                   <h2 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">{tCommon('active')} ({active.length})</h2>
                 </div>
-                <ul className="divide-y divide-gray-200 dark:divide-gray-800">
+                <ul className="divide-y divide-gray-300 dark:divide-gray-800">
                   {active.map((bay) => (
                     <li key={bay.id} className="flex items-center px-5 py-4 gap-4">
                       <p className="flex-1 font-medium text-gray-900 dark:text-white">{bay.name}</p>
                       {canManage && (
                         <div className="flex items-center gap-1">
                           <button onClick={() => setModal({ bay })}
-                            className="px-3 py-1.5 text-xs rounded-lg border border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:border-gray-500 transition-colors">
+                            className="px-3 py-1.5 text-xs rounded-lg border border-gray-300 dark:border-gray-700 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:border-gray-500 transition-colors">
                             {t('rename')}
                           </button>
                           <button onClick={() => toggleActive(bay)} disabled={toggling === bay.id}
@@ -232,10 +232,10 @@ export default function BaysClient({
             )}
             {inactive.length > 0 && (
               <div className="bg-white dark:bg-gray-900 rounded-2xl overflow-hidden">
-                <div className="px-5 py-3 border-b border-gray-200 dark:border-gray-800">
+                <div className="px-5 py-3 border-b border-gray-300 dark:border-gray-800">
                   <h2 className="text-xs font-semibold text-gray-300 dark:text-gray-600 uppercase tracking-wider">{tCommon('inactive')} ({inactive.length})</h2>
                 </div>
-                <ul className="divide-y divide-gray-200 dark:divide-gray-800">
+                <ul className="divide-y divide-gray-300 dark:divide-gray-800">
                   {inactive.map((bay) => (
                     <li key={bay.id} className="flex items-center px-5 py-4 gap-4">
                       <p className="flex-1 font-medium text-gray-500">{bay.name}</p>
