@@ -565,7 +565,10 @@
     "creating": "Creating...",
     "create": "Create",
     "clickDayHint": "Click on a day to create a new order.",
-    "newHint": "+ new"
+    "newHint": "+ new",
+    "agenda": "List",
+    "noServicesThisWeek": "No service orders this week.",
+    "dayN": "Day {n}"
   },
   "photo": {
     "upload": "Upload Photos",
