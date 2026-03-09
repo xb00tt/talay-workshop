@@ -2,6 +2,7 @@ import type { NextAuthOptions } from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import bcrypt from 'bcryptjs'
 import { prisma } from './prisma'
+import { rateLimit } from './rateLimit'
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -13,6 +14,10 @@ export const authOptions: NextAuthOptions = {
       },
       async authorize(credentials) {
         if (!credentials?.username || !credentials?.password) return null
+
+        // Rate-limit: 10 failed attempts per username per 15 minutes
+        const key = `login:${credentials.username.toLowerCase()}`
+        if (!rateLimit(key, 10, 15 * 60 * 1000).allowed) return null
 
         const user = await prisma.user.findUnique({
           where: { username: credentials.username },
