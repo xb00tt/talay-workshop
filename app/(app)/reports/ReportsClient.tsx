@@ -120,31 +120,31 @@ export default function ReportsClient({ trucks, canExport }: { trucks: TruckOpti
   return (
     <div className="p-6 lg:p-8 max-w-6xl mx-auto space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-bold text-white">{t('title')}</h1>
+        <h1 className="text-xl font-bold text-gray-900 dark:text-white">{t('title')}</h1>
       </div>
 
       {/* Filters */}
-      <div className="bg-gray-900 rounded-2xl p-5">
+      <div className="bg-white dark:bg-gray-900 rounded-2xl p-5">
         <div className="flex flex-wrap gap-4 items-end">
           <div>
             <label className="block text-xs text-gray-500 mb-1">{t('dateFrom')}</label>
             <input
               type="date" value={from} onChange={(e) => setFrom(e.target.value)}
-              className="bg-gray-800 border border-gray-700 rounded-xl px-3 py-2 text-white text-sm focus:outline-hidden focus:ring-2 focus:ring-blue-500"
+              className="bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-2 text-gray-900 dark:text-white text-sm focus:outline-hidden focus:ring-2 focus:ring-blue-500"
             />
           </div>
           <div>
             <label className="block text-xs text-gray-500 mb-1">{t('dateTo')}</label>
             <input
               type="date" value={to} onChange={(e) => setTo(e.target.value)}
-              className="bg-gray-800 border border-gray-700 rounded-xl px-3 py-2 text-white text-sm focus:outline-hidden focus:ring-2 focus:ring-blue-500"
+              className="bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-2 text-gray-900 dark:text-white text-sm focus:outline-hidden focus:ring-2 focus:ring-blue-500"
             />
           </div>
           <div>
             <label className="block text-xs text-gray-500 mb-1">{t('truckOptional')}</label>
             <select
               value={truckId} onChange={(e) => setTruckId(e.target.value)}
-              className="bg-gray-800 border border-gray-700 rounded-xl px-3 py-2 text-white text-sm focus:outline-hidden focus:ring-2 focus:ring-blue-500"
+              className="bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-2 text-gray-900 dark:text-white text-sm focus:outline-hidden focus:ring-2 focus:ring-blue-500"
             >
               <option value="">{t('selectAllTrucks')}</option>
               {trucks.map((tr) => (
@@ -172,9 +172,9 @@ export default function ReportsClient({ trucks, canExport }: { trucks: TruckOpti
               { label: t('totalPartsCost'),    value: fmt(data.totals.partsCost) },
               { label: t('avgDaysInWorkshop'), value: fmt(data.totals.avgDays, 1) },
             ].map((c) => (
-              <div key={c.label} className="bg-gray-900 rounded-xl p-4">
+              <div key={c.label} className="bg-white dark:bg-gray-900 rounded-xl p-4">
                 <p className="text-xs text-gray-500">{c.label}</p>
-                <p className="text-2xl font-bold text-white mt-1">{c.value}</p>
+                <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1">{c.value}</p>
               </div>
             ))}
           </div>
@@ -192,14 +192,14 @@ export default function ReportsClient({ trucks, canExport }: { trucks: TruckOpti
             )}
             <button
               onClick={printReport}
-              className="px-4 py-2 text-sm border border-gray-700 text-gray-400 hover:bg-gray-800 rounded-xl transition-colors print:hidden"
+              className="px-4 py-2 text-sm border border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition-colors print:hidden"
             >
               {tCommon('print')}
             </button>
           </div>
 
           {/* Tab navigation */}
-          <div className="flex gap-1 border-b border-gray-800">
+          <div className="flex gap-1 border-b border-gray-200 dark:border-gray-800">
             {(['services', 'trucks', 'parts'] as const).map((tabKey) => {
               const labels = {
                 services: t('tabServices'),
@@ -213,7 +213,7 @@ export default function ReportsClient({ trucks, canExport }: { trucks: TruckOpti
                   className={`px-4 py-2 text-sm font-medium transition-colors border-b-2 -mb-px ${
                     tab === tabKey
                       ? 'border-blue-500 text-blue-400'
-                      : 'border-transparent text-gray-500 hover:text-gray-300'
+                      : 'border-transparent text-gray-500 hover:text-gray-600 dark:hover:text-gray-300'
                   }`}
                 >
                   {labels[tabKey]}
@@ -224,11 +224,11 @@ export default function ReportsClient({ trucks, canExport }: { trucks: TruckOpti
 
           {/* Services tab */}
           {tab === 'services' && (
-            <div className="bg-gray-900 rounded-2xl overflow-hidden">
+            <div className="bg-white dark:bg-gray-900 rounded-2xl overflow-hidden">
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
-                    <tr className="border-b border-gray-800">
+                    <tr className="border-b border-gray-200 dark:border-gray-800">
                       {[
                         t('colPlate'), t('colMakeModel'), t('colDate'),
                         t('colDays'), t('colMileage'), t('colWorkCards'), t('colPartsCost'),
@@ -239,12 +239,12 @@ export default function ReportsClient({ trucks, canExport }: { trucks: TruckOpti
                       ))}
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-gray-800">
+                  <tbody className="divide-y divide-gray-200 dark:divide-gray-800">
                     {data.rows.length === 0 ? (
                       <tr><td colSpan={7} className="px-4 py-8 text-center text-gray-500 text-sm">{t('noServices')}</td></tr>
                     ) : data.rows.map((row) => (
-                      <tr key={row.serviceId} className="hover:bg-gray-800/50 transition-colors">
-                        <td className="px-4 py-3 font-mono text-white">{row.plate}</td>
+                      <tr key={row.serviceId} className="hover:bg-gray-100 dark:hover:bg-gray-800/50 transition-colors">
+                        <td className="px-4 py-3 font-mono text-gray-900 dark:text-white">{row.plate}</td>
                         <td className="px-4 py-3 text-gray-400">{row.make} {row.model}</td>
                         <td className="px-4 py-3 text-gray-400 whitespace-nowrap">{fmtDate(row.endDate)}</td>
                         <td className="px-4 py-3 text-gray-400 tabular-nums">{fmt(row.daysInWorkshop, 1)}</td>
@@ -265,11 +265,11 @@ export default function ReportsClient({ trucks, canExport }: { trucks: TruckOpti
 
           {/* Per-truck tab */}
           {tab === 'trucks' && (
-            <div className="bg-gray-900 rounded-2xl overflow-hidden">
+            <div className="bg-white dark:bg-gray-900 rounded-2xl overflow-hidden">
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
-                    <tr className="border-b border-gray-800">
+                    <tr className="border-b border-gray-200 dark:border-gray-800">
                       {[
                         t('colPlate'), t('colMakeModel'), t('colServices'),
                         t('colTotalDays'), t('colPartsCost'),
@@ -280,12 +280,12 @@ export default function ReportsClient({ trucks, canExport }: { trucks: TruckOpti
                       ))}
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-gray-800">
+                  <tbody className="divide-y divide-gray-200 dark:divide-gray-800">
                     {data.truckSummary.length === 0 ? (
                       <tr><td colSpan={5} className="px-4 py-8 text-center text-gray-500 text-sm">{t('noData')}</td></tr>
                     ) : data.truckSummary.map((tr) => (
-                      <tr key={tr.truckId} className="hover:bg-gray-800/50 transition-colors">
-                        <td className="px-4 py-3 font-mono text-white">{tr.plate}</td>
+                      <tr key={tr.truckId} className="hover:bg-gray-100 dark:hover:bg-gray-800/50 transition-colors">
+                        <td className="px-4 py-3 font-mono text-gray-900 dark:text-white">{tr.plate}</td>
                         <td className="px-4 py-3 text-gray-400">{tr.make} {tr.model}</td>
                         <td className="px-4 py-3 text-gray-400 tabular-nums">{tr.serviceCount}</td>
                         <td className="px-4 py-3 text-gray-400 tabular-nums">{fmt(tr.totalDays, 1)}</td>
@@ -302,11 +302,11 @@ export default function ReportsClient({ trucks, canExport }: { trucks: TruckOpti
 
           {/* Parts tab */}
           {tab === 'parts' && (
-            <div className="bg-gray-900 rounded-2xl overflow-hidden">
+            <div className="bg-white dark:bg-gray-900 rounded-2xl overflow-hidden">
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
-                    <tr className="border-b border-gray-800">
+                    <tr className="border-b border-gray-200 dark:border-gray-800">
                       {[t('colParts'), t('colTotalQty'), t('colExpense')].map((h) => (
                         <th key={h} className="text-left px-4 py-3 text-xs text-gray-500 font-semibold uppercase tracking-wider whitespace-nowrap">
                           {h}
@@ -314,12 +314,12 @@ export default function ReportsClient({ trucks, canExport }: { trucks: TruckOpti
                       ))}
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-gray-800">
+                  <tbody className="divide-y divide-gray-200 dark:divide-gray-800">
                     {data.partsSummary.length === 0 ? (
                       <tr><td colSpan={3} className="px-4 py-8 text-center text-gray-500 text-sm">{t('noPartsUsed')}</td></tr>
                     ) : data.partsSummary.map((p, i) => (
-                      <tr key={i} className="hover:bg-gray-800/50 transition-colors">
-                        <td className="px-4 py-3 text-gray-200">{p.name}</td>
+                      <tr key={i} className="hover:bg-gray-100 dark:hover:bg-gray-800/50 transition-colors">
+                        <td className="px-4 py-3 text-gray-700 dark:text-gray-200">{p.name}</td>
                         <td className="px-4 py-3 text-gray-400 tabular-nums">{fmt(p.totalQty, 3)}</td>
                         <td className="px-4 py-3 text-gray-400 tabular-nums">
                           {p.totalCost > 0 ? `${fmt(p.totalCost)} €` : '—'}

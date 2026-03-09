@@ -40,13 +40,13 @@ function Lightbox({ photos, index, onClose, onPrev, onNext }: {
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4" onClick={onClose}>
       <div className="relative max-w-4xl w-full" onClick={(e) => e.stopPropagation()}>
         {/* Close */}
-        <button onClick={onClose} className="absolute -top-10 right-0 text-white text-2xl hover:text-gray-300">×</button>
+        <button onClick={onClose} className="absolute -top-10 right-0 text-gray-900 dark:text-white text-2xl hover:text-gray-600 dark:hover:text-gray-300">×</button>
 
         {/* Prev */}
         {index > 0 && (
           <button
             onClick={onPrev}
-            className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-12 text-white text-3xl hover:text-gray-300 px-2"
+            className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-12 text-gray-900 dark:text-white text-3xl hover:text-gray-600 dark:hover:text-gray-300 px-2"
           >‹</button>
         )}
 
@@ -68,7 +68,7 @@ function Lightbox({ photos, index, onClose, onPrev, onNext }: {
         {index < photos.length - 1 && (
           <button
             onClick={onNext}
-            className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-12 text-white text-3xl hover:text-gray-300 px-2"
+            className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-12 text-gray-900 dark:text-white text-3xl hover:text-gray-600 dark:hover:text-gray-300 px-2"
           >›</button>
         )}
       </div>
@@ -121,9 +121,9 @@ export function PhotoGallery({
   }
 
   return (
-    <div className="bg-gray-900 rounded-2xl overflow-hidden">
-      <div className="flex items-center justify-between px-5 py-3 border-b border-gray-800">
-        <h2 className="text-sm font-semibold text-white">Снимки ({photos.length})</h2>
+    <div className="bg-white dark:bg-gray-900 rounded-2xl overflow-hidden">
+      <div className="flex items-center justify-between px-5 py-3 border-b border-gray-200 dark:border-gray-800">
+        <h2 className="text-sm font-semibold text-gray-900 dark:text-white">Снимки ({photos.length})</h2>
         {canUpload && (
           <button
             onClick={() => fileRef.current?.click()}
@@ -148,7 +148,7 @@ export function PhotoGallery({
       ) : (
         <div className="p-4 grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2">
           {photos.map((photo, idx) => (
-            <div key={photo.id} className="group relative aspect-square rounded-lg overflow-hidden bg-gray-800">
+            <div key={photo.id} className="group relative aspect-square rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-800">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={`/api/uploads/${photo.filePath.replace(/\\/g, '/')}`}
@@ -218,19 +218,19 @@ export function NotesSection({
   }
 
   return (
-    <div className="bg-gray-900 rounded-2xl overflow-hidden">
-      <div className="px-5 py-3 border-b border-gray-800">
-        <h2 className="text-sm font-semibold text-white">Бележки</h2>
+    <div className="bg-white dark:bg-gray-900 rounded-2xl overflow-hidden">
+      <div className="px-5 py-3 border-b border-gray-200 dark:border-gray-800">
+        <h2 className="text-sm font-semibold text-gray-900 dark:text-white">Бележки</h2>
       </div>
 
       {notes.length === 0 ? (
         <p className="px-5 py-6 text-sm text-gray-500 text-center">Няма бележки.</p>
       ) : (
-        <ul className="divide-y divide-gray-800">
+        <ul className="divide-y divide-gray-200 dark:divide-gray-800">
           {notes.map((n) => (
             <li key={n.id} className="px-5 py-3">
-              <p className="text-sm text-gray-200 whitespace-pre-wrap">{n.content}</p>
-              <p className="text-xs text-gray-600 mt-1">
+              <p className="text-sm text-gray-700 dark:text-gray-200 whitespace-pre-wrap">{n.content}</p>
+              <p className="text-xs text-gray-300 dark:text-gray-600 mt-1">
                 {n.userNameSnapshot} · {fmtDateTime(n.createdAt)}
               </p>
             </li>
@@ -239,19 +239,19 @@ export function NotesSection({
       )}
 
       {canCreate && (
-        <form onSubmit={submit} className="px-5 py-4 border-t border-gray-800 space-y-2">
+        <form onSubmit={submit} className="px-5 py-4 border-t border-gray-200 dark:border-gray-800 space-y-2">
           <textarea
             value={content}
             onChange={(e) => setContent(e.target.value)}
             rows={2}
             placeholder="Добави бележка..."
-            className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white placeholder-gray-600 text-sm focus:outline-hidden focus:ring-2 focus:ring-blue-500 resize-none"
+            className="w-full bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-2 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-600 text-sm focus:outline-hidden focus:ring-2 focus:ring-blue-500 resize-none"
           />
           {error && <p className="text-red-400 text-xs">{error}</p>}
           <button
             type="submit"
             disabled={saving || !content.trim()}
-            className="px-3 py-1.5 text-sm bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-lg transition-colors disabled:opacity-50"
+            className="px-3 py-1.5 text-sm bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300 rounded-lg transition-colors disabled:opacity-50"
           >
             {saving ? 'Запазване...' : 'Добави бележка'}
           </button>

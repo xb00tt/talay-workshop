@@ -26,8 +26,8 @@ function Input(props: React.InputHTMLAttributes<HTMLInputElement>) {
     <input
       {...props}
       className={
-        'w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-white ' +
-        'placeholder-gray-500 focus:outline-hidden focus:ring-2 focus:ring-blue-500 ' +
+        'w-full bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-gray-900 dark:text-white ' +
+        'placeholder-gray-400 dark:placeholder-gray-500 focus:outline-hidden focus:ring-2 focus:ring-blue-500 ' +
         (props.className ?? '')
       }
     />
@@ -39,8 +39,8 @@ function Textarea(props: React.TextareaHTMLAttributes<HTMLTextAreaElement>) {
     <textarea
       {...props}
       className={
-        'w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-white ' +
-        'placeholder-gray-500 focus:outline-hidden focus:ring-2 focus:ring-blue-500 resize-none ' +
+        'w-full bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-gray-900 dark:text-white ' +
+        'placeholder-gray-400 dark:placeholder-gray-500 focus:outline-hidden focus:ring-2 focus:ring-blue-500 resize-none ' +
         (props.className ?? '')
       }
     />
@@ -52,7 +52,7 @@ function Select(props: React.SelectHTMLAttributes<HTMLSelectElement>) {
     <select
       {...props}
       className={
-        'w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-white ' +
+        'w-full bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-gray-900 dark:text-white ' +
         'focus:outline-hidden focus:ring-2 focus:ring-blue-500 ' +
         (props.className ?? '')
       }
@@ -61,7 +61,7 @@ function Select(props: React.SelectHTMLAttributes<HTMLSelectElement>) {
 }
 
 function Label({ children }: { children: React.ReactNode }) {
-  return <label className="block text-sm font-medium text-gray-300 mb-1">{children}</label>
+  return <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">{children}</label>
 }
 
 function StatusMsg({ type, msg }: { type: 'error' | 'success'; msg: string }) {
@@ -86,9 +86,9 @@ function Section({
   children: React.ReactNode
 }) {
   return (
-    <div className="bg-gray-900 rounded-2xl p-6">
+    <div className="bg-white dark:bg-gray-900 rounded-2xl p-6">
       <div className="mb-5">
-        <h2 className="text-base font-semibold text-white">{title}</h2>
+        <h2 className="text-base font-semibold text-gray-900 dark:text-white">{title}</h2>
         {description && <p className="text-sm text-gray-500 mt-0.5">{description}</p>}
       </div>
       {children}
@@ -193,10 +193,10 @@ function CompanySection({ initial }: { initial: CompanySettings }) {
               <img
                 src={`/api/uploads/${logoPath}`}
                 alt="Logo"
-                className="h-14 w-auto rounded-lg border border-gray-700 object-contain bg-gray-800 p-1"
+                className="h-14 w-auto rounded-lg border border-gray-200 dark:border-gray-700 object-contain bg-gray-100 dark:bg-gray-800 p-1"
               />
             ) : (
-              <div className="h-14 w-24 rounded-lg border border-dashed border-gray-600 flex items-center justify-center text-xs text-gray-600">
+              <div className="h-14 w-24 rounded-lg border border-dashed border-gray-300 dark:border-gray-600 flex items-center justify-center text-xs text-gray-400 dark:text-gray-600">
                 {t('noLogo')}
               </div>
             )}
@@ -211,12 +211,12 @@ function CompanySection({ initial }: { initial: CompanySettings }) {
               />
               <label
                 htmlFor="logo-upload"
-                className={`inline-flex items-center px-3 py-1.5 rounded-lg border border-gray-600 text-sm
-                  text-gray-300 hover:bg-gray-800 cursor-pointer transition-colors ${uploading ? 'opacity-50 pointer-events-none' : ''}`}
+                className={`inline-flex items-center px-3 py-1.5 rounded-lg border border-gray-300 dark:border-gray-600 text-sm
+                  text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer transition-colors ${uploading ? 'opacity-50 pointer-events-none' : ''}`}
               >
                 {uploading ? t('uploading') : t('uploadLogo')}
               </label>
-              <p className="text-xs text-gray-600 mt-1">JPG, PNG, GIF, WebP</p>
+              <p className="text-xs text-gray-400 dark:text-gray-600 mt-1">JPG, PNG, GIF, WebP</p>
             </div>
           </div>
         </div>
@@ -285,7 +285,7 @@ function FrotcomSection({ initial }: { initial: { frotcomUsername: string; frotc
             <button
               type="button"
               onClick={() => setShowPw((v) => !v)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300 text-xs"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 text-xs"
             >
               {showPw ? t('hidePassword') : t('showPassword')}
             </button>
@@ -360,7 +360,7 @@ function PersonalSection({ initial }: { initial: PersonalPrefs }) {
             onChange={(e) => setDarkMode(e.target.checked)}
             className="w-4 h-4 accent-blue-500"
           />
-          <span className="text-sm text-gray-300">{t('darkMode')}</span>
+          <span className="text-sm text-gray-600 dark:text-gray-300">{t('darkMode')}</span>
         </label>
 
         {status && <StatusMsg type={status.type} msg={status.msg} />}
@@ -386,7 +386,7 @@ export default function SettingsClient({
   const t = useTranslations('settings')
   return (
     <div className="p-6 lg:p-8 max-w-2xl">
-      <h1 className="text-2xl font-bold text-white mb-6">{t('title')}</h1>
+      <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">{t('title')}</h1>
       <div className="space-y-5">
         {canEdit && <CompanySection initial={settings} />}
         {canEdit && settings.frotcomUsername !== undefined && (

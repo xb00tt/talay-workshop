@@ -74,8 +74,8 @@ function AddModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
-      <div className="bg-gray-900 rounded-2xl w-full max-w-md p-6 space-y-4">
-        <h2 className="text-base font-semibold text-white">
+      <div className="bg-white dark:bg-gray-900 rounded-2xl w-full max-w-md p-6 space-y-4">
+        <h2 className="text-base font-semibold text-gray-900 dark:text-white">
           {isAdr ? t('addAdrEquipment') : t('addEquipment')}
         </h2>
         <form onSubmit={submit} className="space-y-3">
@@ -83,19 +83,19 @@ function AddModal({
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder={t('namePlaceholder')}
-            className="w-full bg-gray-800 border border-gray-700 rounded-xl px-3 py-2 text-white placeholder-gray-600 text-sm focus:outline-hidden focus:ring-2 focus:ring-blue-500"
+            className="w-full bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-2 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-600 text-sm focus:outline-hidden focus:ring-2 focus:ring-blue-500"
             autoFocus
           />
           <input
             value={desc}
             onChange={(e) => setDesc(e.target.value)}
             placeholder={t('descPlaceholder')}
-            className="w-full bg-gray-800 border border-gray-700 rounded-xl px-3 py-2 text-white placeholder-gray-600 text-sm focus:outline-hidden focus:ring-2 focus:ring-blue-500"
+            className="w-full bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-2 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-600 text-sm focus:outline-hidden focus:ring-2 focus:ring-blue-500"
           />
           {err && <p className="text-red-400 text-xs">{err}</p>}
           <div className="flex gap-2 justify-end">
             <button type="button" onClick={onClose}
-              className="px-3 py-1.5 text-sm text-gray-400 hover:text-gray-200 transition-colors">
+              className="px-3 py-1.5 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors">
               {tCommon('cancel')}
             </button>
             <button type="submit" disabled={busy || !name.trim()}
@@ -146,25 +146,25 @@ function EditModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
-      <div className="bg-gray-900 rounded-2xl w-full max-w-md p-6 space-y-4">
-        <h2 className="text-base font-semibold text-white">{t('editModal')}</h2>
+      <div className="bg-white dark:bg-gray-900 rounded-2xl w-full max-w-md p-6 space-y-4">
+        <h2 className="text-base font-semibold text-gray-900 dark:text-white">{t('editModal')}</h2>
         <form onSubmit={submit} className="space-y-3">
           <input
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="w-full bg-gray-800 border border-gray-700 rounded-xl px-3 py-2 text-white text-sm focus:outline-hidden focus:ring-2 focus:ring-blue-500"
+            className="w-full bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-2 text-gray-900 dark:text-white text-sm focus:outline-hidden focus:ring-2 focus:ring-blue-500"
             autoFocus
           />
           <input
             value={desc}
             onChange={(e) => setDesc(e.target.value)}
             placeholder={t('descPlaceholder')}
-            className="w-full bg-gray-800 border border-gray-700 rounded-xl px-3 py-2 text-white placeholder-gray-600 text-sm focus:outline-hidden focus:ring-2 focus:ring-blue-500"
+            className="w-full bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-2 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-600 text-sm focus:outline-hidden focus:ring-2 focus:ring-blue-500"
           />
           {err && <p className="text-red-400 text-xs">{err}</p>}
           <div className="flex gap-2 justify-end">
             <button type="button" onClick={onClose}
-              className="px-3 py-1.5 text-sm text-gray-400 hover:text-gray-200 transition-colors">
+              className="px-3 py-1.5 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors">
               {tCommon('cancel')}
             </button>
             <button type="submit" disabled={busy || !name.trim()}
@@ -257,7 +257,7 @@ function ItemList({
   }
 
   return (
-    <div className="bg-gray-900 rounded-2xl overflow-hidden">
+    <div className="bg-white dark:bg-gray-900 rounded-2xl overflow-hidden">
       {editTarget && (
         <EditModal
           item={editTarget}
@@ -270,8 +270,8 @@ function ItemList({
         />
       )}
 
-      <div className="flex items-center justify-between px-5 py-3 border-b border-gray-800">
-        <h2 className="text-sm font-semibold text-white">{title} ({active.length})</h2>
+      <div className="flex items-center justify-between px-5 py-3 border-b border-gray-200 dark:border-gray-800">
+        <h2 className="text-sm font-semibold text-gray-900 dark:text-white">{title} ({active.length})</h2>
         {canEdit && (
           <button onClick={onAdd}
             className="text-sm text-blue-400 hover:text-blue-300 transition-colors">
@@ -290,14 +290,14 @@ function ItemList({
         <p className="px-5 py-10 text-sm text-gray-500 text-center">{t('noItems')}</p>
       ) : (
         <>
-          <ul className="divide-y divide-gray-800">
+          <ul className="divide-y divide-gray-200 dark:divide-gray-800">
             {active.map((item, idx) => (
               <li key={item.id} className="flex items-center gap-3 px-5 py-3">
-                <span className="shrink-0 w-6 h-6 rounded-full bg-gray-800 flex items-center justify-center text-xs text-gray-500">
+                <span className="shrink-0 w-6 h-6 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center text-xs text-gray-500">
                   {idx + 1}
                 </span>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm text-gray-200">{item.name}</p>
+                  <p className="text-sm text-gray-700 dark:text-gray-200">{item.name}</p>
                   {item.description && (
                     <p className="text-xs text-gray-500">{item.description}</p>
                   )}
@@ -305,13 +305,13 @@ function ItemList({
                 {canEdit && (
                   <div className="shrink-0 flex items-center gap-1">
                     <button disabled={idx === 0 || busy} onClick={() => move(item, 'up')}
-                      className="p-1 text-gray-600 hover:text-gray-300 disabled:opacity-30 transition-colors">↑</button>
+                      className="p-1 text-gray-300 dark:text-gray-600 hover:text-gray-600 dark:hover:text-gray-300 disabled:opacity-30 transition-colors">↑</button>
                     <button disabled={idx === active.length - 1 || busy} onClick={() => move(item, 'down')}
-                      className="p-1 text-gray-600 hover:text-gray-300 disabled:opacity-30 transition-colors">↓</button>
+                      className="p-1 text-gray-300 dark:text-gray-600 hover:text-gray-600 dark:hover:text-gray-300 disabled:opacity-30 transition-colors">↓</button>
                     <button onClick={() => setEditTarget(item)}
-                      className="p-1 text-gray-600 hover:text-gray-300 transition-colors text-xs">✎</button>
+                      className="p-1 text-gray-300 dark:text-gray-600 hover:text-gray-600 dark:hover:text-gray-300 transition-colors text-xs">✎</button>
                     <button disabled={busy} onClick={() => toggle(item)}
-                      className="px-2 py-0.5 text-xs rounded-sm bg-gray-800 hover:bg-gray-700 text-gray-400 transition-colors disabled:opacity-50">
+                      className="px-2 py-0.5 text-xs rounded-sm bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-500 dark:text-gray-400 transition-colors disabled:opacity-50">
                       {t('deactivateBtn')}
                     </button>
                     <button disabled={busy} onClick={() => doDelete(item)}
@@ -325,18 +325,18 @@ function ItemList({
           </ul>
 
           {inactive.length > 0 && (
-            <div className="border-t border-gray-800">
-              <p className="px-5 py-2 text-xs text-gray-600 font-semibold uppercase tracking-wider">
+            <div className="border-t border-gray-200 dark:border-gray-800">
+              <p className="px-5 py-2 text-xs text-gray-300 dark:text-gray-600 font-semibold uppercase tracking-wider">
                 {t('inactiveSection')} ({inactive.length})
               </p>
-              <ul className="divide-y divide-gray-800">
+              <ul className="divide-y divide-gray-200 dark:divide-gray-800">
                 {inactive.map((item) => (
                   <li key={item.id} className="flex items-center gap-3 px-5 py-2">
-                    <p className="flex-1 text-sm text-gray-600 line-through">{item.name}</p>
+                    <p className="flex-1 text-sm text-gray-300 dark:text-gray-600 line-through">{item.name}</p>
                     {canEdit && (
                       <div className="shrink-0 flex gap-1">
                         <button disabled={busy} onClick={() => toggle(item)}
-                          className="px-2 py-0.5 text-xs rounded-sm bg-gray-800 hover:bg-gray-700 text-gray-400 transition-colors disabled:opacity-50">
+                          className="px-2 py-0.5 text-xs rounded-sm bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-500 dark:text-gray-400 transition-colors disabled:opacity-50">
                           {t('activateBtn')}
                         </button>
                         <button disabled={busy} onClick={() => doDelete(item)}
@@ -380,7 +380,7 @@ export default function EquipmentClient({ initialItems, initialAdrItems, canEdit
       )}
 
       <div>
-        <h1 className="text-xl font-bold text-white">{t('title')}</h1>
+        <h1 className="text-xl font-bold text-gray-900 dark:text-white">{t('title')}</h1>
         <p className="text-sm text-gray-500 mt-0.5">
           {t('description')}
         </p>

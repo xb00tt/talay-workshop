@@ -32,9 +32,9 @@ function fmtKm(km: number | null) {
 
 function StatCard({ label, value, sub, alert }: { label: string; value: string; sub?: string; alert?: boolean }) {
   return (
-    <div className={`rounded-xl p-3 ${alert ? 'bg-amber-500/10 border border-amber-500/20' : 'bg-gray-800/60'}`}>
+    <div className={`rounded-xl p-3 ${alert ? 'bg-amber-500/10 border border-amber-500/20' : 'bg-gray-100 dark:bg-gray-800/60'}`}>
       <p className="text-xs text-gray-500 mb-1">{label}</p>
-      <p className={`text-sm font-semibold ${alert ? 'text-amber-400' : 'text-white'}`}>{value}</p>
+      <p className={`text-sm font-semibold ${alert ? 'text-amber-400' : 'text-gray-900 dark:text-white'}`}>{value}</p>
       {sub && <p className="text-xs text-gray-500 mt-0.5">{sub}</p>}
     </div>
   )
@@ -94,16 +94,16 @@ export default async function TruckProfilePage({ params }: { params: Promise<{ i
   return (
     <div className="p-6 lg:p-8 max-w-4xl mx-auto space-y-6">
 
-      <Link href="/trucks" className="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-300 transition-colors">
+      <Link href="/trucks" className="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors">
         ← Назад към камионите
       </Link>
 
       {/* Header */}
-      <div className="bg-gray-900 rounded-2xl p-5">
+      <div className="bg-white dark:bg-gray-900 rounded-2xl p-5">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
             <div className="flex items-center gap-2 mb-1 flex-wrap">
-              <h1 className="font-mono text-2xl font-bold text-white">{truck.plateNumber}</h1>
+              <h1 className="font-mono text-2xl font-bold text-gray-900 dark:text-white">{truck.plateNumber}</h1>
               {mileageAlert && (
                 <span className="px-2 py-0.5 rounded-md text-xs font-bold bg-amber-500/20 text-amber-400 border border-amber-500/30">
                   ⚠ За сервиз
@@ -116,10 +116,10 @@ export default async function TruckProfilePage({ params }: { params: Promise<{ i
                 <span className="px-1.5 py-0.5 rounded-sm text-xs font-medium bg-sky-500/10 text-sky-400 border border-sky-500/20">Frotcom</span>
               )}
               {!truck.isActive && (
-                <span className="px-1.5 py-0.5 rounded-sm text-xs font-medium bg-gray-700/50 text-gray-500">Неактивен</span>
+                <span className="px-1.5 py-0.5 rounded-sm text-xs font-medium bg-gray-200 dark:bg-gray-700/50 text-gray-500">Неактивен</span>
               )}
             </div>
-            <p className="text-gray-400">
+            <p className="text-gray-500 dark:text-gray-400">
               {truck.make} {truck.model}{truck.year ? ` · ${truck.year}` : ''}
             </p>
           </div>
@@ -151,7 +151,7 @@ export default async function TruckProfilePage({ params }: { params: Promise<{ i
           >
             <div>
               <p className="text-xs text-blue-400 font-medium mb-0.5">Активна поръчка</p>
-              <p className="text-sm text-white">
+              <p className="text-sm text-gray-900 dark:text-white">
                 {STATUS_LABEL[activeService.status]} · {fmtDate(activeService.scheduledDate)}
                 {activeService.bayNameSnapshot ? ` · ${activeService.bayNameSnapshot}` : ''}
               </p>
@@ -162,9 +162,9 @@ export default async function TruckProfilePage({ params }: { params: Promise<{ i
       </div>
 
       {/* Service history */}
-      <div className="bg-gray-900 rounded-2xl overflow-hidden">
-        <div className="px-5 py-3 border-b border-gray-800">
-          <h2 className="text-sm font-semibold text-white">
+      <div className="bg-white dark:bg-gray-900 rounded-2xl overflow-hidden">
+        <div className="px-5 py-3 border-b border-gray-200 dark:border-gray-800">
+          <h2 className="text-sm font-semibold text-gray-900 dark:text-white">
             История на сервизите ({truck.serviceOrders.length})
           </h2>
         </div>
@@ -172,7 +172,7 @@ export default async function TruckProfilePage({ params }: { params: Promise<{ i
         {truck.serviceOrders.length === 0 ? (
           <p className="px-5 py-10 text-sm text-gray-500 text-center">Няма сервизни поръчки.</p>
         ) : (
-          <ul className="divide-y divide-gray-800">
+          <ul className="divide-y divide-gray-200 dark:divide-gray-800">
             {truck.serviceOrders.map((svc) => {
               const workDone  = svc.sections.flatMap((s) => s.workCards)
               const partsCost = workDone.flatMap((wc) => wc.parts)
@@ -181,14 +181,14 @@ export default async function TruckProfilePage({ params }: { params: Promise<{ i
                 <li key={svc.id}>
                   <Link
                     href={`/services/${svc.id}`}
-                    className="flex items-start justify-between px-5 py-4 hover:bg-gray-800/50 transition-colors gap-4"
+                    className="flex items-start justify-between px-5 py-4 hover:bg-gray-100/50 dark:hover:bg-gray-800/50 transition-colors gap-4"
                   >
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1.5 flex-wrap">
                         <span className={`inline-flex items-center px-2 py-0.5 rounded-sm text-xs font-medium ${STATUS_COLOR[svc.status]}`}>
                           {STATUS_LABEL[svc.status]}
                         </span>
-                        <span className="text-sm text-gray-300">{fmtDate(svc.scheduledDate)}</span>
+                        <span className="text-sm text-gray-600 dark:text-gray-300">{fmtDate(svc.scheduledDate)}</span>
                       </div>
                       {svc.bayNameSnapshot && (
                         <p className="text-xs text-gray-500">Бокс: {svc.bayNameSnapshot}</p>
@@ -197,7 +197,7 @@ export default async function TruckProfilePage({ params }: { params: Promise<{ i
                         <p className="text-xs text-gray-500">Шофьор: {svc.driverNameSnapshot}</p>
                       )}
                       {workDone.length > 0 && (
-                        <p className="text-xs text-gray-600 mt-1">{workDone.length} завършени работни карти</p>
+                        <p className="text-xs text-gray-400 dark:text-gray-600 mt-1">{workDone.length} завършени работни карти</p>
                       )}
                       {svc.cancellationReason && (
                         <p className="text-xs text-red-500 mt-1">Отменена: {svc.cancellationReason}</p>
@@ -205,12 +205,12 @@ export default async function TruckProfilePage({ params }: { params: Promise<{ i
                     </div>
                     <div className="text-right shrink-0">
                       {svc.mileageAtService !== null && (
-                        <p className="text-sm text-gray-300 tabular-nums">{fmtKm(svc.mileageAtService)}</p>
+                        <p className="text-sm text-gray-600 dark:text-gray-300 tabular-nums">{fmtKm(svc.mileageAtService)}</p>
                       )}
                       {partsCost > 0 && (
                         <p className="text-xs text-gray-500 mt-0.5">{partsCost.toFixed(2)} €</p>
                       )}
-                      <p className="text-gray-600 text-sm mt-1">→</p>
+                      <p className="text-gray-400 dark:text-gray-600 text-sm mt-1">→</p>
                     </div>
                   </Link>
                 </li>

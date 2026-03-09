@@ -14,8 +14,8 @@ function Input(props: React.InputHTMLAttributes<HTMLInputElement>) {
     <input
       {...props}
       className={
-        'w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-white ' +
-        'placeholder-gray-500 focus:outline-hidden focus:ring-2 focus:ring-blue-500 ' +
+        'w-full bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-gray-900 dark:text-white ' +
+        'placeholder-gray-400 dark:placeholder-gray-500 focus:outline-hidden focus:ring-2 focus:ring-blue-500 ' +
         (props.className ?? '')
       }
     />
@@ -23,7 +23,7 @@ function Input(props: React.InputHTMLAttributes<HTMLInputElement>) {
 }
 
 function Label({ children }: { children: React.ReactNode }) {
-  return <label className="block text-sm font-medium text-gray-300 mb-1">{children}</label>
+  return <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">{children}</label>
 }
 
 export default function EditTruckButton({ truck, canEdit }: { truck: Truck; canEdit: boolean }) {
@@ -71,7 +71,7 @@ export default function EditTruckButton({ truck, canEdit }: { truck: Truck; canE
     <>
       <button
         onClick={() => setOpen(true)}
-        className="px-3 py-1.5 text-sm bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-xl transition-colors"
+        className="px-3 py-1.5 text-sm bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300 rounded-xl transition-colors"
       >
         Редактирай
       </button>
@@ -79,10 +79,10 @@ export default function EditTruckButton({ truck, canEdit }: { truck: Truck; canE
       {open && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/60" onClick={() => setOpen(false)} />
-          <div className="relative w-full max-w-md bg-gray-900 rounded-2xl shadow-2xl p-6">
+          <div className="relative w-full max-w-md bg-white dark:bg-gray-900 rounded-2xl shadow-2xl p-6">
             <div className="flex items-center justify-between mb-5">
-              <h2 className="text-base font-semibold text-white">Редактиране на камион</h2>
-              <button onClick={() => setOpen(false)} className="text-gray-500 hover:text-white text-xl leading-none">×</button>
+              <h2 className="text-base font-semibold text-gray-900 dark:text-white">Редактиране на камион</h2>
+              <button onClick={() => setOpen(false)} className="text-gray-500 hover:text-gray-900 dark:hover:text-white text-xl leading-none">×</button>
             </div>
             <form onSubmit={save} className="space-y-4">
               <div className="grid grid-cols-2 gap-3">
@@ -115,12 +115,12 @@ export default function EditTruckButton({ truck, canEdit }: { truck: Truck; canE
               </div>
               <label className="flex items-center gap-3 cursor-pointer">
                 <input type="checkbox" checked={isAdr} onChange={(e) => setIsAdr(e.target.checked)} className="w-4 h-4 accent-blue-500" />
-                <span className="text-sm text-gray-300">ADR камион</span>
+                <span className="text-sm text-gray-600 dark:text-gray-300">ADR камион</span>
               </label>
               {error && <p className="text-sm text-red-400">{error}</p>}
               <div className="flex gap-3 pt-1">
                 <button type="button" onClick={() => setOpen(false)}
-                  className="flex-1 py-2.5 rounded-xl border border-gray-600 text-gray-300 hover:bg-gray-800 transition-colors text-sm">
+                  className="flex-1 py-2.5 rounded-xl border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-sm">
                   Откажи
                 </button>
                 <button type="submit" disabled={loading}

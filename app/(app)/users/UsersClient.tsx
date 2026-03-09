@@ -95,8 +95,8 @@ function Input(props: React.InputHTMLAttributes<HTMLInputElement>) {
     <input
       {...props}
       className={
-        'w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-white ' +
-        'placeholder-gray-500 focus:outline-hidden focus:ring-2 focus:ring-blue-500 ' +
+        'w-full bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-gray-900 dark:text-white ' +
+        'placeholder-gray-400 dark:placeholder-gray-500 focus:outline-hidden focus:ring-2 focus:ring-blue-500 ' +
         (props.className ?? '')
       }
     />
@@ -108,7 +108,7 @@ function Select(props: React.SelectHTMLAttributes<HTMLSelectElement>) {
     <select
       {...props}
       className={
-        'w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-white ' +
+        'w-full bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-gray-900 dark:text-white ' +
         'focus:outline-hidden focus:ring-2 focus:ring-blue-500 ' +
         (props.className ?? '')
       }
@@ -117,7 +117,7 @@ function Select(props: React.SelectHTMLAttributes<HTMLSelectElement>) {
 }
 
 function Label({ children }: { children: React.ReactNode }) {
-  return <label className="block text-sm font-medium text-gray-300 mb-1">{children}</label>
+  return <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">{children}</label>
 }
 
 function ErrorBox({ msg }: { msg: string }) {
@@ -134,10 +134,10 @@ function Modal({ title, onClose, children }: { title: string; onClose: () => voi
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/60" onClick={onClose} />
-      <div className="relative w-full max-w-lg bg-gray-900 rounded-2xl shadow-2xl flex flex-col max-h-[90vh]">
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-800 shrink-0">
-          <h2 className="text-base font-semibold text-white">{title}</h2>
-          <button onClick={onClose} className="text-gray-500 hover:text-white text-xl leading-none">×</button>
+      <div className="relative w-full max-w-lg bg-white dark:bg-gray-900 rounded-2xl shadow-2xl flex flex-col max-h-[90vh]">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-gray-800 shrink-0">
+          <h2 className="text-base font-semibold text-gray-900 dark:text-white">{title}</h2>
+          <button onClick={onClose} className="text-gray-500 hover:text-gray-900 dark:hover:text-white text-xl leading-none">×</button>
         </div>
         <div className="overflow-y-auto flex-1 px-6 py-5">{children}</div>
       </div>
@@ -166,16 +166,16 @@ function RecoveryDisplay({
         <p className="text-yellow-300 text-sm font-semibold mb-3">⚠ {t('saveCodeWarning')}</p>
         {tempPassword && (
           <div className="mb-3">
-            <p className="text-xs text-gray-400 mb-1">{t('tempPasswordFor')} <strong className="text-white">{username}</strong>:</p>
-            <div className="bg-gray-900 rounded-lg p-2 text-center">
-              <span className="font-mono text-lg font-bold text-white tracking-widest">{tempPassword}</span>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">{t('tempPasswordFor')} <strong className="text-gray-900 dark:text-white">{username}</strong>:</p>
+            <div className="bg-white dark:bg-gray-900 rounded-lg p-2 text-center">
+              <span className="font-mono text-lg font-bold text-gray-900 dark:text-white tracking-widest">{tempPassword}</span>
             </div>
           </div>
         )}
         <div>
-          <p className="text-xs text-gray-400 mb-1">{t('recoveryCodeLabel')}</p>
-          <div className="bg-gray-900 rounded-lg p-2 text-center">
-            <span className="font-mono text-lg font-bold text-white tracking-widest">{code}</span>
+          <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">{t('recoveryCodeLabel')}</p>
+          <div className="bg-white dark:bg-gray-900 rounded-lg p-2 text-center">
+            <span className="font-mono text-lg font-bold text-gray-900 dark:text-white tracking-widest">{code}</span>
           </div>
         </div>
         <p className="text-yellow-200/70 text-xs mt-3">
@@ -190,14 +190,14 @@ function RecoveryDisplay({
           onChange={(e) => setConfirmed(e.target.checked)}
           className="mt-1 w-4 h-4 accent-blue-500 shrink-0"
         />
-        <span className="text-sm text-gray-300">{t('saveCodeConfirm')}</span>
+        <span className="text-sm text-gray-600 dark:text-gray-300">{t('saveCodeConfirm')}</span>
       </label>
 
       <button
         onClick={onClose}
         disabled={!confirmed}
         className="w-full py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold
-          transition-colors disabled:bg-gray-700 disabled:text-gray-500 disabled:cursor-not-allowed"
+          transition-colors disabled:bg-gray-200 dark:disabled:bg-gray-700 disabled:text-gray-400 dark:disabled:text-gray-500 disabled:cursor-not-allowed"
       >
         {t('done')}
       </button>
@@ -225,7 +225,7 @@ function PermissionsEditor({
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <p className="text-sm font-medium text-gray-300">{t('permissionsTitle')}</p>
+        <p className="text-sm font-medium text-gray-600 dark:text-gray-300">{t('permissionsTitle')}</p>
         <button
           type="button"
           onClick={toggleAll}
@@ -248,7 +248,7 @@ function PermissionsEditor({
                   onChange={() => toggle(perm)}
                   className="w-4 h-4 accent-blue-500 shrink-0"
                 />
-                <span className="text-xs text-gray-400 group-hover:text-gray-200 transition-colors">
+                <span className="text-xs text-gray-500 dark:text-gray-400 group-hover:text-gray-700 dark:group-hover:text-gray-200 transition-colors">
                   {PERMISSION_LABELS[perm]}
                 </span>
               </label>
@@ -369,7 +369,7 @@ function AddUserModal({
 
         <div className="flex gap-3 pt-2">
           <button type="button" onClick={onClose}
-            className="flex-1 py-2.5 rounded-xl border border-gray-600 text-gray-300 hover:bg-gray-800 transition-colors">
+            className="flex-1 py-2.5 rounded-xl border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
             {tCommon('cancel')}
           </button>
           <button type="submit" disabled={submitting}
@@ -448,7 +448,7 @@ function EditUserModal({
         </div>
 
         {role === 'ASSISTANT' && (
-          <div className="border border-gray-700 rounded-xl p-4">
+          <div className="border border-gray-200 dark:border-gray-700 rounded-xl p-4">
             <PermissionsEditor selected={perms} onChange={setPerms} />
           </div>
         )}
@@ -481,14 +481,14 @@ function EditUserModal({
             onChange={(e) => setDarkMode(e.target.checked)}
             className="w-4 h-4 accent-blue-500"
           />
-          <span className="text-sm text-gray-300">{t('darkMode')}</span>
+          <span className="text-sm text-gray-600 dark:text-gray-300">{t('darkMode')}</span>
         </label>
 
         {error && <ErrorBox msg={error} />}
 
         <div className="flex gap-3 pt-2">
           <button type="button" onClick={onClose}
-            className="flex-1 py-2.5 rounded-xl border border-gray-600 text-gray-300 hover:bg-gray-800 transition-colors">
+            className="flex-1 py-2.5 rounded-xl border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
             {tCommon('cancel')}
           </button>
           <button type="submit" disabled={submitting}
@@ -547,13 +547,13 @@ function ResetPasswordModal({
   return (
     <Modal title={t('resetTitle')} onClose={onClose}>
       <div className="space-y-5">
-        <p className="text-sm text-gray-300">
+        <p className="text-sm text-gray-600 dark:text-gray-300">
           {t('resetDesc', { name: user.name, username: user.username })}
         </p>
         {error && <ErrorBox msg={error} />}
         <div className="flex gap-3">
           <button onClick={onClose}
-            className="flex-1 py-2.5 rounded-xl border border-gray-600 text-gray-300 hover:bg-gray-800 transition-colors">
+            className="flex-1 py-2.5 rounded-xl border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
             {tCommon('cancel')}
           </button>
           <button onClick={confirm} disabled={submitting}
@@ -601,13 +601,13 @@ function DeleteModal({
   return (
     <Modal title={t('deleteTitle')} onClose={onClose}>
       <div className="space-y-5">
-        <p className="text-sm text-gray-300">
+        <p className="text-sm text-gray-600 dark:text-gray-300">
           {t('deleteDesc', { name: user.name, username: user.username })}
         </p>
         {error && <ErrorBox msg={error} />}
         <div className="flex gap-3">
           <button onClick={onClose}
-            className="flex-1 py-2.5 rounded-xl border border-gray-600 text-gray-300 hover:bg-gray-800 transition-colors">
+            className="flex-1 py-2.5 rounded-xl border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
             {tCommon('cancel')}
           </button>
           <button onClick={confirm} disabled={submitting}
@@ -628,7 +628,7 @@ function RoleBadge({ role }: { role: 'MANAGER' | 'ASSISTANT' }) {
     <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
       role === 'MANAGER'
         ? 'bg-blue-600/20 text-blue-400'
-        : 'bg-gray-700 text-gray-300'
+        : 'bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300'
     }`}>
       {role === 'MANAGER' ? t('role.MANAGER') : t('role.ASSISTANT')}
     </span>
@@ -695,7 +695,7 @@ export default function UsersClient({
         {/* Header */}
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h1 className="text-2xl font-bold text-white">{t('list')}</h1>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{t('list')}</h1>
             <p className="text-sm text-gray-500 mt-0.5">{t('countLabel', { count: users.length })}</p>
           </div>
           <button
@@ -714,16 +714,16 @@ export default function UsersClient({
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder={t('searchPlaceholder')}
-            className="w-full max-w-sm bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-hidden focus:ring-2 focus:ring-blue-500"
+            className="w-full max-w-sm bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-sm text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-hidden focus:ring-2 focus:ring-blue-500"
           />
         </div>
 
         {/* Table */}
-        <div className="bg-gray-900 rounded-2xl overflow-hidden">
+        <div className="bg-white dark:bg-gray-900 rounded-2xl overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-gray-800">
+                <tr className="border-b border-gray-200 dark:border-gray-800">
                   <th className="text-left px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">
                     {t('title')}
                   </th>
@@ -736,17 +736,17 @@ export default function UsersClient({
                   <th className="px-5 py-3" />
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-800">
+              <tbody className="divide-y divide-gray-200 dark:divide-gray-800">
                 {visibleUsers.map((user) => (
-                  <tr key={user.id} className="hover:bg-gray-800/50 transition-colors">
+                  <tr key={user.id} className="hover:bg-gray-100 dark:hover:bg-gray-800/50 transition-colors">
                     <td className="px-5 py-4">
-                      <p className="font-medium text-white">{user.name}</p>
+                      <p className="font-medium text-gray-900 dark:text-white">{user.name}</p>
                       <p className="text-xs text-gray-500 font-mono">{user.username}</p>
                     </td>
                     <td className="px-5 py-4">
                       <RoleBadge role={user.role} />
                       {user.role === 'ASSISTANT' && (
-                        <p className="text-xs text-gray-600 mt-1">
+                        <p className="text-xs text-gray-400 dark:text-gray-600 mt-1">
                           {t('permCount', { count: parsePerms(user.permissions).length })}
                         </p>
                       )}
@@ -850,8 +850,8 @@ function ActionBtn({
       title={label}
       className={`p-1.5 rounded-lg transition-colors ${
         danger
-          ? 'text-gray-600 hover:text-red-400 hover:bg-red-400/10'
-          : 'text-gray-500 hover:text-white hover:bg-gray-700'
+          ? 'text-gray-400 dark:text-gray-600 hover:text-red-400 hover:bg-red-400/10'
+          : 'text-gray-500 hover:text-gray-900 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-gray-700'
       }`}
     >
       {children}

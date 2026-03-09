@@ -37,7 +37,7 @@ const STEPS = [
 
 function Label({ children, required }: { children: React.ReactNode; required?: boolean }) {
   return (
-    <label className="block text-sm font-medium text-gray-300 mb-1">
+    <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">
       {children}
       {required && <span className="text-red-400 ml-1">*</span>}
     </label>
@@ -49,8 +49,8 @@ function Input(props: React.InputHTMLAttributes<HTMLInputElement>) {
     <input
       {...props}
       className={
-        'w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-white ' +
-        'placeholder-gray-500 focus:outline-hidden focus:ring-2 focus:ring-blue-500 focus:border-transparent ' +
+        'w-full bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-gray-900 dark:text-white ' +
+        'placeholder-gray-400 dark:placeholder-gray-500 focus:outline-hidden focus:ring-2 focus:ring-blue-500 focus:border-transparent ' +
         (props.className ?? '')
       }
     />
@@ -62,8 +62,8 @@ function Textarea(props: React.TextareaHTMLAttributes<HTMLTextAreaElement>) {
     <textarea
       {...props}
       className={
-        'w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-white ' +
-        'placeholder-gray-500 focus:outline-hidden focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none ' +
+        'w-full bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-gray-900 dark:text-white ' +
+        'placeholder-gray-400 dark:placeholder-gray-500 focus:outline-hidden focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none ' +
         (props.className ?? '')
       }
     />
@@ -281,7 +281,7 @@ function EquipmentList({
 
   return (
     <div>
-      <p className="text-sm font-semibold text-gray-300 mb-2">{label}</p>
+      <p className="text-sm font-semibold text-gray-600 dark:text-gray-300 mb-2">{label}</p>
       <div className="space-y-2">
         {items.map((item, i) => (
           <div key={i} className="flex items-start gap-2">
@@ -386,7 +386,7 @@ function RecoveryCodeScreen({ code, onDone }: { code: string; onDone: () => void
         </svg>
       </div>
       <div>
-        <h2 className="text-xl font-bold text-white">Настройката е завършена!</h2>
+        <h2 className="text-xl font-bold text-gray-900 dark:text-white">Настройката е завършена!</h2>
         <p className="text-gray-400 mt-1 text-sm">Запазете кода за възстановяване преди да продължите.</p>
       </div>
 
@@ -394,8 +394,8 @@ function RecoveryCodeScreen({ code, onDone }: { code: string; onDone: () => void
         <p className="text-yellow-300 text-sm font-semibold mb-3">
           ⚠ Код за възстановяване на паролата
         </p>
-        <div className="bg-gray-900 rounded-lg p-3 text-center">
-          <span className="font-mono text-2xl font-bold tracking-widest text-white">{code}</span>
+        <div className="bg-white dark:bg-gray-900 rounded-lg p-3 text-center">
+          <span className="font-mono text-2xl font-bold tracking-widest text-gray-900 dark:text-white">{code}</span>
         </div>
         <p className="text-yellow-200/70 text-xs mt-3">
           Този код се показва само веднъж. Запишете го на сигурно място. Ще ви трябва ако забравите
@@ -410,7 +410,7 @@ function RecoveryCodeScreen({ code, onDone }: { code: string; onDone: () => void
           onChange={(e) => setConfirmed(e.target.checked)}
           className="mt-1 w-4 h-4 accent-blue-500 shrink-0"
         />
-        <span className="text-sm text-gray-300">
+        <span className="text-sm text-gray-600 dark:text-gray-300">
           Записал/а съм кода за възстановяване на сигурно място.
         </span>
       </label>
@@ -419,7 +419,7 @@ function RecoveryCodeScreen({ code, onDone }: { code: string; onDone: () => void
         onClick={onDone}
         disabled={!confirmed}
         className="w-full py-3 rounded-xl font-semibold text-white transition-all
-          bg-blue-600 hover:bg-blue-500 disabled:bg-gray-700 disabled:text-gray-500 disabled:cursor-not-allowed"
+          bg-blue-600 hover:bg-blue-500 disabled:bg-gray-200 dark:disabled:bg-gray-700 disabled:text-gray-400 dark:disabled:text-gray-500 disabled:cursor-not-allowed"
       >
         Отиди към вход
       </button>
@@ -508,8 +508,8 @@ export default function SetupWizard() {
   // ── Done screen ──────────────────────────────────────────────────────────
   if (recoveryCode) {
     return (
-      <div className="min-h-screen bg-gray-950 flex items-center justify-center p-4">
-        <div className="w-full max-w-md bg-gray-900 rounded-2xl p-8 shadow-2xl">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex items-center justify-center p-4">
+        <div className="w-full max-w-md bg-white dark:bg-gray-900 rounded-2xl p-8 shadow-2xl">
           <RecoveryCodeScreen code={recoveryCode} onDone={() => router.push('/login')} />
         </div>
       </div>
@@ -526,17 +526,17 @@ export default function SetupWizard() {
   ][step - 1]
 
   return (
-    <div className="min-h-screen bg-gray-950 flex items-center justify-center p-4">
-      <div className="w-full max-w-lg bg-gray-900 rounded-2xl shadow-2xl overflow-hidden">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex items-center justify-center p-4">
+      <div className="w-full max-w-lg bg-white dark:bg-gray-900 rounded-2xl shadow-2xl overflow-hidden">
         {/* Header */}
-        <div className="bg-gray-800 px-8 py-5">
-          <h1 className="text-lg font-bold text-white">Talay Workshop — Първоначална настройка</h1>
+        <div className="bg-gray-100 dark:bg-gray-800 px-8 py-5">
+          <h1 className="text-lg font-bold text-gray-900 dark:text-white">Talay Workshop — Първоначална настройка</h1>
           <div className="mt-3 flex gap-1.5">
             {STEPS.map((_, i) => (
               <div
                 key={i}
                 className={`h-1.5 flex-1 rounded-full transition-colors ${
-                  i + 1 <= step ? 'bg-blue-500' : 'bg-gray-600'
+                  i + 1 <= step ? 'bg-blue-500' : 'bg-gray-300 dark:bg-gray-600'
                 }`}
               />
             ))}
@@ -563,7 +563,7 @@ export default function SetupWizard() {
               type="button"
               onClick={back}
               disabled={loading}
-              className="flex-1 py-3 rounded-xl border border-gray-600 text-gray-300 hover:bg-gray-800 transition-colors disabled:opacity-50"
+              className="flex-1 py-3 rounded-xl border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors disabled:opacity-50"
             >
               Назад
             </button>

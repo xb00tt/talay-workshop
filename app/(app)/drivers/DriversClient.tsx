@@ -45,30 +45,30 @@ export default function DriversClient({
   return (
     <div className="p-6 lg:p-8 max-w-3xl mx-auto space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-white">{t('list')}</h1>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{t('list')}</h1>
         <p className="text-sm text-gray-500 mt-0.5">{t('subtitle')}</p>
       </div>
 
       {drivers.length === 0 ? (
-        <div className="bg-gray-900 rounded-2xl">
+        <div className="bg-white dark:bg-gray-900 rounded-2xl">
           <p className="px-5 py-12 text-center text-gray-500">{t('empty')}</p>
         </div>
       ) : (
         <div className="space-y-4">
           {active.length > 0 && (
-            <div className="bg-gray-900 rounded-2xl overflow-hidden">
-              <div className="px-5 py-3 border-b border-gray-800">
-                <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
+            <div className="bg-white dark:bg-gray-900 rounded-2xl overflow-hidden">
+              <div className="px-5 py-3 border-b border-gray-200 dark:border-gray-800">
+                <h2 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                   {tCommon('active')} ({active.length})
                 </h2>
               </div>
-              <ul className="divide-y divide-gray-800">
+              <ul className="divide-y divide-gray-200 dark:divide-gray-800">
                 {active.map((d) => (
                   <li key={d.id} className="flex items-center justify-between px-5 py-3 gap-4">
                     <div className="min-w-0">
-                      <p className="text-sm font-medium text-gray-200 truncate">{d.name}</p>
+                      <p className="text-sm font-medium text-gray-700 dark:text-gray-200 truncate">{d.name}</p>
                       {d.frotcomDriverId && (
-                        <p className="text-xs text-gray-600 mt-0.5">{t('frotcomId')}: {d.frotcomDriverId}</p>
+                        <p className="text-xs text-gray-300 dark:text-gray-600 mt-0.5">{t('frotcomId')}: {d.frotcomDriverId}</p>
                       )}
                     </div>
                     {isManager && (
@@ -86,13 +86,13 @@ export default function DriversClient({
             </div>
           )}
           {inactive.length > 0 && (
-            <div className="bg-gray-900 rounded-2xl overflow-hidden">
-              <div className="px-5 py-3 border-b border-gray-800">
-                <h2 className="text-xs font-semibold text-gray-600 uppercase tracking-wider">
+            <div className="bg-white dark:bg-gray-900 rounded-2xl overflow-hidden">
+              <div className="px-5 py-3 border-b border-gray-200 dark:border-gray-800">
+                <h2 className="text-xs font-semibold text-gray-300 dark:text-gray-600 uppercase tracking-wider">
                   {tCommon('inactive')} ({inactive.length})
                 </h2>
               </div>
-              <ul className="divide-y divide-gray-800">
+              <ul className="divide-y divide-gray-200 dark:divide-gray-800">
                 {inactive.map((d) => (
                   <li key={d.id} className="flex items-center justify-between px-5 py-3 gap-4">
                     <p className="text-sm text-gray-500 truncate">{d.name}</p>

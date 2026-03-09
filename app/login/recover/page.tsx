@@ -45,9 +45,9 @@ export default function RecoverPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-950 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex items-center justify-center p-4">
       <div className="w-full max-w-sm">
-        <div className="bg-gray-900 rounded-2xl p-6 shadow-2xl">
+        <div className="bg-white dark:bg-gray-900 rounded-2xl p-6 shadow-2xl">
           {stage === 'success' ? (
             <div className="text-center space-y-4">
               <div className="w-12 h-12 rounded-full bg-green-500/20 flex items-center justify-center mx-auto">
@@ -56,7 +56,7 @@ export default function RecoverPage() {
                 </svg>
               </div>
               <div>
-                <h2 className="text-lg font-bold text-white">Паролата е сменена</h2>
+                <h2 className="text-lg font-bold text-gray-900 dark:text-white">Паролата е сменена</h2>
                 <p className="text-gray-400 text-sm mt-1">Вече можете да влезете с новата парола.</p>
               </div>
               <button
@@ -69,7 +69,7 @@ export default function RecoverPage() {
           ) : (
             <>
               <div className="mb-5">
-                <h1 className="text-lg font-bold text-white">Възстановяване на парола</h1>
+                <h1 className="text-lg font-bold text-gray-900 dark:text-white">Възстановяване на парола</h1>
                 <p className="text-gray-400 text-sm mt-1">
                   Въведете кода за възстановяване, получен при създаване на акаунта.
                 </p>
@@ -77,7 +77,7 @@ export default function RecoverPage() {
 
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-1">
+                  <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">
                     Потребителско име
                   </label>
                   <input
@@ -87,14 +87,14 @@ export default function RecoverPage() {
                     required
                     autoFocus
                     autoComplete="username"
-                    className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2.5 text-white
-                      placeholder-gray-500 focus:outline-hidden focus:ring-2 focus:ring-blue-500"
+                    className="w-full bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2.5 text-gray-900 dark:text-white
+                      placeholder-gray-400 dark:placeholder-gray-500 focus:outline-hidden focus:ring-2 focus:ring-blue-500"
                     placeholder="потребителско_име"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-1">
+                  <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">
                     Код за възстановяване
                   </label>
                   <input
@@ -102,14 +102,14 @@ export default function RecoverPage() {
                     value={recoveryCode}
                     onChange={(e) => setRecoveryCode(e.target.value.toUpperCase())}
                     required
-                    className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2.5 text-white
-                      font-mono tracking-widest placeholder-gray-500 focus:outline-hidden focus:ring-2 focus:ring-blue-500"
+                    className="w-full bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2.5 text-gray-900 dark:text-white
+                      font-mono tracking-widest placeholder-gray-400 dark:placeholder-gray-500 focus:outline-hidden focus:ring-2 focus:ring-blue-500"
                     placeholder="XXXXXXXXXXXXXX"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-1">
+                  <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">
                     Нова парола
                   </label>
                   <input
@@ -118,14 +118,14 @@ export default function RecoverPage() {
                     onChange={(e) => setNewPassword(e.target.value)}
                     required
                     autoComplete="new-password"
-                    className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2.5 text-white
-                      placeholder-gray-500 focus:outline-hidden focus:ring-2 focus:ring-blue-500"
+                    className="w-full bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2.5 text-gray-900 dark:text-white
+                      placeholder-gray-400 dark:placeholder-gray-500 focus:outline-hidden focus:ring-2 focus:ring-blue-500"
                     placeholder="Минимум 8 символа"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-1">
+                  <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">
                     Потвърди паролата
                   </label>
                   <input
@@ -134,8 +134,8 @@ export default function RecoverPage() {
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     required
                     autoComplete="new-password"
-                    className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2.5 text-white
-                      placeholder-gray-500 focus:outline-hidden focus:ring-2 focus:ring-blue-500"
+                    className="w-full bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2.5 text-gray-900 dark:text-white
+                      placeholder-gray-400 dark:placeholder-gray-500 focus:outline-hidden focus:ring-2 focus:ring-blue-500"
                     placeholder="Повтори паролата"
                   />
                 </div>
@@ -157,7 +157,7 @@ export default function RecoverPage() {
               </form>
 
               <div className="mt-4 text-center">
-                <Link href="/login" className="text-sm text-gray-500 hover:text-gray-300 transition-colors">
+                <Link href="/login" className="text-sm text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors">
                   ← Назад към вход
                 </Link>
               </div>
