@@ -1,8 +1,10 @@
 import type { NextConfig } from 'next'
 import createNextIntlPlugin from 'next-intl/plugin'
 import { withSentryConfig } from '@sentry/nextjs'
+import withBundleAnalyzer from '@next/bundle-analyzer'
 
 const withNextIntl = createNextIntlPlugin('./i18n/request.ts')
+const withAnalyzer = withBundleAnalyzer({ enabled: process.env.ANALYZE === 'true' })
 
 const nextConfig: NextConfig = {
   // Uploads served via /api/uploads/[...path] route handler
@@ -22,7 +24,7 @@ const nextConfig: NextConfig = {
   },
 }
 
-export default withSentryConfig(withNextIntl(nextConfig), {
+export default withSentryConfig(withAnalyzer(withNextIntl(nextConfig)), {
   // Source maps are disabled until SENTRY_ORG + SENTRY_PROJECT are configured
   sourcemaps: { disable: true },
   // Suppress Sentry CLI output during builds
