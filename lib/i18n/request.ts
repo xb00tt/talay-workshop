@@ -1,12 +1,11 @@
 import { getRequestConfig } from "next-intl/server";
-import { auth } from "@/auth";
 import { routing } from "./routing";
 
 export default getRequestConfig(async () => {
-  // Locale from user session preference; fall back to default
-  const session = await auth();
-  const locale =
-    (session?.user?.preferredLocale as string) ?? routing.defaultLocale;
+  // Default to Bulgarian for all requests.
+  // Per-user locale preference is read from the session in individual pages
+  // that need it, not here — avoids auth() calls on every edge request.
+  const locale = routing.defaultLocale;
 
   return {
     locale,

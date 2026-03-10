@@ -1,9 +1,14 @@
 import type { NextConfig } from "next";
-import createNextIntlPlugin from "next-intl/plugin";
-
-const withNextIntl = createNextIntlPlugin("./lib/i18n/request.ts");
 
 const nextConfig: NextConfig = {
+  // Set up next-intl config alias manually (avoids withNextIntl plugin
+  // which causes 404 on login page in Next.js 16 + Turbopack).
+  // This replicates what createNextIntlPlugin does internally.
+  turbopack: {
+    resolveAlias: {
+      "next-intl/config": "./lib/i18n/request.ts",
+    },
+  },
   // Static file uploads served from /uploads
   async rewrites() {
     return [
@@ -15,4 +20,4 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default withNextIntl(nextConfig);
+export default nextConfig;
