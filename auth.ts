@@ -50,7 +50,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     async jwt({ token, user }) {
       if (user) {
         // Initial sign-in: populate token from user returned by authorize()
-        token.id = user.id;
+        token.id = user.id ?? "";
         token.username = (user as { username: string }).username;
         token.role = (user as { role: string }).role;
         token.permissions = (user as { permissions: string[] }).permissions;

@@ -1,15 +1,13 @@
 import { auth } from "@/auth";
 import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
+import type { NextAuthRequest } from "next-auth";
 
 // Routes that don't require authentication
 const PUBLIC_PATHS = ["/login", "/api/auth"];
 
 // With localePrefix: "never", next-intl needs no middleware for URL routing.
 // Locale is detected server-side in lib/i18n/request.ts from the user session.
-export default auth(function proxy(
-  request: NextRequest & { auth: Awaited<ReturnType<typeof auth>> }
-) {
+export default auth(function proxy(request: NextAuthRequest) {
   const { pathname } = request.nextUrl;
 
   if (pathname.startsWith("/api/auth")) {
