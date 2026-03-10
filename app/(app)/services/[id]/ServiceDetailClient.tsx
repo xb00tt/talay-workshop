@@ -257,6 +257,8 @@ function ServiceSection({
           <WorkCardsTable
             workCards={section.workCards}
             serviceId={serviceId}
+            sectionId={section.id}
+            onMutate={onMutate}
           />
         )}
 
@@ -322,10 +324,22 @@ function ChecklistSection({
 function WorkCardsTable({
   workCards,
   serviceId,
+  sectionId,
+  onMutate,
 }: {
   workCards: Array<{ id: number; status: string; mechanicName: string; description: string }>;
   serviceId: number;
+  sectionId: number;
+  onMutate: () => void;
 }) {
+  const [adding, setAdding] = useState(false);
+  const [mechanics, setMechanics] = useState<Array<{ id: number; name: string }>>([]);
+  const [mechanicId, setMechanicId] = useState("");
+  const [mechanicName, setMechanicName] = useState("");
+  const [description, setDescription] = useState("");
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
+
   const WORKCARD_STATUS_LABELS: Record<string, string> = {
     PENDING: "Изчаква",
     ASSIGNED: "Назначена",
@@ -334,43 +348,128 @@ function WorkCardsTable({
     CANCELLED: "Отменена",
   };
 
-  if (workCards.length === 0) {
-    return (
-      <p className="text-sm text-[var(--text-secondary)] py-2">Няма работни карти.</p>
-    );
+  async function openAddForm() {
+    const res = await fetch("/api/mechanics");
+    const data = await res.json();
+    setMechanics(data);
+    setAdding(true);
+  }
+
+  async function addCard(e: React.FormEvent) {
+    e.preventDefault();
+    if (!description.trim() || (!mechanicId && !mechanicName.trim())) return;
+    setSaving(true);
+    setError("");
+
+    const name = mechanicId
+      ? (mechanics.find((m) => String(m.id) === mechanicId)?.name ?? mechanicName)
+      : mechanicName;
+
+    const res = await fetch(`/api/services/${serviceId}/work-cards`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        serviceSectionId: sectionId,
+        description: description.trim(),
+        mechanicId: mechanicId ? parseInt(mechanicId) : null,
+        mechanicName: name,
+      }),
+    });
+
+    if (res.ok) {
+      setAdding(false);
+      setDescription(""); setMechanicId(""); setMechanicName("");
+      onMutate();
+    } else {
+      const body = await res.json();
+      setError(body.error ?? "Грешка");
+    }
+    setSaving(false);
   }
 
   return (
-    <div className="rounded border border-[var(--border)] overflow-hidden">
-      <table className="w-full text-sm">
-        <thead>
-          <tr className="border-b border-[var(--border)] bg-[var(--bg-elevated)]">
-            <th className="px-3 py-2 text-left text-xs font-medium uppercase tracking-wide text-[var(--text-muted)]">Механик</th>
-            <th className="px-3 py-2 text-left text-xs font-medium uppercase tracking-wide text-[var(--text-muted)]">Описание</th>
-            <th className="px-3 py-2 text-left text-xs font-medium uppercase tracking-wide text-[var(--text-muted)]">Статус</th>
-          </tr>
-        </thead>
-        <tbody className="divide-y divide-[var(--border)]">
-          {workCards.map((card) => (
-            <tr key={card.id} className="h-10 hover:bg-[var(--bg-elevated)] transition-colors cursor-pointer">
-              <td className="px-3 py-2">
-                <Link
-                  href={`/services/${serviceId}/work-cards/${card.id}`}
-                  className="text-[var(--text-primary)] hover:text-[var(--accent)] font-medium"
-                >
-                  {card.mechanicName}
-                </Link>
-              </td>
-              <td className="px-3 py-2 text-[var(--text-secondary)] max-w-xs truncate">
-                {card.description}
-              </td>
-              <td className="px-3 py-2 text-[var(--text-secondary)]">
-                {WORKCARD_STATUS_LABELS[card.status] ?? card.status}
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+    <div className="space-y-2">
+      {workCards.length > 0 && (
+        <div className="rounded border border-[var(--border)] overflow-hidden">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-[var(--border)] bg-[var(--bg-elevated)]">
+                <th className="px-3 py-2 text-left text-xs font-medium uppercase tracking-wide text-[var(--text-muted)]">Механик</th>
+                <th className="px-3 py-2 text-left text-xs font-medium uppercase tracking-wide text-[var(--text-muted)]">Описание</th>
+                <th className="px-3 py-2 text-left text-xs font-medium uppercase tracking-wide text-[var(--text-muted)]">Статус</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-[var(--border)]">
+              {workCards.map((card) => (
+                <tr key={card.id} className="h-10 hover:bg-[var(--bg-elevated)] transition-colors cursor-pointer"
+                  onClick={() => window.location.href = `/services/${serviceId}/work-cards/${card.id}`}>
+                  <td className="px-3 py-2">
+                    <Link
+                      href={`/services/${serviceId}/work-cards/${card.id}`}
+                      className="text-[var(--text-primary)] hover:text-[var(--accent)] font-medium"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      {card.mechanicName}
+                    </Link>
+                  </td>
+                  <td className="px-3 py-2 text-[var(--text-secondary)] max-w-xs truncate">{card.description}</td>
+                  <td className="px-3 py-2 text-[var(--text-secondary)]">
+                    {WORKCARD_STATUS_LABELS[card.status] ?? card.status}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      {!adding && (
+        <button
+          onClick={openAddForm}
+          className="text-xs text-[var(--accent)] hover:underline"
+        >
+          + Добави работна карта
+        </button>
+      )}
+
+      {adding && (
+        <form onSubmit={addCard} className="rounded border border-[var(--border)] p-3 space-y-3 bg-[var(--bg-surface)]">
+          <div className="space-y-1">
+            <label className="text-xs text-[var(--text-muted)]">Механик *</label>
+            <select
+              value={mechanicId}
+              onChange={(e) => { setMechanicId(e.target.value); if (e.target.value) setMechanicName(""); }}
+              className="w-full h-8 px-2 text-sm rounded border border-[var(--border)] bg-[var(--bg-elevated)] text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent)]"
+            >
+              <option value="">— изберете или въведете —</option>
+              {mechanics.map((m) => <option key={m.id} value={String(m.id)}>{m.name}</option>)}
+            </select>
+            {!mechanicId && (
+              <input
+                value={mechanicName}
+                onChange={(e) => setMechanicName(e.target.value)}
+                placeholder="Или въведете ръчно..."
+                className="w-full h-8 px-2 text-sm rounded border border-[var(--border)] bg-[var(--bg-elevated)] text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent)] mt-1"
+              />
+            )}
+          </div>
+          <div className="space-y-1">
+            <label className="text-xs text-[var(--text-muted)]">Описание *</label>
+            <input
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder="Смяна на масло..."
+              required
+              className="w-full h-8 px-2 text-sm rounded border border-[var(--border)] bg-[var(--bg-elevated)] text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent)]"
+            />
+          </div>
+          {error && <p className="text-xs text-[var(--status-cancelled)]">{error}</p>}
+          <div className="flex gap-2">
+            <Button type="submit" size="sm" disabled={saving}>Добави</Button>
+            <Button type="button" size="sm" variant="outline" onClick={() => setAdding(false)}>Откажи</Button>
+          </div>
+        </form>
+      )}
     </div>
   );
 }

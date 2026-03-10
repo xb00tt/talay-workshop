@@ -57,20 +57,21 @@ export function DashboardClient() {
         <section>
           <div className="space-y-1">
             {alerts.map((alert) => (
-              <Link
-                key={alert.truckId}
-                href={`/trucks/${alert.truckId}`}
-                className="flex items-center gap-3 px-3 py-2 rounded bg-[var(--bg-surface)] border border-[var(--border)] hover:border-[var(--accent)] transition-colors"
-              >
-                <span className="inline-block h-1.5 w-1.5 rounded-full bg-[var(--status-cancelled)] shrink-0" />
-                <span className="text-sm font-medium text-[var(--text-primary)]">
-                  {alert.plateNumber}
-                </span>
-                <span className="text-sm text-[var(--text-secondary)]">
-                  {formatMileage(alert.kmSinceService)} от последното обслужване (лимит{" "}
-                  {formatMileage(alert.mileageTriggerKm)})
-                </span>
-              </Link>
+              <div key={alert.truckId}>
+                <Link
+                  href={`/trucks/${alert.truckId}`}
+                  className="flex items-center gap-3 px-3 py-2 rounded bg-[var(--bg-surface)] border border-[var(--border)] hover:border-[var(--accent)] transition-colors"
+                >
+                  <span className="inline-block h-1.5 w-1.5 rounded-full bg-[var(--status-cancelled)] shrink-0" />
+                  <span className="text-sm font-medium text-[var(--text-primary)]">
+                    {alert.plateNumber}
+                  </span>
+                  <span className="text-sm text-[var(--text-secondary)]">
+                    {formatMileage(alert.kmSinceService)} от последното обслужване (лимит{" "}
+                    {formatMileage(alert.mileageTriggerKm)})
+                  </span>
+                </Link>
+              </div>
             ))}
           </div>
         </section>

@@ -99,6 +99,158 @@ async function main() {
     console.log("Created default ADR equipment items (6 items)");
   }
 
+  // --- Demo trucks ---
+  const existingTrucks = await db.truck.count();
+  if (existingTrucks === 0) {
+    const trucks = await db.truck.createManyAndReturn({
+      data: [
+        { plateNumber: "TX 1234 AB", make: "Volvo", model: "FH16", year: 2019, currentMileage: 487500, mileageTriggerKm: 30000 },
+        { plateNumber: "TX 5678 BC", make: "Scania", model: "R500", year: 2020, currentMileage: 312000, mileageTriggerKm: 30000 },
+        { plateNumber: "TX 9012 CD", make: "Mercedes", model: "Actros", year: 2021, currentMileage: 198000, mileageTriggerKm: 30000 },
+        { plateNumber: "TX 3456 EF", make: "DAF", model: "XF480", year: 2018, currentMileage: 621000, mileageTriggerKm: 30000, isAdr: true },
+        { plateNumber: "TX 7890 GH", make: "MAN", model: "TGX 540", year: 2022, currentMileage: 95000, mileageTriggerKm: 30000 },
+      ],
+    });
+    console.log(`Created ${trucks.length} demo trucks`);
+
+    // Demo bays
+    const bays = await db.bay.createManyAndReturn({
+      data: [
+        { name: "Бокс 1" },
+        { name: "Бокс 2" },
+        { name: "Бокс 3" },
+      ],
+    });
+    console.log(`Created ${bays.length} bays`);
+
+    // Demo mechanics
+    const mechanics = await db.mechanic.createManyAndReturn({
+      data: [
+        { name: "Иван Петров" },
+        { name: "Георги Димитров" },
+        { name: "Стоян Иванов" },
+      ],
+    });
+    console.log(`Created ${mechanics.length} mechanics`);
+
+    // Demo drivers
+    await db.driver.createMany({
+      data: [
+        { name: "Петър Стоянов" },
+        { name: "Николай Георгиев" },
+        { name: "Димитър Христов" },
+      ],
+    });
+    console.log("Created 3 demo drivers");
+
+    // Scheduled service (future — shows in upcoming queue)
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+
+    await db.serviceOrder.create({
+      data: {
+        truckId: trucks[1].id,
+        truckPlateSnapshot: trucks[1].plateNumber,
+        status: "SCHEDULED",
+        scheduledDate: tomorrow,
+      },
+    });
+
+    // Active service in IN_PROGRESS (shows on dashboard)
+    const today = new Date();
+    const threeDaysAgo = new Date();
+    threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
+
+    const checklistTemplate = await db.checklistTemplate.findMany({ where: { isActive: true } });
+
+    const activeService = await db.serviceOrder.create({
+      data: {
+        truckId: trucks[0].id,
+        truckPlateSnapshot: trucks[0].plateNumber,
+        status: "IN_PROGRESS",
+        scheduledDate: threeDaysAgo,
+        startDate: threeDaysAgo,
+        bayId: bays[0].id,
+        bayNameSnapshot: bays[0].name,
+        mileageAtService: 487200,
+        sections: {
+          create: [
+            {
+              type: "CHECKLIST",
+              title: "Контролен лист",
+              order: 1,
+              checklistItems: {
+                create: checklistTemplate.map((item) => ({
+                  description: item.description,
+                  isCompleted: false,
+                })),
+              },
+            },
+            {
+              type: "EQUIPMENT_CHECK",
+              title: "Проверка на оборудване",
+              order: 2,
+            },
+            {
+              type: "DRIVER_FEEDBACK",
+              title: "Сигнали от шофьор",
+              order: 3,
+              workCards: {
+                create: [
+                  {
+                    mechanicId: mechanics[0].id,
+                    mechanicName: mechanics[0].name,
+                    description: "Смяна на масло и маслен филтър",
+                    status: "IN_PROGRESS",
+                    specialInstructions: "Използва SAE 15W-40",
+                  },
+                ],
+              },
+            },
+          ],
+        },
+      },
+    });
+    console.log(`Created active service (IN_PROGRESS) for ${trucks[0].plateNumber}`);
+
+    // Completed service (shows in history)
+    const lastMonth = new Date();
+    lastMonth.setDate(lastMonth.getDate() - 32);
+    const lastMonthEnd = new Date(lastMonth);
+    lastMonthEnd.setDate(lastMonthEnd.getDate() + 4);
+
+    await db.serviceOrder.create({
+      data: {
+        truckId: trucks[0].id,
+        truckPlateSnapshot: trucks[0].plateNumber,
+        status: "COMPLETED",
+        scheduledDate: lastMonth,
+        startDate: lastMonth,
+        endDate: lastMonthEnd,
+        bayId: bays[1].id,
+        bayNameSnapshot: bays[1].name,
+        mileageAtService: 456000,
+      },
+    });
+    console.log(`Created completed service for ${trucks[0].plateNumber}`);
+
+    // Truck with mileage alert (kmSince > trigger)
+    await db.serviceOrder.create({
+      data: {
+        truckId: trucks[3].id,
+        truckPlateSnapshot: trucks[3].plateNumber,
+        status: "COMPLETED",
+        scheduledDate: lastMonth,
+        startDate: lastMonth,
+        endDate: lastMonthEnd,
+        mileageAtService: 585000,  // current is 621000 → 36000 km since = over 30000 trigger
+      },
+    });
+    console.log(`Created alert scenario for ${trucks[3].plateNumber} (36k km over limit)`);
+  } else {
+    console.log(`Trucks already exist (${existingTrucks}), skipping demo data`);
+  }
+
   console.log("Seed complete.");
 }
 
