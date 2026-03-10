@@ -1,0 +1,191 @@
+{
+  "common": {
+    "save": "Запази",
+    "cancel": "Отказ",
+    "delete": "Изтрий",
+    "edit": "Редактирай",
+    "add": "Добави",
+    "confirm": "Потвърди",
+    "close": "Затвори",
+    "back": "Назад",
+    "search": "Търси",
+    "loading": "Зареждане...",
+    "noResults": "Няма резултати",
+    "error": "Грешка",
+    "success": "Успешно",
+    "yes": "Да",
+    "no": "Не",
+    "actions": "Действия",
+    "createdAt": "Създадено",
+    "updatedAt": "Обновено",
+    "active": "Активен",
+    "inactive": "Неактивен",
+    "page": "Страница",
+    "of": "от",
+    "perPage": "на страница"
+  },
+
+  "nav": {
+    "dashboard": "Табло",
+    "services": "Поръчки",
+    "trucks": "Камиони",
+    "calendar": "Календар",
+    "reports": "Справки",
+    "settings": "Настройки",
+    "drivers": "Шофьори",
+    "auditLog": "Журнал"
+  },
+
+  "auth": {
+    "username": "Потребителско име",
+    "password": "Парола",
+    "login": "Вход",
+    "logout": "Изход",
+    "loginError": "Невалидно потребителско име или парола",
+    "sessionExpired": "Сесията е изтекла. Моля, влезте отново.",
+    "recoveryCode": "Код за възстановяване",
+    "resetPassword": "Смяна на парола",
+    "newPassword": "Нова парола"
+  },
+
+  "status": {
+    "SCHEDULED": "Планирана",
+    "INTAKE": "Приемане",
+    "IN_PROGRESS": "В процес",
+    "QUALITY_CHECK": "Проверка",
+    "READY": "Готова",
+    "COMPLETED": "Завършена",
+    "CANCELLED": "Отменена"
+  },
+
+  "workCardStatus": {
+    "PENDING": "Изчаква",
+    "ASSIGNED": "Възложена",
+    "IN_PROGRESS": "В процес",
+    "COMPLETED": "Завършена",
+    "CANCELLED": "Отменена"
+  },
+
+  "dashboard": {
+    "title": "Табло",
+    "alerts": "Сигнали",
+    "activeServices": "Активни поръчки",
+    "upcomingServices": "Предстоящи поръчки",
+    "mileageAlert": "Превишен пробег",
+    "noActiveServices": "Няма активни поръчки",
+    "noUpcoming": "Няма предстоящи поръчки",
+    "daysInService": "дни в сервиз",
+    "nextAction": "Следващо действие",
+    "truck": "Камион",
+    "status": "Статус",
+    "bay": "Бокс",
+    "scheduled": "Планирана дата"
+  },
+
+  "service": {
+    "title": "Поръчка",
+    "new": "Нова поръчка",
+    "details": "Детайли",
+    "history": "История",
+    "create": "Създай поръчка",
+    "cancel": "Отмени поръчка",
+    "cancellationReason": "Причина за отмяна",
+    "reschedule": "Промени дата",
+    "scheduledDate": "Планирана дата",
+    "startDate": "Начало",
+    "endDate": "Край",
+    "mileageAtService": "Пробег при приемане",
+    "driver": "Шофьор",
+    "bay": "Бокс",
+    "sections": "Секции",
+    "addSection": "Добави секция",
+    "noSections": "Няма секции",
+    "intake": "Приемане",
+    "complete": "Завърши",
+    "advanceStatus": "Следващ статус",
+    "cancelConfirm": "Сигурни ли сте, че искате да отмените тази поръчка?",
+    "driverFeedbackNotes": "Бележки от шофьора"
+  },
+
+  "truck": {
+    "title": "Камион",
+    "new": "Нов камион",
+    "list": "Камиони",
+    "plate": "Рег. номер",
+    "make": "Марка",
+    "model": "Модел",
+    "year": "Година",
+    "mileage": "Пробег",
+    "mileageTrigger": "Праг за сигнал (км)",
+    "isAdr": "ADR",
+    "isActive": "Активен",
+    "deactivate": "Деактивирай",
+    "reactivate": "Активирай",
+    "syncMileage": "Синхронизирай пробег",
+    "import": "Импортирай от Frotcom",
+    "lastService": "Последен сервиз",
+    "kmSinceService": "км от последен сервиз",
+    "noServices": "Няма история на сервизи"
+  },
+
+  "workCard": {
+    "title": "Работна карта",
+    "new": "Нова работна карта",
+    "mechanic": "Механик",
+    "description": "Описание",
+    "specialInstructions": "Специални инструкции",
+    "parts": "Части",
+    "notes": "Бележки",
+    "addPart": "Добави част",
+    "addNote": "Добави бележка",
+    "cancel": "Отмени карта",
+    "reopen": "Отвори отново",
+    "complete": "Завърши карта",
+    "print": "Печат"
+  },
+
+  "equipment": {
+    "title": "Оборудване",
+    "check": "Проверка на оборудването",
+    "intake": "При приемане",
+    "exit": "При изписване",
+    "skip": "Пропусни проверката",
+    "skipNote": "Причина за пропускане",
+    "PRESENT": "Налично",
+    "MISSING": "Липсва",
+    "RESTOCKED": "Попълнено",
+    "adr": "ADR оборудване"
+  },
+
+  "settings": {
+    "title": "Настройки",
+    "company": "Компания",
+    "companyName": "Наименование",
+    "companyAddress": "Адрес",
+    "logo": "Лого",
+    "users": "Потребители",
+    "mechanics": "Механици",
+    "drivers": "Шофьори",
+    "equipmentLists": "Списъци с оборудване",
+    "checklistTemplate": "Шаблон за чеклист",
+    "frotcom": "Frotcom",
+    "frotcomUsername": "Потребителско име",
+    "frotcomPassword": "Парола",
+    "testConnection": "Тест на връзката",
+    "language": "Език",
+    "darkMode": "Тъмен режим"
+  },
+
+  "errors": {
+    "required": "Полето е задължително",
+    "minLength": "Минимална дължина: {min} символа",
+    "maxLength": "Максимална дължина: {max} символа",
+    "invalidFormat": "Невалиден формат",
+    "serverError": "Грешка на сървъра. Моля, опитайте отново.",
+    "forbidden": "Нямате права за това действие",
+    "notFound": "Не е намерено",
+    "duplicatePlate": "Камион с този рег. номер вече съществува",
+    "truckHasActiveService": "Камионът вече има активна поръчка",
+    "bayOccupied": "Боксът е зает от друга активна поръчка"
+  }
+}

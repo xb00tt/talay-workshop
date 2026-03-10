@@ -1,0 +1,191 @@
+{
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "add": "Add",
+    "confirm": "Confirm",
+    "close": "Close",
+    "back": "Back",
+    "search": "Search",
+    "loading": "Loading...",
+    "noResults": "No results",
+    "error": "Error",
+    "success": "Success",
+    "yes": "Yes",
+    "no": "No",
+    "actions": "Actions",
+    "createdAt": "Created",
+    "updatedAt": "Updated",
+    "active": "Active",
+    "inactive": "Inactive",
+    "page": "Page",
+    "of": "of",
+    "perPage": "per page"
+  },
+
+  "nav": {
+    "dashboard": "Dashboard",
+    "services": "Services",
+    "trucks": "Trucks",
+    "calendar": "Calendar",
+    "reports": "Reports",
+    "settings": "Settings",
+    "drivers": "Drivers",
+    "auditLog": "Audit Log"
+  },
+
+  "auth": {
+    "username": "Username",
+    "password": "Password",
+    "login": "Log in",
+    "logout": "Log out",
+    "loginError": "Invalid username or password",
+    "sessionExpired": "Session expired. Please log in again.",
+    "recoveryCode": "Recovery code",
+    "resetPassword": "Reset password",
+    "newPassword": "New password"
+  },
+
+  "status": {
+    "SCHEDULED": "Scheduled",
+    "INTAKE": "Intake",
+    "IN_PROGRESS": "In Progress",
+    "QUALITY_CHECK": "Quality Check",
+    "READY": "Ready",
+    "COMPLETED": "Completed",
+    "CANCELLED": "Cancelled"
+  },
+
+  "workCardStatus": {
+    "PENDING": "Pending",
+    "ASSIGNED": "Assigned",
+    "IN_PROGRESS": "In Progress",
+    "COMPLETED": "Completed",
+    "CANCELLED": "Cancelled"
+  },
+
+  "dashboard": {
+    "title": "Dashboard",
+    "alerts": "Alerts",
+    "activeServices": "Active services",
+    "upcomingServices": "Upcoming services",
+    "mileageAlert": "Mileage overdue",
+    "noActiveServices": "No active services",
+    "noUpcoming": "No upcoming services",
+    "daysInService": "days in service",
+    "nextAction": "Next action",
+    "truck": "Truck",
+    "status": "Status",
+    "bay": "Bay",
+    "scheduled": "Scheduled date"
+  },
+
+  "service": {
+    "title": "Service order",
+    "new": "New service order",
+    "details": "Details",
+    "history": "History",
+    "create": "Create service order",
+    "cancel": "Cancel service order",
+    "cancellationReason": "Cancellation reason",
+    "reschedule": "Reschedule",
+    "scheduledDate": "Scheduled date",
+    "startDate": "Start date",
+    "endDate": "End date",
+    "mileageAtService": "Mileage at intake",
+    "driver": "Driver",
+    "bay": "Bay",
+    "sections": "Sections",
+    "addSection": "Add section",
+    "noSections": "No sections",
+    "intake": "Intake",
+    "complete": "Complete",
+    "advanceStatus": "Advance status",
+    "cancelConfirm": "Are you sure you want to cancel this service order?",
+    "driverFeedbackNotes": "Driver feedback notes"
+  },
+
+  "truck": {
+    "title": "Truck",
+    "new": "New truck",
+    "list": "Trucks",
+    "plate": "Plate number",
+    "make": "Make",
+    "model": "Model",
+    "year": "Year",
+    "mileage": "Mileage",
+    "mileageTrigger": "Alert threshold (km)",
+    "isAdr": "ADR",
+    "isActive": "Active",
+    "deactivate": "Deactivate",
+    "reactivate": "Reactivate",
+    "syncMileage": "Sync mileage",
+    "import": "Import from Frotcom",
+    "lastService": "Last service",
+    "kmSinceService": "km since last service",
+    "noServices": "No service history"
+  },
+
+  "workCard": {
+    "title": "Work card",
+    "new": "New work card",
+    "mechanic": "Mechanic",
+    "description": "Description",
+    "specialInstructions": "Special instructions",
+    "parts": "Parts",
+    "notes": "Notes",
+    "addPart": "Add part",
+    "addNote": "Add note",
+    "cancel": "Cancel card",
+    "reopen": "Reopen",
+    "complete": "Complete card",
+    "print": "Print"
+  },
+
+  "equipment": {
+    "title": "Equipment",
+    "check": "Equipment check",
+    "intake": "At intake",
+    "exit": "At exit",
+    "skip": "Skip check",
+    "skipNote": "Reason for skipping",
+    "PRESENT": "Present",
+    "MISSING": "Missing",
+    "RESTOCKED": "Restocked",
+    "adr": "ADR equipment"
+  },
+
+  "settings": {
+    "title": "Settings",
+    "company": "Company",
+    "companyName": "Company name",
+    "companyAddress": "Address",
+    "logo": "Logo",
+    "users": "Users",
+    "mechanics": "Mechanics",
+    "drivers": "Drivers",
+    "equipmentLists": "Equipment lists",
+    "checklistTemplate": "Checklist template",
+    "frotcom": "Frotcom",
+    "frotcomUsername": "Username",
+    "frotcomPassword": "Password",
+    "testConnection": "Test connection",
+    "language": "Language",
+    "darkMode": "Dark mode"
+  },
+
+  "errors": {
+    "required": "This field is required",
+    "minLength": "Minimum length: {min} characters",
+    "maxLength": "Maximum length: {max} characters",
+    "invalidFormat": "Invalid format",
+    "serverError": "Server error. Please try again.",
+    "forbidden": "You don't have permission to do this",
+    "notFound": "Not found",
+    "duplicatePlate": "A truck with this plate number already exists",
+    "truckHasActiveService": "This truck already has an active service order",
+    "bayOccupied": "This bay is occupied by another active service"
+  }
+}

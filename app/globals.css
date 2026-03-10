@@ -2,128 +2,258 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
+/* Dark mode variant — toggled by setting class="dark" on <html> */
 @custom-variant dark (&:is(.dark *));
 
+/* ── Tailwind theme bridge (shadcn colour tokens → Tailwind utilities) ── */
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-sans);
-  --font-mono: var(--font-geist-mono);
-  --color-sidebar-ring: var(--sidebar-ring);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar: var(--sidebar);
-  --color-chart-5: var(--chart-5);
-  --color-chart-4: var(--chart-4);
-  --color-chart-3: var(--chart-3);
-  --color-chart-2: var(--chart-2);
-  --color-chart-1: var(--chart-1);
-  --color-ring: var(--ring);
-  --color-input: var(--input);
-  --color-border: var(--border);
-  --color-destructive: var(--destructive);
+  --color-background:        var(--background);
+  --color-foreground:        var(--foreground);
+  --color-card:              var(--card);
+  --color-card-foreground:   var(--card-foreground);
+  --color-popover:           var(--popover);
+  --color-popover-foreground:var(--popover-foreground);
+  --color-primary:           var(--primary);
+  --color-primary-foreground:var(--primary-foreground);
+  --color-secondary:         var(--secondary);
+  --color-secondary-foreground:var(--secondary-foreground);
+  --color-muted:             var(--muted);
+  --color-muted-foreground:  var(--muted-foreground);
+  --color-accent:            var(--accent);
   --color-accent-foreground: var(--accent-foreground);
-  --color-accent: var(--accent);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-muted: var(--muted);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-secondary: var(--secondary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-primary: var(--primary);
-  --color-popover-foreground: var(--popover-foreground);
-  --color-popover: var(--popover);
-  --color-card-foreground: var(--card-foreground);
-  --color-card: var(--card);
-  --radius-sm: calc(var(--radius) * 0.6);
-  --radius-md: calc(var(--radius) * 0.8);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) * 1.4);
-  --radius-2xl: calc(var(--radius) * 1.8);
-  --radius-3xl: calc(var(--radius) * 2.2);
-  --radius-4xl: calc(var(--radius) * 2.6);
+  --color-destructive:       var(--destructive);
+  --color-border:            var(--border);
+  --color-input:             var(--input);
+  --color-ring:              var(--ring);
+  --font-sans:               var(--font-sans);
+  --font-mono:               var(--font-geist-mono);
+  --radius-sm:  calc(var(--radius) * 0.6);
+  --radius-md:  calc(var(--radius) * 0.8);
+  --radius-lg:  var(--radius);
+  --radius-xl:  calc(var(--radius) * 1.4);
 }
 
+/* ═══════════════════════════════════════════════════════════
+   LIGHT MODE  (default — new users start in light mode)
+═══════════════════════════════════════════════════════════ */
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.809 0.105 251.813);
-  --chart-2: oklch(0.623 0.214 259.815);
-  --chart-3: oklch(0.546 0.245 262.881);
-  --chart-4: oklch(0.488 0.243 264.376);
-  --chart-5: oklch(0.424 0.199 265.638);
-  --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  /* Semantic surfaces */
+  --bg-base:     hsl(210, 20%, 98%);   /* page background */
+  --bg-surface:  hsl(0, 0%, 100%);     /* cards, panels */
+  --bg-elevated: hsl(210, 16%, 95%);   /* inputs, hover, popovers */
+  --bg-overlay:  hsl(210, 14%, 90%);   /* active / selected states */
+
+  /* Semantic text */
+  --text-primary:   hsl(220, 20%, 12%);
+  --text-secondary: hsl(220, 10%, 45%);
+  --text-muted:     hsl(220, 8%,  65%);
+
+  /* One accent colour */
+  --brand: hsl(215, 70%, 50%);
+
+  /* Status colours (same in both themes) */
+  --status-scheduled:     hsl(220, 8%,  55%);
+  --status-intake:        hsl(270, 45%, 55%);
+  --status-in-progress:   hsl(215, 70%, 55%);
+  --status-quality-check: hsl(45,  80%, 50%);
+  --status-ready:         hsl(45,  80%, 50%);
+  --status-completed:     hsl(145, 50%, 42%);
+  --status-cancelled:     hsl(0,   55%, 50%);
+
+  /* shadcn required tokens → mapped to our palette */
+  --background:          var(--bg-base);
+  --foreground:          var(--text-primary);
+  --card:                var(--bg-surface);
+  --card-foreground:     var(--text-primary);
+  --popover:             var(--bg-surface);
+  --popover-foreground:  var(--text-primary);
+  --primary:             var(--brand);
+  --primary-foreground:  hsl(0, 0%, 100%);
+  --secondary:           var(--bg-elevated);
+  --secondary-foreground:var(--text-primary);
+  --muted:               var(--bg-elevated);
+  --muted-foreground:    var(--text-secondary);
+  --accent:              var(--bg-overlay);
+  --accent-foreground:   var(--text-primary);
+  --destructive:         hsl(0, 72%, 51%);
+  --border:              hsl(220, 13%, 88%);
+  --input:               var(--bg-elevated);
+  --ring:                var(--brand);
+
+  /* Geometry */
+  --radius: 0.375rem;  /* 6px — matches plan's 6px button radius */
 }
 
+/* ═══════════════════════════════════════════════════════════
+   DARK MODE  (user-toggled, class="dark" on <html>)
+═══════════════════════════════════════════════════════════ */
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.809 0.105 251.813);
-  --chart-2: oklch(0.623 0.214 259.815);
-  --chart-3: oklch(0.546 0.245 262.881);
-  --chart-4: oklch(0.488 0.243 264.376);
-  --chart-5: oklch(0.424 0.199 265.638);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  --bg-base:     hsl(220, 16%, 7%);
+  --bg-surface:  hsl(220, 14%, 10%);
+  --bg-elevated: hsl(220, 12%, 14%);
+  --bg-overlay:  hsl(220, 10%, 18%);
+
+  --text-primary:   hsl(220, 10%, 93%);
+  --text-secondary: hsl(220, 8%,  60%);
+  --text-muted:     hsl(220, 6%,  40%);
+
+  --brand: hsl(215, 70%, 55%);
+
+  --background:          var(--bg-base);
+  --foreground:          var(--text-primary);
+  --card:                var(--bg-surface);
+  --card-foreground:     var(--text-primary);
+  --popover:             var(--bg-elevated);
+  --popover-foreground:  var(--text-primary);
+  --primary:             var(--brand);
+  --primary-foreground:  hsl(0, 0%, 100%);
+  --secondary:           var(--bg-elevated);
+  --secondary-foreground:var(--text-primary);
+  --muted:               var(--bg-elevated);
+  --muted-foreground:    var(--text-secondary);
+  --accent:              var(--bg-overlay);
+  --accent-foreground:   var(--text-primary);
+  --destructive:         hsl(0, 62%, 55%);
+  --border:              hsl(220, 10%, 16%);
+  --input:               var(--bg-elevated);
+  --ring:                var(--brand);
 }
 
+/* ═══════════════════════════════════════════════════════════
+   BASE STYLES
+═══════════════════════════════════════════════════════════ */
 @layer base {
   * {
     @apply border-border outline-ring/50;
+    box-sizing: border-box;
   }
+
+  html {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    font-size: 14px;              /* base = 14px (0.875rem body) */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
   body {
     @apply bg-background text-foreground;
+    min-height: 100dvh;
   }
-  html {
-    @apply font-sans;
+
+  /* Tabular numbers everywhere (truck plates, mileage, dates) */
+  table, .tabular-nums {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   TYPOGRAPHY SCALE
+═══════════════════════════════════════════════════════════ */
+@layer base {
+  /* Page title: 1.25rem / 600 */
+  h1 { font-size: 1.25rem; font-weight: 600; line-height: 1.4; }
+  /* Section head: 0.8125rem uppercase */
+  h2 { font-size: 0.8125rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; line-height: 1.3; color: var(--text-secondary); }
+  /* Subsection */
+  h3 { font-size: 0.875rem; font-weight: 600; line-height: 1.4; }
+  /* Body */
+  p, li { font-size: 0.875rem; line-height: 1.5; }
+  /* Meta / timestamps */
+  small, .text-meta { font-size: 0.75rem; color: var(--text-muted); }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   STATUS DOTS  (.status-dot + .status-{slug})
+   6px coloured circle + text — no pill backgrounds
+═══════════════════════════════════════════════════════════ */
+@layer components {
+  .status-dot {
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .status-dot-scheduled     { background-color: var(--status-scheduled); }
+  .status-dot-intake        { background-color: var(--status-intake); }
+  .status-dot-in_progress   { background-color: var(--status-in-progress); }
+  .status-dot-quality_check { background-color: var(--status-quality-check); }
+  .status-dot-ready         { background-color: var(--status-ready); }
+  .status-dot-completed     { background-color: var(--status-completed); }
+  .status-dot-cancelled     { background-color: var(--status-cancelled); }
+
+  .status-text-scheduled     { color: var(--status-scheduled); }
+  .status-text-intake        { color: var(--status-intake); }
+  .status-text-in_progress   { color: var(--status-in-progress); }
+  .status-text-quality_check { color: var(--status-quality-check); }
+  .status-text-ready         { color: var(--status-ready); }
+  .status-text-completed     { color: var(--status-completed); }
+  .status-text-cancelled     { color: var(--status-cancelled); }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   SHADCN COMPONENT OVERRIDES
+   — 32px height for buttons & inputs
+   — hover-only table row actions
+═══════════════════════════════════════════════════════════ */
+@layer components {
+  /* Buttons: 32px height */
+  .btn, [data-slot="button"] {
+    height: 2rem;         /* 32px */
+    padding-inline: 0.75rem;
+    font-size: 0.875rem;
+  }
+
+  /* Inputs: 32px height, elevated background */
+  [data-slot="input"],
+  [data-slot="select-trigger"],
+  [data-slot="textarea"] {
+    height: 2rem;
+    background-color: var(--bg-elevated);
+    font-size: 0.875rem;
+  }
+
+  /* Tables: full-row click, no zebra */
+  table { width: 100%; border-collapse: collapse; }
+  thead th {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--text-muted);
+    padding: 0.5rem 0.75rem;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+  }
+  tbody tr {
+    height: 2.5rem;       /* 40px row height */
+    border-bottom: 1px solid var(--border);
+    transition: background-color 120ms ease;
+  }
+  tbody tr:hover { background-color: var(--bg-elevated); }
+  tbody td { padding: 0 0.75rem; font-size: 0.875rem; }
+
+  /* Row action buttons: hidden until row hover */
+  .row-actions { opacity: 0; transition: opacity 120ms ease; }
+  tr:hover .row-actions { opacity: 1; }
+
+  /* Skeleton: matches elevated bg */
+  [data-slot="skeleton"] { background-color: var(--bg-elevated); }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   PRINT STYLES  (work card + service order A4)
+═══════════════════════════════════════════════════════════ */
+@media print {
+  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  body { background: white !important; color: black !important; }
+  .no-print { display: none !important; }
+  .print-page {
+    width: 210mm;
+    min-height: 297mm;
+    padding: 15mm;
+    margin: 0 auto;
+    font-size: 11pt;
   }
 }
