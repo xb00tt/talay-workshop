@@ -14,6 +14,11 @@ export default async function DashboardPage() {
         where: { status: { in: ['INTAKE', 'IN_PROGRESS', 'QUALITY_CHECK', 'READY'] } },
         include: {
           truck: { select: { make: true, model: true } },
+          sections: {
+            include: {
+              workCards: { where: { status: { not: 'CANCELLED' } }, select: { mechanicName: true } },
+            },
+          },
         },
         orderBy: { startDate: 'asc' },
       }),
@@ -67,15 +72,23 @@ export default async function DashboardPage() {
       lastServiceMileage: t.serviceOrders[0]?.mileageAtService ?? t.lastKnownServiceMileage ?? null,
     }))
 
-  const activeServicesMapped = activeServices.map((s) => ({
-    id:                 s.id,
-    truckPlateSnapshot: s.truckPlateSnapshot,
-    truckMake:          s.truck.make,
-    truckModel:         s.truck.model,
-    status:             s.status as 'INTAKE' | 'IN_PROGRESS' | 'QUALITY_CHECK' | 'READY',
-    startDate:          s.startDate?.toISOString() ?? null,
-    createdAt:          s.createdAt.toISOString(),
-  }))
+  const activeServicesMapped = activeServices.map((s) => {
+    const activeWCs     = s.sections.flatMap((sec) => sec.workCards).filter((wc) => wc.mechanicName)
+    const firstMechanic = activeWCs[0]?.mechanicName ?? null
+    const mechanicCount = activeWCs.length
+    return {
+      id:                 s.id,
+      truckPlateSnapshot: s.truckPlateSnapshot,
+      truckMake:          s.truck.make,
+      truckModel:         s.truck.model,
+      status:             s.status as 'INTAKE' | 'IN_PROGRESS' | 'QUALITY_CHECK' | 'READY',
+      startDate:          s.startDate?.toISOString() ?? null,
+      createdAt:          s.createdAt.toISOString(),
+      driverNameSnapshot: s.driverNameSnapshot ?? null,
+      firstMechanic,
+      mechanicCount,
+    }
+  })
 
   return (
     <DashboardClient
@@ -88,6 +101,7 @@ export default async function DashboardPage() {
         scheduledDate:      s.scheduledDate.toISOString(),
       }))}
       mileageAlerts={mileageAlerts}
+      userName={session.user.name ?? ''}
     />
   )
 }

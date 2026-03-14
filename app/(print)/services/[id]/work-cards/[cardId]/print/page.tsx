@@ -64,7 +64,7 @@ export default async function WorkCardPrintPage({
   const companyAddress = settings?.companyAddress || ''
 
   const WC_STATUS: Record<string, string> = {
-    PENDING: 'Изчакваща', ASSIGNED: 'Назначена',
+    PENDING: 'Изчакваща',
     IN_PROGRESS: 'В процес', COMPLETED: 'Завършена', CANCELLED: 'Отменена',
   }
 

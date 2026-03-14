@@ -10,7 +10,7 @@ const VALID_PERMISSIONS = new Set(Object.values(PERMISSIONS))
 async function authorize() {
   const session = await getServerSession(authOptions)
   if (!session) return { session: null, err: NextResponse.json({ error: 'Unauthorized' }, { status: 401 }) }
-  if (!hasPermission(session.user.role, session.user.permissions, 'user.manage')) {
+  if (session.user.role !== 'ADMIN') {
     return { session: null, err: NextResponse.json({ error: 'Forbidden' }, { status: 403 }) }
   }
   return { session, err: null }

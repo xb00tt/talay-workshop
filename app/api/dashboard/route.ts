@@ -11,7 +11,14 @@ export async function GET() {
     await Promise.all([
       prisma.serviceOrder.findMany({
         where: { status: { in: ['INTAKE', 'IN_PROGRESS', 'QUALITY_CHECK', 'READY'] } },
-        include: { truck: { select: { make: true, model: true } } },
+        include: {
+          truck: { select: { make: true, model: true } },
+          sections: {
+            include: {
+              workCards: { where: { status: { not: 'CANCELLED' } }, select: { mechanicName: true } },
+            },
+          },
+        },
         orderBy: { startDate: 'asc' },
       }),
 
@@ -62,15 +69,23 @@ export async function GET() {
       lastServiceMileage: t.serviceOrders[0]?.mileageAtService ?? t.lastKnownServiceMileage ?? null,
     }))
 
-  const activeServicesMapped = activeServices.map((s) => ({
-    id:                 s.id,
-    truckPlateSnapshot: s.truckPlateSnapshot,
-    truckMake:          s.truck.make,
-    truckModel:         s.truck.model,
-    status:             s.status,
-    startDate:          s.startDate?.toISOString() ?? null,
-    createdAt:          s.createdAt.toISOString(),
-  }))
+  const activeServicesMapped = activeServices.map((s) => {
+    const activeWCs     = s.sections.flatMap((sec) => sec.workCards).filter((wc) => wc.mechanicName)
+    const firstMechanic = activeWCs[0]?.mechanicName ?? null
+    const mechanicCount = activeWCs.length
+    return {
+      id:                 s.id,
+      truckPlateSnapshot: s.truckPlateSnapshot,
+      truckMake:          s.truck.make,
+      truckModel:         s.truck.model,
+      status:             s.status,
+      startDate:          s.startDate?.toISOString() ?? null,
+      createdAt:          s.createdAt.toISOString(),
+      driverNameSnapshot: s.driverNameSnapshot ?? null,
+      firstMechanic,
+      mechanicCount,
+    }
+  })
 
   const upcoming = upcomingServices.map((s) => ({
     id:                 s.id,

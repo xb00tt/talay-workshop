@@ -4,10 +4,12 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 import { PhotoGallery, NotesSection, type Photo, type NoteItem } from '@/components/PhotosAndNotes'
+import { WC_STATUS_COLOR } from '@/lib/status-config'
+import { Input, Label, ErrorBox, Modal } from '@/components/ui'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-type WorkCardStatus = 'PENDING' | 'ASSIGNED' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED'
+type WorkCardStatus = 'PENDING' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED'
 
 interface Part { id: number; name: string; partNumber: string | null; quantity: number; unitCost: number | null }
 
@@ -28,55 +30,6 @@ interface WorkCardDetail {
     title: string
     serviceOrderId: number
   }
-}
-
-// ─── Config ───────────────────────────────────────────────────────────────────
-
-const WC_COLOR: Record<WorkCardStatus, string> = {
-  PENDING:     'bg-gray-100 text-gray-600 dark:bg-gray-600/20 dark:text-gray-400',
-  ASSIGNED:    'bg-blue-100 text-blue-800 dark:bg-blue-600/20 dark:text-blue-400',
-  IN_PROGRESS: 'bg-indigo-100 text-indigo-800 dark:bg-indigo-600/20 dark:text-indigo-400',
-  COMPLETED:   'bg-green-100 text-green-800 dark:bg-green-600/20 dark:text-green-400',
-  CANCELLED:   'bg-red-100 text-red-700 dark:bg-red-600/20 dark:text-red-400',
-}
-
-// ─── Shared UI ────────────────────────────────────────────────────────────────
-
-function Input(props: React.InputHTMLAttributes<HTMLInputElement>) {
-  return (
-    <input
-      {...props}
-      className={
-        'w-full bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-gray-900 dark:text-white ' +
-        'placeholder-gray-400 dark:placeholder-gray-500 focus:outline-hidden focus:ring-2 focus:ring-blue-500 ' +
-        (props.className ?? '')
-      }
-    />
-  )
-}
-function Label({ children }: { children: React.ReactNode }) {
-  return <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">{children}</label>
-}
-function ErrorBox({ msg }: { msg: string }) {
-  return (
-    <div className="px-3 py-2 bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/30 rounded-lg text-red-700 dark:text-red-400 text-sm">
-      {msg}
-    </div>
-  )
-}
-function Modal({ title, onClose, children }: { title: string; onClose: () => void; children: React.ReactNode }) {
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-black/60" onClick={onClose} />
-      <div className="relative w-full max-w-md bg-white dark:bg-gray-900 rounded-2xl shadow-2xl p-6">
-        <div className="flex items-center justify-between mb-5">
-          <h2 className="text-base font-semibold text-gray-900 dark:text-white">{title}</h2>
-          <button onClick={onClose} className="text-gray-500 hover:text-gray-900 dark:hover:text-white text-xl leading-none">×</button>
-        </div>
-        {children}
-      </div>
-    </div>
-  )
 }
 
 // ─── Add Part Modal ───────────────────────────────────────────────────────────
@@ -179,9 +132,10 @@ export default function WorkCardClient({
   const t = useTranslations('workCard')
   const tCommon = useTranslations('common')
 
-  const [wc,          setWc]          = useState<WorkCardDetail>(initialWorkCard)
-  const [showAddPart, setShowAddPart] = useState(false)
-  const [statusLoading, setStatusLoading] = useState(false)
+  const [wc,                 setWc]                 = useState<WorkCardDetail>(initialWorkCard)
+  const [showAddPart,        setShowAddPart]        = useState(false)
+  const [statusLoading,      setStatusLoading]      = useState(false)
+  const [pendingDeletePartId, setPendingDeletePartId] = useState<number | null>(null)
 
   const serviceId = wc.serviceSection.serviceOrderId
   const sectionId = wc.serviceSection.id
@@ -191,11 +145,11 @@ export default function WorkCardClient({
   }
 
   async function deletePart(partId: number) {
-    if (!confirm(t('deletePart'))) return
     await fetch(
       `/api/services/${serviceId}/sections/${sectionId}/work-cards/${wc.id}/parts/${partId}`,
       { method: 'DELETE' },
     )
+    setPendingDeletePartId(null)
     setWc((prev) => ({ ...prev, parts: prev.parts.filter((p) => p.id !== partId) }))
   }
 
@@ -239,7 +193,7 @@ export default function WorkCardClient({
             <p className="text-xs text-gray-500 mb-1">{wc.serviceSection.title}</p>
             <h1 className="text-lg font-semibold text-gray-900 dark:text-white leading-snug">{wc.description}</h1>
           </div>
-          <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${WC_COLOR[wc.status]}`}>
+          <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${WC_STATUS_COLOR[wc.status]}`}>
             {t(`status.${wc.status}`)}
           </span>
         </div>
@@ -334,12 +288,30 @@ export default function WorkCardClient({
                     </td>
                     <td className="px-5 py-3 text-right">
                       {!isTerminal && (
-                        <button
-                          onClick={() => deletePart(p.id)}
-                          className="text-gray-400 dark:text-gray-700 hover:text-red-500 dark:hover:text-red-400 transition-colors text-lg leading-none"
-                        >
-                          ×
-                        </button>
+                        pendingDeletePartId === p.id ? (
+                          <div className="flex items-center justify-end gap-2">
+                            <button
+                              onClick={() => deletePart(p.id)}
+                              className="text-xs font-medium text-red-500 hover:text-red-400 transition-colors"
+                            >
+                              {tCommon('delete')}
+                            </button>
+                            <button
+                              onClick={() => setPendingDeletePartId(null)}
+                              className="text-xs text-gray-400 hover:text-gray-300 transition-colors"
+                            >
+                              {tCommon('cancel')}
+                            </button>
+                          </div>
+                        ) : (
+                          <button
+                            onClick={() => setPendingDeletePartId(p.id)}
+                            className="text-gray-400 dark:text-gray-700 hover:text-red-500 dark:hover:text-red-400 transition-colors text-lg leading-none"
+                            aria-label={tCommon('delete')}
+                          >
+                            ×
+                          </button>
+                        )
                       )}
                     </td>
                   </tr>

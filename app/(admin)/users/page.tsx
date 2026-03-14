@@ -1,16 +1,13 @@
 import { redirect } from 'next/navigation'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
-import { hasPermission } from '@/lib/permissions'
 import { prisma } from '@/lib/prisma'
-import UsersClient from './UsersClient'
+import UsersClient from '@/app/(app)/users/UsersClient'
 
-export default async function UsersPage() {
+export default async function AdminUsersPage() {
   const session = await getServerSession(authOptions)
   if (!session) redirect('/login')
-  if (!hasPermission(session.user.role, session.user.permissions, 'user.manage')) {
-    redirect('/dashboard')
-  }
+  if (session.user.role !== 'ADMIN') redirect('/dashboard')
 
   const users = await prisma.user.findMany({
     orderBy: { name: 'asc' },

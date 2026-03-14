@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Services — Detail v2</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  body { font-family: 'Inter', sans-serif; background: #eef2f7; }
+  .card { background: white; border: 1px solid #c4cdd9; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+  .nav-item { color: #94a3b8; border-radius: 8px; transition: all 0.15s; }
+  .nav-item:hover { background: rgba(255,255,255,0.08); color: #f1f5f9; }
+  .nav-item.active { background: rgba(59,130,246,0.2); color: #93c5fd; }
+  .badge { font-size: 11px; font-weight: 600; border-radius: 20px; padding: 2px 8px; }
+  ::-webkit-scrollbar { width: 4px; } ::-webkit-scrollbar-track { background: #f1f5f9; } ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+
+  /* Progress pipeline */
+  .step { display:flex; flex-direction:column; align-items:center; gap:4px; flex:1; }
+  .step-dot { width:28px; height:28px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; flex-shrink:0; }
+  .step-line { flex:1; height:2px; margin-top:14px; }
+  .step.done .step-dot { background:#2563eb; color:white; }
+  .step.done .step-line { background:#2563eb; }
+  .step.active .step-dot { background:#2563eb; color:white; box-shadow:0 0 0 4px rgba(37,99,235,0.2); }
+  .step.active .step-line { background:#e2e8f0; }
+  .step.pending .step-dot { background:#e2e8f0; color:#94a3b8; }
+  .step.pending .step-line { background:#e2e8f0; }
+
+  /* Work card */
+  .wc-badge { font-size:10px; font-weight:600; padding:2px 8px; border-radius:12px; }
+
+  /* Checklist */
+  .check-item { display:flex; align-items:center; gap:10px; padding:8px 0; border-bottom:1px solid #f1f5f9; }
+  .check-item:last-child { border-bottom:none; }
+
+  /* Equip check phase tabs */
+  .phase-tab { font-size:12px; font-weight:500; padding:4px 12px; border-radius:6px; cursor:pointer; color:#64748b; transition:all 0.15s; border:1px solid transparent; }
+  .phase-tab.active { background:#eff6ff; color:#2563eb; border-color:#bfdbfe; }
+  .phase-tab:hover:not(.active) { background:#f1f5f9; }
+
+  /* WC notes */
+  .wc-note { font-size:12px; color:#475569; background:#f8fafc; border-radius:8px; padding:8px 10px; border-left:2px solid #e2e8f0; }
+</style>
+</head>
+<body class="text-slate-800 h-screen overflow-hidden flex">
+
+<!-- Sidebar -->
+<aside class="w-60 flex-shrink-0 flex flex-col" style="background:#1e293b; box-shadow: 4px 0 16px rgba(0,0,0,0.15);">
+  <div class="px-5 py-5">
+    <div class="flex items-center gap-3">
+      <div class="w-8 h-8 bg-blue-600 rounded-xl flex items-center justify-center shadow-sm">
+        <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+      </div>
+      <div>
+        <div class="font-bold text-white text-sm leading-tight">Talay Workshop</div>
+        <div class="text-slate-400 text-xs">Управление</div>
+      </div>
+    </div>
+  </div>
+  <nav class="flex-1 px-3 py-2 space-y-0.5 overflow-y-auto">
+    <a href="dashboard.html" class="nav-item flex items-center gap-3 px-3 py-2 text-sm font-medium">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+      Начало
+    </a>
+    <a href="services-list.html" class="nav-item active flex items-center gap-3 px-3 py-2 text-sm font-medium">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+      Поръчки
+      <span class="ml-auto badge bg-blue-500/20 text-blue-300">14</span>
+    </a>
+    <a href="#" class="nav-item flex items-center gap-3 px-3 py-2 text-sm font-medium">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+      Календар
+    </a>
+    <div class="pt-4 pb-1 px-3"><p class="text-xs font-semibold uppercase tracking-wider" style="color:rgba(148,163,184,0.5)">Флота</p></div>
+    <a href="#" class="nav-item flex items-center gap-3 px-3 py-2 text-sm font-medium">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10l2 2h8l2-2zM13 16l2-5h3l2 5-2 2h-3l-2-2z"/></svg>
+      Камиони <span class="ml-auto text-xs text-slate-500">152</span>
+    </a>
+    <a href="#" class="nav-item flex items-center gap-3 px-3 py-2 text-sm font-medium">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+      Шофьори
+    </a>
+    <a href="#" class="nav-item flex items-center gap-3 px-3 py-2 text-sm font-medium">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+      Механици
+    </a>
+    <div class="pt-4 pb-1 px-3"><p class="text-xs font-semibold uppercase tracking-wider" style="color:rgba(148,163,184,0.5)">Управление</p></div>
+    <a href="#" class="nav-item flex items-center gap-3 px-3 py-2 text-sm font-medium">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+      Отчети
+    </a>
+  </nav>
+  <div class="px-3 py-4" style="border-top:1px solid rgba(255,255,255,0.08)">
+    <div class="flex items-center gap-3 px-2 py-2 rounded-lg cursor-pointer">
+      <div class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center flex-shrink-0">
+        <span class="text-white text-xs font-bold">БТ</span>
+      </div>
+      <div class="flex-1 min-w-0">
+        <div class="text-sm font-medium text-white truncate">Борислав Т.</div>
+        <div class="text-xs text-slate-400">Мениджър</div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- Main -->
+<main class="flex-1 overflow-y-auto">
+
+  <!-- Page header -->
+  <header class="bg-white border-b border-slate-200 px-8 py-4 sticky top-0 z-10">
+    <!-- Breadcrumb + actions -->
+    <div class="flex items-center justify-between mb-3">
+      <div class="flex items-center gap-2 text-sm text-slate-500">
+        <a href="services-list.html" class="hover:text-blue-600 flex items-center gap-1">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+          Поръчки
+        </a>
+        <span>/</span>
+        <span class="text-slate-800 font-semibold">PB 5678 CD</span>
+        <span class="badge bg-amber-50 text-amber-600 border border-amber-100 ml-1">В работа</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <button class="flex items-center gap-1.5 text-sm text-slate-600 border border-slate-300 px-3 py-1.5 rounded-lg hover:bg-slate-50">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
+          Печат
+        </button>
+        <!-- Advance button — amber with warning icon because checks fail -->
+        <button class="flex items-center gap-1.5 text-sm text-white px-3 py-1.5 rounded-lg font-medium" style="background:#d97706">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+          Напредък към Контрол
+        </button>
+        <button class="text-sm text-red-500 hover:text-red-600 border border-red-200 px-3 py-1.5 rounded-lg hover:bg-red-50">Откажи</button>
+      </div>
+    </div>
+
+    <!-- Progress pipeline -->
+    <div class="flex items-center">
+      <div class="step done">
+        <div class="flex items-center w-full">
+          <div class="step-dot">✓</div>
+          <div class="step-line"></div>
+        </div>
+        <span class="text-xs text-blue-600 font-medium">Планирана</span>
+      </div>
+      <div class="step done">
+        <div class="flex items-center w-full">
+          <div class="step-dot">✓</div>
+          <div class="step-line"></div>
+        </div>
+        <span class="text-xs text-blue-600 font-medium">Прием</span>
+      </div>
+      <div class="step active">
+        <div class="flex items-center w-full">
+          <div class="step-dot">3</div>
+          <div class="step-line"></div>
+        </div>
+        <span class="text-xs text-blue-700 font-semibold">В работа</span>
+      </div>
+      <div class="step pending">
+        <div class="flex items-center w-full">
+          <div class="step-dot">4</div>
+          <div class="step-line"></div>
+        </div>
+        <span class="text-xs text-slate-400">Контрол</span>
+      </div>
+      <div class="step pending">
+        <div class="flex items-center w-full">
+          <div class="step-dot" style="background:transparent"></div>
+          <div class="step-line" style="background:transparent"></div>
+        </div>
+        <span class="text-xs text-slate-400">Готов</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Stage transition warning banner -->
+  <div class="mx-8 mt-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 flex items-start gap-3">
+    <svg class="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+    <div class="flex-1">
+      <p class="text-sm font-semibold text-amber-800">Има незавършени работни карти</p>
+      <p class="text-xs text-amber-700 mt-0.5">1 карта е все още в статус <strong>Чакаща</strong> — Проверка и регулиране на спирачки (И. Колев). Можете да напреднете към Контрол, но проблемът ще остане видим.</p>
+    </div>
+    <button class="text-xs text-amber-700 font-medium underline underline-offset-2 flex-shrink-0">Игнорирай</button>
+  </div>
+
+  <!-- Content -->
+  <div class="px-8 py-5 grid gap-5" style="grid-template-columns:1fr 320px">
+
+    <!-- Left column -->
+    <div class="space-y-4">
+
+      <!-- Work cards -->
+      <div class="card rounded-xl overflow-hidden">
+        <div class="px-5 py-3 border-b border-slate-200 flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="font-semibold text-sm text-slate-800">Работни Карти</span>
+            <!-- 1 pending = warning dot -->
+            <span class="w-2 h-2 rounded-full bg-amber-400" title="1 карта в изчакване"></span>
+          </div>
+          <button class="flex items-center gap-1.5 text-xs text-blue-600 border border-blue-200 bg-blue-50 px-2.5 py-1 rounded-lg hover:bg-blue-100">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+            Добави карта
+          </button>
+        </div>
+        <div class="divide-y divide-slate-100">
+
+          <!-- Work card 1 — IN_PROGRESS -->
+          <div class="px-5 py-4">
+            <div class="flex items-start justify-between mb-2">
+              <div>
+                <div class="font-semibold text-sm text-slate-900">Смяна масло и филтри</div>
+                <div class="text-xs text-slate-500 mt-0.5">П. Петров · назначена 10.03.2026</div>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="wc-badge bg-amber-100 text-amber-700">В процес</span>
+                <button class="text-xs text-slate-500 hover:text-slate-700 border border-slate-200 px-2 py-0.5 rounded">Печат</button>
+                <button class="text-xs text-red-400 hover:text-red-600 border border-red-100 px-2 py-0.5 rounded">Откажи</button>
+              </div>
+            </div>
+            <!-- Parts -->
+            <div class="mt-2 bg-slate-50 rounded-lg px-3 py-2">
+              <div class="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">Части</div>
+              <div class="space-y-1">
+                <div class="flex items-center justify-between text-xs">
+                  <span class="text-slate-700">Масло Shell Rimula R4 X 10W-40</span>
+                  <span class="text-slate-500">14 л · €4.20/л = <strong class="text-slate-800">€58.80</strong></span>
+                </div>
+                <div class="flex items-center justify-between text-xs">
+                  <span class="text-slate-700">Маслен филтър Mahle OX 404D</span>
+                  <span class="text-slate-500">1 бр · €18.50 = <strong class="text-slate-800">€18.50</strong></span>
+                </div>
+                <div class="flex items-center justify-between text-xs">
+                  <span class="text-slate-700">Горивен филтър Knecht KX 75</span>
+                  <span class="text-slate-500">2 бр · €22.00 = <strong class="text-slate-800">€44.00</strong></span>
+                </div>
+              </div>
+              <div class="mt-2 pt-2 border-t border-slate-200 flex justify-end text-xs font-semibold text-slate-800">Общо: €121.30</div>
+            </div>
+            <!-- WC Notes -->
+            <div class="mt-3 space-y-1.5">
+              <div class="wc-note">
+                <span class="font-medium text-slate-600">Б. Тодоров</span> · <span class="text-slate-400">11.03 · 09:05</span>
+                <p class="mt-0.5">Маслото е сменено. Петното идва от разхерметизирана уплътнителна шайба — заменена.</p>
+              </div>
+            </div>
+            <div class="mt-2 flex items-center gap-2">
+              <input type="text" placeholder="Добави бележка към картата…" class="flex-1 text-xs border border-slate-200 rounded-lg px-3 py-1.5 bg-slate-50 focus:outline-none focus:border-blue-300">
+              <button class="text-xs text-blue-600 border border-blue-200 bg-blue-50 px-2.5 py-1.5 rounded-lg hover:bg-blue-100">Запази</button>
+            </div>
+          </div>
+
+          <!-- Work card 2 — PENDING (warning highlight) -->
+          <div class="px-5 py-4" style="background:#fffbeb">
+            <div class="flex items-start justify-between mb-2">
+              <div>
+                <div class="font-semibold text-sm text-slate-900">Проверка и регулиране на спирачки</div>
+                <div class="text-xs text-slate-500 mt-0.5">И. Колев · назначена 10.03.2026</div>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="wc-badge bg-slate-100 text-slate-600">Чакаща</span>
+                <button class="text-xs text-slate-500 hover:text-slate-700 border border-slate-200 px-2 py-0.5 rounded">Печат</button>
+                <button class="text-xs text-red-400 hover:text-red-600 border border-red-100 px-2 py-0.5 rounded">Откажи</button>
+              </div>
+            </div>
+            <p class="text-xs text-slate-500 italic">Без части.</p>
+            <div class="mt-2 flex items-center gap-2">
+              <input type="text" placeholder="Добави бележка към картата…" class="flex-1 text-xs border border-slate-200 rounded-lg px-3 py-1.5 bg-white focus:outline-none focus:border-blue-300">
+              <button class="text-xs text-blue-600 border border-blue-200 bg-blue-50 px-2.5 py-1.5 rounded-lg hover:bg-blue-100">Запази</button>
+            </div>
+          </div>
+
+          <!-- Work card 3 — CANCELLED (with reopen) -->
+          <div class="px-5 py-4 opacity-60">
+            <div class="flex items-start justify-between">
+              <div>
+                <div class="font-semibold text-sm text-slate-900 line-through">Смяна въздушен филтър</div>
+                <div class="text-xs text-slate-500 mt-0.5">Г. Иванов · отменена 11.03.2026</div>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="wc-badge bg-red-100 text-red-500">Отменена</span>
+                <button class="text-xs text-slate-500 hover:text-blue-600 border border-slate-200 px-2 py-0.5 rounded">Възстанови</button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Checklist -->
+      <div class="card rounded-xl overflow-hidden">
+        <div class="px-5 py-3 border-b border-slate-200 flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <span class="font-semibold text-sm text-slate-800">Чеклист</span>
+            <span class="badge bg-emerald-50 text-emerald-600 border border-emerald-100">7 / 10 завършени</span>
+          </div>
+        </div>
+        <div class="px-5 py-2">
+          <div class="check-item">
+            <div class="w-4 h-4 rounded bg-emerald-500 flex items-center justify-center flex-shrink-0"><svg class="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg></div>
+            <span class="text-sm text-slate-600 line-through">Проверка на нивото на маслото</span>
+            <span class="ml-auto text-xs text-slate-400">Б. Тодоров</span>
+          </div>
+          <div class="check-item">
+            <div class="w-4 h-4 rounded bg-emerald-500 flex items-center justify-center flex-shrink-0"><svg class="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg></div>
+            <span class="text-sm text-slate-600 line-through">Проверка на охладителна течност</span>
+            <span class="ml-auto text-xs text-slate-400">Б. Тодоров</span>
+          </div>
+          <div class="check-item">
+            <div class="w-4 h-4 rounded bg-emerald-500 flex items-center justify-center flex-shrink-0"><svg class="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg></div>
+            <span class="text-sm text-slate-600 line-through">Проверка на налягане в гуми</span>
+            <span class="ml-auto text-xs text-slate-400">Б. Тодоров</span>
+          </div>
+          <div class="check-item">
+            <div class="w-4 h-4 rounded border-2 border-slate-300 flex-shrink-0"></div>
+            <span class="text-sm text-slate-800">Проверка на спирачна система</span>
+            <span class="ml-auto text-xs text-slate-400">—</span>
+          </div>
+          <div class="check-item">
+            <div class="w-4 h-4 rounded border-2 border-slate-300 flex-shrink-0"></div>
+            <span class="text-sm text-slate-800">Проверка на осветление</span>
+            <span class="ml-auto text-xs text-slate-400">—</span>
+          </div>
+          <div class="check-item">
+            <div class="w-4 h-4 rounded border-2 border-slate-300 flex-shrink-0"></div>
+            <span class="text-sm text-slate-800">Визуална проверка на ходовата</span>
+            <span class="ml-auto text-xs text-slate-400">—</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Driver feedback -->
+      <div class="card rounded-xl overflow-hidden">
+        <div class="px-5 py-3 border-b border-slate-200">
+          <span class="font-semibold text-sm text-slate-800">Сигнали от Шофьора</span>
+        </div>
+        <div class="px-5 py-3 space-y-2">
+          <div class="flex items-start gap-2">
+            <span class="w-1.5 h-1.5 rounded-full bg-amber-500 mt-1.5 flex-shrink-0"></span>
+            <span class="text-sm text-slate-700">Необичаен шум при спиране — задна ос</span>
+          </div>
+          <div class="flex items-start gap-2">
+            <span class="w-1.5 h-1.5 rounded-full bg-amber-500 mt-1.5 flex-shrink-0"></span>
+            <span class="text-sm text-slate-700">Предупредителна лампа за налягане в гумите</span>
+          </div>
+          <div class="mt-3 pt-3 border-t border-slate-100">
+            <p class="text-xs text-slate-500 mb-1">Бележки</p>
+            <p class="text-sm text-slate-600">Шофьорът съобщава, че проблемът с шума е периодичен — проявява се основно при натоварен товар над 20т.</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Right column -->
+    <div class="space-y-4">
+
+      <!-- Service info -->
+      <div class="card rounded-xl overflow-hidden">
+        <div class="px-5 py-3 border-b border-slate-200">
+          <span class="font-semibold text-sm text-slate-800">Информация</span>
+        </div>
+        <div class="px-5 py-4 space-y-3 text-sm">
+          <div class="flex justify-between">
+            <span class="text-slate-500">Камион</span>
+            <span class="font-semibold text-slate-800">PB 5678 CD</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-slate-500">Марка / Модел</span>
+            <span class="text-slate-700">Scania R 450</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-slate-500">Година</span>
+            <span class="text-slate-700">2022</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-slate-500">Пробег при прием</span>
+            <span class="text-slate-700">154 200 км</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-slate-500">Бокс</span>
+            <span class="font-medium text-slate-700">Бокс 3</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-slate-500">Планирана дата</span>
+            <span class="text-slate-700">10.03.2026</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-slate-500">Шофьор</span>
+            <span class="text-slate-700">И. Христов</span>
+          </div>
+          <div class="flex justify-between items-center">
+            <span class="text-slate-500">ADR</span>
+            <span class="badge bg-red-50 text-red-600 border border-red-100">ADR</span>
+          </div>
+          <div class="pt-2 border-t border-slate-100 flex justify-between">
+            <span class="text-slate-500">Стойност части</span>
+            <span class="font-bold text-slate-900">€121.30</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Equipment check — INTAKE + EXIT tabs -->
+      <div class="card rounded-xl overflow-hidden">
+        <div class="px-5 py-3 border-b border-slate-200">
+          <div class="flex items-center justify-between mb-2">
+            <span class="font-semibold text-sm text-slate-800">Проверка на оборудване</span>
+          </div>
+          <!-- Phase tabs -->
+          <div class="flex gap-1">
+            <div class="phase-tab active">Прием</div>
+            <div class="phase-tab">Изход <span class="text-slate-400 font-normal">(чакащ)</span></div>
+          </div>
+        </div>
+
+        <!-- INTAKE phase content -->
+        <div id="equip-intake">
+          <div class="px-5 py-2 space-y-2 text-sm">
+            <div class="flex items-center justify-between">
+              <span class="text-slate-700">Пожарогасител</span>
+              <span class="badge bg-emerald-50 text-emerald-600 border border-emerald-100">Наличен</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-slate-700">Авариен триъгълник</span>
+              <span class="badge bg-emerald-50 text-emerald-600 border border-emerald-100">Наличен</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-slate-700">Светлоотразителна жилетка</span>
+              <span class="badge bg-red-50 text-red-500 border border-red-100">Липсва</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-slate-700">Аптечка</span>
+              <span class="badge bg-red-50 text-red-500 border border-red-100">Липсва</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-slate-700">Въже за теглене</span>
+              <span class="badge bg-emerald-50 text-emerald-600 border border-emerald-100">Наличен</span>
+            </div>
+            <!-- ADR equipment -->
+            <div class="pt-2 mt-1 border-t border-slate-100">
+              <p class="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-2">ADR Оборудване</p>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-slate-700">Противогаз</span>
+              <span class="badge bg-emerald-50 text-emerald-600 border border-emerald-100">Наличен</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-slate-700">ADR защитен костюм</span>
+              <span class="badge bg-emerald-50 text-emerald-600 border border-emerald-100">Наличен</span>
+            </div>
+          </div>
+          <div class="px-5 py-2 border-t border-slate-100 flex items-center justify-between bg-slate-50">
+            <span class="text-xs text-slate-500">Извършен: 10.03.2026 · 08:47 · Б. Тодоров</span>
+            <span class="text-xs font-semibold text-red-500">2 липсват</span>
+          </div>
+        </div>
+
+        <!-- EXIT phase placeholder -->
+        <div class="px-5 py-4 hidden" id="equip-exit">
+          <div class="flex flex-col items-center justify-center gap-2 py-4 text-center">
+            <div class="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center">
+              <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
+            </div>
+            <p class="text-sm text-slate-500 font-medium">Изходната проверка не е извършена</p>
+            <p class="text-xs text-slate-400">Извършва се при преминаване към Контрол</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Service notes -->
+      <div class="card rounded-xl overflow-hidden">
+        <div class="px-5 py-3 border-b border-slate-200 flex items-center justify-between">
+          <span class="font-semibold text-sm text-slate-800">Бележки</span>
+        </div>
+        <div class="px-5 py-3 space-y-3">
+          <div class="text-sm">
+            <div class="flex items-center gap-2 mb-1">
+              <span class="font-medium text-slate-700">Б. Тодоров</span>
+              <span class="text-xs text-slate-400">10.03 · 14:22</span>
+            </div>
+            <p class="text-slate-600">Прием приключен. Забелязано петно от масло под двигателя — ще се провери при смяната.</p>
+          </div>
+          <div class="text-sm border-t border-slate-100 pt-3">
+            <div class="flex items-center gap-2 mb-1">
+              <span class="font-medium text-slate-700">Б. Тодоров</span>
+              <span class="text-xs text-slate-400">11.03 · 09:05</span>
+            </div>
+            <p class="text-slate-600">Маслото е сменено. Петното идва от разхерметизирана уплътнителна шайба — заменена.</p>
+          </div>
+        </div>
+        <div class="px-5 py-3 border-t border-slate-100 flex gap-2">
+          <input type="text" placeholder="Нова бележка…" class="flex-1 text-xs border border-slate-200 rounded-lg px-3 py-1.5 bg-slate-50 focus:outline-none focus:border-blue-300">
+          <button class="text-xs text-blue-600 border border-blue-200 bg-blue-50 px-2.5 py-1.5 rounded-lg hover:bg-blue-100 flex-shrink-0">Добави</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</main>
+
+<script>
+  // Phase tab toggle
+  const tabs = document.querySelectorAll('.phase-tab');
+  const intake = document.getElementById('equip-intake');
+  const exit = document.getElementById('equip-exit');
+  tabs[0].addEventListener('click', () => {
+    tabs[0].classList.add('active'); tabs[1].classList.remove('active');
+    intake.classList.remove('hidden'); exit.classList.add('hidden');
+  });
+  tabs[1].addEventListener('click', () => {
+    tabs[1].classList.add('active'); tabs[0].classList.remove('active');
+    exit.classList.remove('hidden'); intake.classList.add('hidden');
+  });
+</script>
+
+<div class="fixed bottom-4 right-4 text-xs bg-indigo-600 text-white px-3 py-1.5 rounded-full font-semibold shadow-lg">Services — Detail v2</div>
+</body>
+</html>

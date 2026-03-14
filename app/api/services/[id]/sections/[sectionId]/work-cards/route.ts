@@ -44,13 +44,15 @@ export async function POST(request: Request, { params }: Params) {
     if (!mechanic) return NextResponse.json({ error: 'Механикът не е намерен.' }, { status: 404 })
   }
 
+  const initialStatus = service.status === 'IN_PROGRESS' ? 'IN_PROGRESS' : 'PENDING'
+
   const workCard = await prisma.workCard.create({
     data: {
       serviceSectionId:    secId,
       description:         description.trim(),
       mechanicId:          mechanic?.id ?? null,
       mechanicName:        mechanic?.name ?? null,
-      status:              'PENDING',
+      status:              initialStatus,
       specialInstructions: specialInstructions?.trim() ?? null,
     },
     include: {

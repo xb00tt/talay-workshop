@@ -125,6 +125,9 @@ export default async function TruckProfilePage({ params }: { params: Promise<{ i
             <p className="text-gray-500 dark:text-gray-400">
               {truck.make} {truck.model}{truck.year ? ` · ${truck.year}` : ''}
             </p>
+            {truck.vin && (
+              <p className="text-xs text-gray-400 dark:text-gray-600 mt-0.5 font-mono">{t('vin')}: {truck.vin}</p>
+            )}
           </div>
           <EditTruckButton truck={truck} canEdit={canEdit} />
         </div>
@@ -144,6 +147,12 @@ export default async function TruckProfilePage({ params }: { params: Promise<{ i
         <div className="mt-3 grid grid-cols-2 sm:grid-cols-4 gap-3">
           <StatCard label={t('lastService') as string}     value={fmtDate(lastCompleted?.endDate ?? lastCompleted?.scheduledDate ?? null)} />
           <StatCard label={t('totalPartsCostLabel')} value={totalPartsCost > 0 ? `${totalPartsCost.toFixed(2)} €` : '—'} />
+          {truck.fuelTankLiters != null && (
+            <StatCard label={t('fuelTankLiters')} value={`${truck.fuelTankLiters} л`} />
+          )}
+          {truck.avgFuelPer100Km != null && (
+            <StatCard label={t('avgFuelPer100Km')} value={`${truck.avgFuelPer100Km} л/100 км`} />
+          )}
         </div>
 
         {/* Active service banner */}

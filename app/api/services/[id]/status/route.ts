@@ -66,10 +66,10 @@ export async function POST(request: Request, { params }: Params) {
   }
 
   if (service.status === 'IN_PROGRESS') {
-    // IN_PROGRESS → QUALITY_CHECK: warn if any work cards still Pending/Assigned/In_Progress
+    // IN_PROGRESS → QUALITY_CHECK: warn if any work cards still Pending/In_Progress
     const hasOpenCards = service.sections.some((s) =>
       s.workCards.some((wc) =>
-        wc.status === 'PENDING' || wc.status === 'ASSIGNED' || wc.status === 'IN_PROGRESS',
+        wc.status === 'PENDING' || wc.status === 'IN_PROGRESS',
       ),
     )
     if (hasOpenCards) {

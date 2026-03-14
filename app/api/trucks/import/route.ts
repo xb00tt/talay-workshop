@@ -36,13 +36,15 @@ export async function POST() {
     const fid = String(v.id)
     if (existingIds.has(fid)) { skipped++; continue }
 
-    // Fetch detail for modelYear (only for new trucks)
+    // Fetch detail for modelYear and fuelTank (only for new trucks)
     let modelYear: number | null = null
+    let fuelTank:  number | null = null
     try {
       const detail: FrotcomVehicleDetail = await frotcomGet(`/vehicles/${v.id}`)
       modelYear = detail.modelYear ?? null
+      fuelTank  = detail.fuelTank  ?? null
     } catch {
-      // modelYear stays null — acceptable
+      // detail fields stay null — acceptable
     }
 
     const mileage = v.useCanbusMileage ? (v.odometerCanbus ?? null) : (v.odometerGps ?? null)
@@ -54,11 +56,14 @@ export async function POST() {
           make:             (v.manufacturer ?? '').trim(),
           model:            (v.model ?? '').trim(),
           year:             modelYear,
+          vin:              v.vin?.trim() || null,
           frotcomVehicleId: fid,
           currentMileage:   mileage,
           useCanbusMileage: v.useCanbusMileage ?? true,
           mileageTriggerKm: 30000,
           isAdr:            false,
+          fuelTankLiters:   fuelTank,
+          avgFuelPer100Km:  v.fuel100Km ?? null,
         },
       })
       imported++
@@ -100,13 +105,16 @@ interface FrotcomVehicle {
   licensePlate:     string
   manufacturer:     string
   model:            string
+  vin?:             string | null
   odometerCanbus:   number | null
   odometerGps:      number | null
   useCanbusMileage: boolean
+  fuel100Km?:       number | null
   driverId:         number | string | null
   driverName:       string | null
 }
 
 interface FrotcomVehicleDetail {
   modelYear?: number | null
+  fuelTank?:  number | null
 }

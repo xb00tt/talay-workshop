@@ -87,8 +87,8 @@ export async function PATCH(request: Request, { params }: Params) {
       return NextResponse.json({ workCard: updated })
     }
 
-    // Manual advance: ASSIGNED or IN_PROGRESS
-    if (status === 'ASSIGNED' || status === 'IN_PROGRESS') {
+    // Manual advance: IN_PROGRESS
+    if (status === 'IN_PROGRESS') {
       if (!hasPermission(session.user.role, session.user.permissions, 'workcard.create')) {
         return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
       }

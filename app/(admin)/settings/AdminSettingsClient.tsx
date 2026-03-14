@@ -5,18 +5,12 @@ import { useTranslations } from 'next-intl'
 
 // ─── Types ─────────────────────────────────────────────────────────────────────
 
-interface CompanySettings {
+interface AdminSettings {
   companyName: string
   companyAddress: string
   logoPath: string | null
-  frotcomUsername?: string
-  frotcomPassword?: string
-}
-
-interface PersonalPrefs {
-  preferredLocale: string
-  darkMode: boolean
-  pageSize: number
+  frotcomUsername: string
+  frotcomPassword: string
 }
 
 // ─── Shared UI primitives ──────────────────────────────────────────────────────
@@ -27,7 +21,7 @@ function Input(props: React.InputHTMLAttributes<HTMLInputElement>) {
       {...props}
       className={
         'w-full bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-gray-900 dark:text-white ' +
-        'placeholder-gray-400 dark:placeholder-gray-500 focus:outline-hidden focus:ring-2 focus:ring-blue-500 ' +
+        'placeholder-gray-400 dark:placeholder-gray-500 focus:outline-hidden focus:ring-2 focus:ring-purple-500 ' +
         (props.className ?? '')
       }
     />
@@ -40,20 +34,7 @@ function Textarea(props: React.TextareaHTMLAttributes<HTMLTextAreaElement>) {
       {...props}
       className={
         'w-full bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-gray-900 dark:text-white ' +
-        'placeholder-gray-400 dark:placeholder-gray-500 focus:outline-hidden focus:ring-2 focus:ring-blue-500 resize-none ' +
-        (props.className ?? '')
-      }
-    />
-  )
-}
-
-function Select(props: React.SelectHTMLAttributes<HTMLSelectElement>) {
-  return (
-    <select
-      {...props}
-      className={
-        'w-full bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-gray-900 dark:text-white ' +
-        'focus:outline-hidden focus:ring-2 focus:ring-blue-500 ' +
+        'placeholder-gray-400 dark:placeholder-gray-500 focus:outline-hidden focus:ring-2 focus:ring-purple-500 resize-none ' +
         (props.className ?? '')
       }
     />
@@ -101,25 +82,25 @@ function SaveBtn({ loading, label }: { loading: boolean; label: string }) {
     <button
       type="submit"
       disabled={loading}
-      className="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-sm font-semibold
+      className="px-5 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-sm font-semibold
         transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
     >
-      {loading ? label : label}
+      {label}
     </button>
   )
 }
 
 // ─── Company info section ──────────────────────────────────────────────────────
 
-function CompanySection({ initial }: { initial: CompanySettings }) {
-  const t      = useTranslations('settings')
+function CompanySection({ initial }: { initial: AdminSettings }) {
+  const t       = useTranslations('settings')
   const tCommon = useTranslations('common')
   const [companyName,    setCompanyName]    = useState(initial.companyName)
   const [companyAddress, setCompanyAddress] = useState(initial.companyAddress)
   const [logoPath,       setLogoPath]       = useState(initial.logoPath)
-  const [loading,  setLoading]  = useState(false)
-  const [uploading, setUploading] = useState(false)
-  const [status,   setStatus]   = useState<{ type: 'error' | 'success'; msg: string } | null>(null)
+  const [loading,    setLoading]    = useState(false)
+  const [uploading,  setUploading]  = useState(false)
+  const [status,     setStatus]     = useState<{ type: 'error' | 'success'; msg: string } | null>(null)
   const fileRef = useRef<HTMLInputElement>(null)
 
   async function save(e: React.FormEvent) {
@@ -233,7 +214,7 @@ function CompanySection({ initial }: { initial: CompanySettings }) {
 // ─── Frotcom credentials section ───────────────────────────────────────────────
 
 function FrotcomSection({ initial }: { initial: { frotcomUsername: string; frotcomPassword: string } }) {
-  const t      = useTranslations('settings')
+  const t       = useTranslations('settings')
   const tCommon = useTranslations('common')
   const [username, setUsername] = useState(initial.frotcomUsername)
   const [password, setPassword] = useState(initial.frotcomPassword)
@@ -301,103 +282,16 @@ function FrotcomSection({ initial }: { initial: { frotcomUsername: string; frotc
   )
 }
 
-// ─── Personal preferences section ─────────────────────────────────────────────
-
-function PersonalSection({ initial }: { initial: PersonalPrefs }) {
-  const t      = useTranslations('settings')
-  const tCommon = useTranslations('common')
-  const [locale,   setLocale]   = useState(initial.preferredLocale)
-  const [darkMode, setDarkMode] = useState(initial.darkMode)
-  const [pageSize, setPageSize] = useState(String(initial.pageSize))
-  const [loading,  setLoading]  = useState(false)
-  const [status,   setStatus]   = useState<{ type: 'error' | 'success'; msg: string } | null>(null)
-
-  async function save(e: React.FormEvent) {
-    e.preventDefault()
-    setStatus(null)
-    setLoading(true)
-    try {
-      const res = await fetch('/api/users/me', {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ preferredLocale: locale, darkMode, pageSize: Number(pageSize) }),
-      })
-      const json = await res.json()
-      if (!res.ok) { setStatus({ type: 'error', msg: json.error ?? tCommon('error') }); return }
-      setStatus({ type: 'success', msg: t('savedReloginRequired') })
-    } catch {
-      setStatus({ type: 'error', msg: tCommon('connectionFailed') })
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  return (
-    <Section title={t('personalPreferences')} description={t('changesMayRequireRelogin')}>
-      <form onSubmit={save} className="space-y-4">
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <Label>{t('language')}</Label>
-            <Select value={locale} onChange={(e) => setLocale(e.target.value)}>
-              <option value="bg">Български</option>
-              <option value="en">English</option>
-            </Select>
-          </div>
-          <div>
-            <Label>{t('rowsPerPage')}</Label>
-            <Select value={pageSize} onChange={(e) => setPageSize(e.target.value)}>
-              <option value="10">10</option>
-              <option value="20">20</option>
-              <option value="50">50</option>
-            </Select>
-          </div>
-        </div>
-
-        <label className="flex items-center gap-3 cursor-pointer">
-          <input
-            type="checkbox"
-            checked={darkMode}
-            onChange={(e) => setDarkMode(e.target.checked)}
-            className="w-4 h-4 accent-blue-500"
-          />
-          <span className="text-sm text-gray-600 dark:text-gray-300">{t('darkMode')}</span>
-        </label>
-
-        {status && <StatusMsg type={status.type} msg={status.msg} />}
-        <div className="flex justify-end pt-1">
-          <SaveBtn loading={loading} label={loading ? tCommon('saving') : tCommon('save')} />
-        </div>
-      </form>
-    </Section>
-  )
-}
-
 // ─── Main component ────────────────────────────────────────────────────────────
 
-export default function SettingsClient({
-  settings,
-  canEdit,
-  currentUser,
-}: {
-  settings: CompanySettings
-  canEdit: boolean
-  currentUser: PersonalPrefs
-}) {
+export default function AdminSettingsClient({ settings }: { settings: AdminSettings }) {
   const t = useTranslations('settings')
   return (
     <div className="p-6 lg:p-8 max-w-2xl">
       <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">{t('title')}</h1>
       <div className="space-y-5">
-        {canEdit && <CompanySection initial={settings} />}
-        {canEdit && settings.frotcomUsername !== undefined && (
-          <FrotcomSection
-            initial={{
-              frotcomUsername: settings.frotcomUsername ?? '',
-              frotcomPassword: settings.frotcomPassword ?? '',
-            }}
-          />
-        )}
-        <PersonalSection initial={currentUser} />
+        <CompanySection initial={settings} />
+        <FrotcomSection initial={settings} />
       </div>
     </div>
   )

@@ -10,7 +10,7 @@ interface UserRow {
   id: number
   username: string
   name: string
-  role: 'MANAGER' | 'ASSISTANT'
+  role: 'ADMIN' | 'MANAGER' | 'ASSISTANT'
   permissions: string
   preferredLocale: string
   darkMode: boolean
@@ -621,15 +621,19 @@ function DeleteModal({
 
 // ─── Role badge ────────────────────────────────────────────────────────────────
 
-function RoleBadge({ role }: { role: 'MANAGER' | 'ASSISTANT' }) {
+function RoleBadge({ role }: { role: 'ADMIN' | 'MANAGER' | 'ASSISTANT' }) {
   const t = useTranslations('user')
+  const cls =
+    role === 'ADMIN'
+      ? 'bg-purple-600/20 text-purple-400'
+      : role === 'MANAGER'
+      ? 'bg-blue-600/20 text-blue-400'
+      : 'bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300'
+  const label =
+    role === 'ADMIN' ? t('role.ADMIN') : role === 'MANAGER' ? t('role.MANAGER') : t('role.ASSISTANT')
   return (
-    <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
-      role === 'MANAGER'
-        ? 'bg-blue-600/20 text-blue-400'
-        : 'bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300'
-    }`}>
-      {role === 'MANAGER' ? t('role.MANAGER') : t('role.ASSISTANT')}
+    <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${cls}`}>
+      {label}
     </span>
   )
 }

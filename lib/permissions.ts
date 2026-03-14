@@ -34,6 +34,10 @@ export function hasPermission(
   permissions: string[],
   action: Permission,
 ): boolean {
-  if (role === 'MANAGER') return true
+  if (role === 'ADMIN' || role === 'MANAGER') return true
   return permissions.includes(action)
+}
+
+export function isAdmin(role: string): boolean {
+  return role === 'ADMIN'
 }

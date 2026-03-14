@@ -10,6 +10,7 @@ datasource db {
 // ─── Enums ───────────────────────────────────────────────────────────────────
 
 enum Role {
+  ADMIN
   MANAGER
   ASSISTANT
 }
@@ -34,7 +35,6 @@ enum SectionType {
 
 enum WorkCardStatus {
   PENDING
-  ASSIGNED
   IN_PROGRESS
   COMPLETED
   CANCELLED
@@ -91,12 +91,15 @@ model Truck {
   model            String
   year             Int?
   frotcomVehicleId String?  @unique
+  vin              String?
   currentMileage          Float?
   /// From Frotcom; selects odometerCanbus vs odometerGps on sync
   useCanbusMileage        Boolean  @default(true)
   mileageTriggerKm        Float    @default(30000)
   /// Manual baseline: odometer at last real-world service; used as fallback when no completed ServiceOrder exists yet
   lastKnownServiceMileage Float?
+  fuelTankLiters   Float?
+  avgFuelPer100Km  Float?
   isAdr            Boolean  @default(false)
   isActive         Boolean  @default(true)
   createdAt        DateTime @default(now())

@@ -4,12 +4,14 @@ import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 import { PhotoGallery, NotesSection, type Photo, type NoteItem } from '@/components/PhotosAndNotes'
+import { SERVICE_STATUS_COLOR, SERVICE_STATUS_PILL, WC_STATUS_COLOR } from '@/lib/status-config'
+import { Input, Textarea, Select, Label, ErrorBox, Modal } from '@/components/ui'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 type ServiceStatus   = 'SCHEDULED' | 'INTAKE' | 'IN_PROGRESS' | 'QUALITY_CHECK' | 'READY' | 'COMPLETED' | 'CANCELLED'
 type SectionType     = 'CHECKLIST' | 'DRIVER_FEEDBACK' | 'MID_SERVICE' | 'EQUIPMENT_CHECK' | 'CUSTOM'
-type WorkCardStatus  = 'PENDING' | 'ASSIGNED' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED'
+type WorkCardStatus  = 'PENDING' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED'
 
 interface ChecklistItem {
   id: number; description: string; isCompleted: boolean
@@ -54,22 +56,6 @@ interface Mechanic { id: number; name: string }
 
 // ─── Config ───────────────────────────────────────────────────────────────────
 
-const SVC_COLOR: Record<ServiceStatus, string> = {
-  SCHEDULED:     'bg-amber-600/20 text-amber-400',
-  INTAKE:        'bg-blue-600/20 text-blue-400',
-  IN_PROGRESS:   'bg-indigo-600/20 text-indigo-400',
-  QUALITY_CHECK: 'bg-purple-600/20 text-purple-400',
-  READY:         'bg-green-600/20 text-green-400',
-  COMPLETED:     'bg-gray-600/20 text-gray-400',
-  CANCELLED:     'bg-red-600/20 text-red-400',
-}
-const WC_COLOR: Record<WorkCardStatus, string> = {
-  PENDING:     'bg-gray-600/20 text-gray-400',
-  ASSIGNED:    'bg-blue-600/20 text-blue-400',
-  IN_PROGRESS: 'bg-indigo-600/20 text-indigo-400',
-  COMPLETED:   'bg-green-600/20 text-green-400',
-  CANCELLED:   'bg-red-600/20 text-red-400',
-}
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -94,66 +80,6 @@ function canDeleteSection(sec: Section) {
 
 // ─── Shared UI ────────────────────────────────────────────────────────────────
 
-function Input(props: React.InputHTMLAttributes<HTMLInputElement>) {
-  return (
-    <input
-      {...props}
-      className={
-        'w-full bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-gray-900 dark:text-white ' +
-        'placeholder-gray-400 dark:placeholder-gray-500 focus:outline-hidden focus:ring-2 focus:ring-blue-500 ' +
-        (props.className ?? '')
-      }
-    />
-  )
-}
-function Textarea(props: React.TextareaHTMLAttributes<HTMLTextAreaElement>) {
-  return (
-    <textarea
-      {...props}
-      className={
-        'w-full bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-gray-900 dark:text-white ' +
-        'placeholder-gray-400 dark:placeholder-gray-500 focus:outline-hidden focus:ring-2 focus:ring-blue-500 resize-none ' +
-        (props.className ?? '')
-      }
-    />
-  )
-}
-function Select(props: React.SelectHTMLAttributes<HTMLSelectElement>) {
-  return (
-    <select
-      {...props}
-      className={
-        'bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-gray-900 dark:text-white ' +
-        'focus:outline-hidden focus:ring-2 focus:ring-blue-500 ' +
-        (props.className ?? '')
-      }
-    />
-  )
-}
-function Label({ children }: { children: React.ReactNode }) {
-  return <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">{children}</label>
-}
-function ErrorBox({ msg }: { msg: string }) {
-  return (
-    <div className="px-3 py-2 bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/30 rounded-lg text-red-700 dark:text-red-400 text-sm">
-      {msg}
-    </div>
-  )
-}
-function Modal({ title, onClose, children }: { title: string; onClose: () => void; children: React.ReactNode }) {
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-black/60" onClick={onClose} />
-      <div className="relative w-full max-w-md bg-white dark:bg-gray-900 rounded-2xl shadow-2xl p-6 max-h-[90vh] overflow-y-auto">
-        <div className="flex items-center justify-between mb-5">
-          <h2 className="text-base font-semibold text-gray-900 dark:text-white">{title}</h2>
-          <button onClick={onClose} className="text-gray-500 hover:text-gray-900 dark:hover:text-white text-xl leading-none">×</button>
-        </div>
-        {children}
-      </div>
-    </div>
-  )
-}
 function SmallBtn({ onClick, children, variant = 'default', disabled }: {
   onClick?: () => void; children: React.ReactNode
   variant?: 'default' | 'danger' | 'success' | 'primary'; disabled?: boolean
@@ -656,7 +582,7 @@ function WorkCardRow({
             <p className="text-xs text-gray-600 mt-1">{wc.parts.length} {tWorkCard('partsCount')}</p>
           )}
         </div>
-        <span className={`inline-flex items-center px-2 py-0.5 rounded-sm text-xs font-medium ${WC_COLOR[wc.status]} shrink-0`}>
+        <span className={`inline-flex items-center px-2 py-0.5 rounded-sm text-xs font-medium ${WC_STATUS_COLOR[wc.status]} shrink-0`}>
           {tWorkCard(`status.${wc.status}`)}
         </span>
       </div>
@@ -938,15 +864,16 @@ function SectionCard({
   const tCommon    = useTranslations('common')
   const tWorkCard  = useTranslations('workCard')
 
-  const [showAddWC,   setShowAddWC]   = useState(false)
-  const [editingWC,   setEditingWC]   = useState<WorkCard | null>(null)
-  const [deleting,    setDeleting]    = useState(false)
+  const [showAddWC,       setShowAddWC]       = useState(false)
+  const [editingWC,       setEditingWC]       = useState<WorkCard | null>(null)
+  const [deleting,        setDeleting]        = useState(false)
+  const [confirmingDelete, setConfirmingDelete] = useState(false)
 
   const doneCount = sec.checklistItems.filter((i) => i.isCompleted).length
 
   async function deleteSection() {
-    if (!confirm(tSection('deleteConfirm'))) return
     setDeleting(true)
+    setConfirmingDelete(false)
     try {
       await fetch(`/api/services/${serviceId}/sections/${sec.id}`, { method: 'DELETE' })
       onSectionDeleted()
@@ -972,13 +899,31 @@ function SectionCard({
           )}
         </div>
         {!serviceTerminal && canDeleteSection(sec) && (
-          <button
-            onClick={deleteSection}
-            disabled={deleting}
-            className="text-xs text-gray-600 hover:text-red-400 transition-colors disabled:opacity-40"
-          >
-            {tSection('deleteSection')}
-          </button>
+          confirmingDelete ? (
+            <div className="flex items-center gap-2">
+              <button
+                onClick={deleteSection}
+                disabled={deleting}
+                className="text-xs font-medium text-red-500 hover:text-red-400 transition-colors disabled:opacity-40"
+              >
+                {tSection('deleteSection')}
+              </button>
+              <button
+                onClick={() => setConfirmingDelete(false)}
+                className="text-xs text-gray-400 hover:text-gray-300 transition-colors"
+              >
+                {tCommon('cancel')}
+              </button>
+            </div>
+          ) : (
+            <button
+              onClick={() => setConfirmingDelete(true)}
+              disabled={deleting}
+              className="text-xs text-gray-600 hover:text-red-400 transition-colors disabled:opacity-40"
+            >
+              {tSection('deleteSection')}
+            </button>
+          )
         )}
       </div>
 
@@ -1195,11 +1140,11 @@ function CollapsiblePanel({
 // ─── StageTaskCard ────────────────────────────────────────────────────────────
 
 function StageTaskCard({
-  service, warnings, advancing, checklistItems, completedChecklist,
+  service, warnings, advancing, advanceError, checklistItems, completedChecklist,
   activeWorkCards, completedWorkCards, equipmentSection, canReschedule,
   onMoveToIntake, onAdvance, onReschedule,
 }: {
-  service: FullService; warnings: string[]; advancing: boolean
+  service: FullService; warnings: string[]; advancing: boolean; advanceError?: string | null
   checklistItems: ChecklistItem[]; completedChecklist: ChecklistItem[]
   activeWorkCards: WorkCard[]; completedWorkCards: WorkCard[]
   equipmentSection: Section | undefined; canReschedule: boolean
@@ -1350,6 +1295,13 @@ function StageTaskCard({
               </li>
             ))}
           </ul>
+        </div>
+      )}
+
+      {/* Advance error */}
+      {advanceError && (
+        <div className="px-5 py-2">
+          <ErrorBox msg={advanceError} />
         </div>
       )}
 
@@ -1611,11 +1563,12 @@ function resolvedStageState(
 type ModalState = 'intake' | 'cancel' | 'reschedule' | 'addSection' | 'addFeedback' | null
 
 export default function ServiceOrderClient({
-  initialService, drivers, mechanics, userName,
+  initialService, tripSinceLastService, drivers, mechanics, userName,
   canReschedule, canCancel, canCreateWorkCard, canCancelWorkCard, canReopenWorkCard, canCompleteWorkCard,
   canCreateNote, canUploadPhoto, equipmentItems, adrEquipmentItems,
 }: {
   initialService: FullService
+  tripSinceLastService?: number | null
   drivers: Driver[]; mechanics: Mechanic[]
   userName: string
   canReschedule: boolean; canCancel: boolean
@@ -1636,6 +1589,7 @@ export default function ServiceOrderClient({
   const [feedbackText,     setFeedbackText]     = useState(initialService.driverFeedbackNotes ?? '')
   const [savingFB,         setSavingFB]         = useState(false)
   const [advancing,        setAdvancing]        = useState(false)
+  const [advanceError,     setAdvanceError]     = useState<string | null>(null)
   const [openPreviousStep, setOpenPreviousStep] = useState<ServiceStatus | null>(null)
 
   const modalRef = useRef(modal)
@@ -1658,6 +1612,7 @@ export default function ServiceOrderClient({
 
   async function advanceStage() {
     setAdvancing(true)
+    setAdvanceError(null)
     try {
       const res  = await fetch(`/api/services/${service.id}/status`, {
         method: 'POST',
@@ -1665,7 +1620,7 @@ export default function ServiceOrderClient({
         body: JSON.stringify({ force: warnings.length > 0 }),
       })
       const json = await res.json()
-      if (!res.ok) { alert(json.error ?? tErrors('genericShort')); return }
+      if (!res.ok) { setAdvanceError(json.error ?? tErrors('genericShort')); return }
       setService(json.service as FullService)
     } finally { setAdvancing(false) }
   }
@@ -1790,7 +1745,7 @@ export default function ServiceOrderClient({
   }
   if (service.status === 'IN_PROGRESS') {
     const hasOpenCards = service.sections.some((s) =>
-      s.workCards.some((wc) => wc.status === 'PENDING' || wc.status === 'ASSIGNED' || wc.status === 'IN_PROGRESS'),
+      s.workCards.some((wc) => wc.status === 'PENDING' || wc.status === 'IN_PROGRESS'),
     )
     if (hasOpenCards) warnings.push(tService('warn.openWorkCards'))
   }
@@ -1803,6 +1758,43 @@ export default function ServiceOrderClient({
         warnings.push(tService('warn.eqExitMissing'))
       }
     }
+  }
+
+  // ── Mobile section chips ────────────────────────────────────────────────────
+
+  const sectionChips: Array<{ domId: string; label: string; done: boolean }> = []
+
+  if (service.status === 'INTAKE') {
+    if (equipmentSection) {
+      const done = !!equipmentSection.intakeSkippedAt || service.equipmentCheckItems.some((i) => i.checkType === 'INTAKE')
+      sectionChips.push({ domId: 'sec-eq', label: tCommon('equipmentCheck'), done })
+    }
+    sectionChips.push({
+      domId: 'sec-feedback',
+      label: tService('driverFeedback'),
+      done: service.driverFeedbackItems.length > 0 || !!service.driverFeedbackNotes,
+    })
+    sectionChips.push({ domId: 'sec-notes', label: tCommon('notesAndPhotos'), done: false })
+  }
+
+  if (['IN_PROGRESS', 'QUALITY_CHECK', 'READY', 'COMPLETED'].includes(service.status)) {
+    if (checklistSection) {
+      sectionChips.push({
+        domId: 'sec-cl',
+        label: tCommon('checklist'),
+        done: checklistItems.length > 0 && completedChecklist.length === checklistItems.length,
+      })
+    }
+    if (equipmentSection) {
+      const done = !!equipmentSection.intakeSkippedAt || service.equipmentCheckItems.some((i) => i.checkType === 'INTAKE')
+      sectionChips.push({ domId: 'sec-eq', label: tCommon('equipmentCheck'), done })
+    }
+    for (const sec of workCardSections) {
+      const activeWCs = sec.workCards.filter((wc) => wc.status !== 'CANCELLED')
+      const done = activeWCs.length > 0 && activeWCs.every((wc) => wc.status === 'COMPLETED')
+      sectionChips.push({ domId: `sec-wc-${sec.id}`, label: sec.title, done })
+    }
+    sectionChips.push({ domId: 'sec-notes', label: tCommon('notesAndPhotos'), done: false })
   }
 
   // ── Rail item renderer (closure over component state) ──────────────────────
@@ -1907,7 +1899,7 @@ export default function ServiceOrderClient({
               {service.truckPlateSnapshot}
             </Link>
             <span className="text-gray-300 dark:text-gray-600">›</span>
-            <span className={`font-semibold truncate inline-flex items-center gap-1.5 ${SVC_COLOR[service.status]}`}>
+            <span className={`font-semibold truncate inline-flex items-center gap-1.5 ${SERVICE_STATUS_PILL[service.status]}`}>
               {tService(`status.${service.status}`)}
             </span>
           </nav>
@@ -1958,6 +1950,24 @@ export default function ServiceOrderClient({
           <p className="text-xs text-center text-gray-500 dark:text-gray-400">{tService(`status.${service.status}`)}</p>
         </div>
 
+        {/* ── Mobile section nav ── */}
+        {sectionChips.length > 1 && (
+          <div className="lg:hidden shrink-0 bg-white dark:bg-gray-900 border-b border-gray-300 dark:border-gray-800 px-3 py-1.5 overflow-x-auto">
+            <div className="flex gap-1.5 items-center">
+              {sectionChips.map((chip) => (
+                <button
+                  key={chip.domId}
+                  onClick={() => document.getElementById(chip.domId)?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
+                  className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors shrink-0"
+                >
+                  {chip.done && <span className="w-1.5 h-1.5 rounded-full bg-green-500 shrink-0" />}
+                  <span>{chip.label.length > 15 ? `${chip.label.slice(0, 15)}\u2026` : chip.label}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* ── Scrollable body ── */}
         <div className="flex-1 overflow-y-auto bg-gray-50 dark:bg-gray-950">
           <div className="px-4 lg:px-6 py-5 space-y-4">
@@ -2007,6 +2017,7 @@ export default function ServiceOrderClient({
                 service={service}
                 warnings={warnings}
                 advancing={advancing}
+                advanceError={advanceError}
                 checklistItems={checklistItems}
                 completedChecklist={completedChecklist}
                 activeWorkCards={activeWorkCards}
@@ -2044,8 +2055,16 @@ export default function ServiceOrderClient({
               </div>
             )}
 
+            {/* INTAKE: trip since last service */}
+            {service.status === 'INTAKE' && tripSinceLastService != null && tripSinceLastService > 0 && (
+              <div className="px-4 py-2.5 bg-sky-500/10 border border-sky-500/20 rounded-xl text-sm text-sky-400">
+                {tService('tripSinceLastService')}: <span className="font-semibold">{Math.round(tripSinceLastService).toLocaleString('bg-BG')} {tCommon('kmUnit')}</span>
+              </div>
+            )}
+
             {/* INTAKE: equipment check + driver feedback */}
             {service.status === 'INTAKE' && equipmentSection && (
+              <div id="sec-eq">
               <CollapsiblePanel
                 key="eq-intake"
                 title={tCommon('equipmentCheck')}
@@ -2078,9 +2097,11 @@ export default function ServiceOrderClient({
                   />
                 </div>
               </CollapsiblePanel>
+              </div>
             )}
 
             {service.status === 'INTAKE' && (
+              <div id="sec-feedback">
               <CollapsiblePanel
                 title={tService('driverFeedback')}
                 kind="feedback"
@@ -2129,6 +2150,7 @@ export default function ServiceOrderClient({
                   </div>
                 </div>
               </CollapsiblePanel>
+              </div>
             )}
 
             {/* IN_PROGRESS / QUALITY_CHECK / READY / COMPLETED: active panels */}
@@ -2136,6 +2158,7 @@ export default function ServiceOrderClient({
               <>
                 {/* Checklist */}
                 {checklistSection && (
+                  <div id="sec-cl">
                   <CollapsiblePanel
                     key={`cl-${service.status}`}
                     title={tCommon('checklist')}
@@ -2161,10 +2184,12 @@ export default function ServiceOrderClient({
                       )}
                     </div>
                   </CollapsiblePanel>
+                  </div>
                 )}
 
                 {/* Equipment check (both phases) */}
                 {equipmentSection && (
+                  <div id="sec-eq">
                   <CollapsiblePanel
                     key={`eq-${service.status}`}
                     title={tCommon('equipmentCheck')}
@@ -2205,12 +2230,13 @@ export default function ServiceOrderClient({
                       />
                     </div>
                   </CollapsiblePanel>
+                  </div>
                 )}
 
                 {/* Work card sections */}
                 {workCardSections.map((sec) => (
+                  <div key={sec.id} id={`sec-wc-${sec.id}`}>
                   <SectionCard
-                    key={sec.id}
                     sec={sec}
                     serviceId={service.id}
                     mechanics={mechanics}
@@ -2232,6 +2258,7 @@ export default function ServiceOrderClient({
                     onEquipmentCheckSaved={(items, phase) => equipmentCheckSaved(items, phase)}
                     onEquipmentCheckSkipped={(phase, note) => equipmentCheckSkipped(phase, note)}
                   />
+                  </div>
                 ))}
 
                 {/* Add section */}
@@ -2248,6 +2275,7 @@ export default function ServiceOrderClient({
 
             {/* Notes & Photos — all stages except SCHEDULED */}
             {service.status !== 'SCHEDULED' && (
+              <div id="sec-notes">
               <CollapsiblePanel
                 title={tCommon('notesAndPhotos')}
                 kind="notes"
@@ -2271,6 +2299,7 @@ export default function ServiceOrderClient({
                   />
                 </div>
               </CollapsiblePanel>
+              </div>
             )}
 
             {/* Previous Steps Accordion */}

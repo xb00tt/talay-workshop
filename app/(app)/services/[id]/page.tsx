@@ -47,6 +47,19 @@ export default async function ServiceOrderPage({ params }: { params: Promise<{ i
 
   if (!service) notFound()
 
+  // Compute km driven since last completed service for this truck
+  let tripSinceLastService: number | null = null
+  if (service.mileageAtService != null) {
+    const prevService = await prisma.serviceOrder.findFirst({
+      where:   { truckId: service.truckId, status: 'COMPLETED', id: { not: serviceId } },
+      orderBy: { endDate: 'desc' },
+      select:  { mileageAtService: true },
+    })
+    if (prevService?.mileageAtService != null) {
+      tripSinceLastService = service.mileageAtService - prevService.mileageAtService
+    }
+  }
+
   const { role, permissions } = session.user
 
   function ser(svc: NonNullable<typeof service>) {
@@ -81,6 +94,7 @@ export default async function ServiceOrderPage({ params }: { params: Promise<{ i
   return (
     <ServiceOrderClient
       initialService={ser(service)}
+      tripSinceLastService={tripSinceLastService}
       drivers={drivers}
       mechanics={mechanics}
       userName={session.user.name ?? ''}

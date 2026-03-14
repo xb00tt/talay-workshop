@@ -1,14 +1,16 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import useSWR from 'swr'
-import Pagination from '@/components/Pagination'
 import { useTranslations } from 'next-intl'
+import { SERVICE_STATUS_COLOR } from '@/lib/status-config'
+import { Input, Select, Label, ErrorBox, Modal } from '@/components/ui'
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json())
 
-// ─── Types ─────────────────────────────────────────────────────────────────────
+// ─── Types ───────────────────────────────────────────────────────────────────────
 
 type ServiceStatus =
   | 'SCHEDULED' | 'INTAKE' | 'IN_PROGRESS' | 'QUALITY_CHECK'
@@ -23,8 +25,14 @@ interface ServiceRow {
   endDate: string | null
   driverNameSnapshot: string | null
   createdAt: string
-  truck: { make: string; model: string; isAdr: boolean }
-  sections: { workCards: { status: string }[] }[]
+  truck: {
+    make: string
+    model: string
+    isAdr: boolean
+    year: number | null
+    currentMileage: number | null
+  }
+  sections: { workCards: { status: string; mechanicName: string | null }[] }[]
 }
 
 interface Truck {
@@ -35,49 +43,20 @@ interface Truck {
   isActive: boolean
 }
 
-// ─── Status colours ─────────────────────────────────────────────────────────────
+// ─── Constants ────────────────────────────────────────────────────────────────────
 
-const STATUS_BADGE: Record<ServiceStatus, string> = {
-  SCHEDULED:     'bg-amber-100 text-amber-800 dark:bg-amber-600/20 dark:text-amber-400',
-  INTAKE:        'bg-blue-100 text-blue-800 dark:bg-blue-600/20 dark:text-blue-400',
-  IN_PROGRESS:   'bg-indigo-100 text-indigo-800 dark:bg-indigo-600/20 dark:text-indigo-400',
-  QUALITY_CHECK: 'bg-purple-100 text-purple-800 dark:bg-purple-600/20 dark:text-purple-400',
-  READY:         'bg-green-100 text-green-800 dark:bg-green-600/20 dark:text-green-400',
-  COMPLETED:     'bg-gray-100 text-gray-600 dark:bg-gray-600/20 dark:text-gray-400',
-  CANCELLED:     'bg-red-100 text-red-700 dark:bg-red-600/20 dark:text-red-400',
-}
+// Grid columns: plate | truck | status | mechanic | driver | date | days
+const COL = '110px 1fr 134px 128px 112px 80px 56px'
 
-const STATUS_STRIPE: Record<ServiceStatus, string> = {
-  SCHEDULED:     'bg-amber-500',
-  INTAKE:        'bg-blue-500',
-  IN_PROGRESS:   'bg-indigo-500',
-  QUALITY_CHECK: 'bg-purple-500',
-  READY:         'bg-green-500',
-  COMPLETED:     'bg-gray-600',
-  CANCELLED:     'bg-red-700',
-}
+// ─── Helpers ──────────────────────────────────────────────────────────────────────
 
-const OPEN_BTN: Record<ServiceStatus, string> = {
-  SCHEDULED:     'bg-gray-700 hover:bg-gray-600 text-white',
-  INTAKE:        'bg-blue-600 hover:bg-blue-500 text-white',
-  IN_PROGRESS:   'bg-blue-600 hover:bg-blue-500 text-white',
-  QUALITY_CHECK: 'bg-purple-600 hover:bg-purple-500 text-white',
-  READY:         'bg-green-600 hover:bg-green-500 text-white',
-  COMPLETED:     'bg-gray-200 hover:bg-gray-300 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300',
-  CANCELLED:     'bg-gray-200 hover:bg-gray-300 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-400',
-}
-
-const ALL_STATUSES: ServiceStatus[] = [
-  'SCHEDULED', 'INTAKE', 'IN_PROGRESS', 'QUALITY_CHECK', 'READY', 'COMPLETED', 'CANCELLED',
-]
-
-// ─── Helpers ───────────────────────────────────────────────────────────────────
-
-function fmtDate(iso: string) {
+function fmtDateShort(iso: string) {
   const d = new Date(iso)
-  const dd = String(d.getUTCDate()).padStart(2, '0')
-  const mm = String(d.getUTCMonth() + 1).padStart(2, '0')
-  return `${dd}.${mm}.${d.getUTCFullYear()}`
+  return `${String(d.getUTCDate()).padStart(2, '0')}.${String(d.getUTCMonth() + 1).padStart(2, '0')}`
+}
+
+function fmtMileage(km: number) {
+  return Math.round(km).toString().replace(/\B(?=(\d{3})+(?!\d))/g, '\u00a0') + '\u00a0км'
 }
 
 function daysInShop(startIso: string, endIso: string | null): number {
@@ -86,88 +65,26 @@ function daysInShop(startIso: string, endIso: string | null): number {
   return Math.max(0, Math.floor((end - start) / 86_400_000))
 }
 
-// ─── Shared UI ─────────────────────────────────────────────────────────────────
+// ─── Shared UI ───────────────────────────────────────────────────────────────────
 
-function Input(props: React.InputHTMLAttributes<HTMLInputElement>) {
-  return (
-    <input
-      {...props}
-      className={
-        'w-full bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-gray-900 dark:text-white ' +
-        'placeholder-gray-400 dark:placeholder-gray-500 focus:outline-hidden focus:ring-2 focus:ring-blue-500 ' +
-        (props.className ?? '')
-      }
-    />
-  )
-}
 
-function Select(props: React.SelectHTMLAttributes<HTMLSelectElement>) {
-  return (
-    <select
-      {...props}
-      className={
-        'bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-gray-900 dark:text-white ' +
-        'focus:outline-hidden focus:ring-2 focus:ring-blue-500 ' +
-        (props.className ?? '')
-      }
-    />
-  )
-}
-
-function Label({ children }: { children: React.ReactNode }) {
-  return <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">{children}</label>
-}
-
-function ErrorBox({ msg }: { msg: string }) {
-  return (
-    <div className="px-3 py-2 bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/30 rounded-lg text-red-700 dark:text-red-400 text-sm">
-      {msg}
-    </div>
-  )
-}
-
-function Modal({ title, onClose, children }: { title: string; onClose: () => void; children: React.ReactNode }) {
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-black/60" onClick={onClose} />
-      <div className="relative w-full max-w-md bg-white dark:bg-gray-900 rounded-2xl shadow-2xl p-6">
-        <div className="flex items-center justify-between mb-5">
-          <h2 className="text-base font-semibold text-gray-900 dark:text-white">{title}</h2>
-          <button onClick={onClose} className="text-gray-500 hover:text-gray-900 dark:hover:text-white text-xl leading-none">×</button>
-        </div>
-        {children}
-      </div>
-    </div>
-  )
-}
-
-function StatusBadge({ status, label }: { status: ServiceStatus; label: string }) {
-  return (
-    <span className={`inline-flex items-center px-2 py-0.5 rounded-sm text-xs font-medium ${STATUS_BADGE[status]}`}>
-      {label}
-    </span>
-  )
-}
-
-// ─── Create service modal ──────────────────────────────────────────────────────
+// ─── Create modal ─────────────────────────────────────────────────────────────────
 
 function CreateModal({
   trucks,
   onClose,
   onCreated,
-  preselectedDate,
 }: {
   trucks: Truck[]
   onClose: () => void
-  onCreated: (service: ServiceRow) => void
-  preselectedDate?: string
+  onCreated: () => void
 }) {
-  const t = useTranslations('service')
+  const t      = useTranslations('service')
   const tCommon = useTranslations('common')
   const tErrors = useTranslations('errors')
 
   const [truckId, setTruckId]             = useState('')
-  const [scheduledDate, setScheduledDate] = useState(preselectedDate ?? '')
+  const [scheduledDate, setScheduledDate] = useState('')
   const [error,   setError]   = useState('')
   const [loading, setLoading] = useState(false)
 
@@ -187,7 +104,7 @@ function CreateModal({
       })
       const json = await res.json()
       if (!res.ok) { setError(json.error ?? tErrors('generic')); return }
-      onCreated(json.service)
+      onCreated()
       onClose()
     } catch {
       setError(tErrors('generic'))
@@ -232,7 +149,7 @@ function CreateModal({
   )
 }
 
-// ─── Reschedule modal ──────────────────────────────────────────────────────────
+// ─── Reschedule modal ─────────────────────────────────────────────────────────────
 
 function RescheduleModal({
   service,
@@ -241,9 +158,9 @@ function RescheduleModal({
 }: {
   service: ServiceRow
   onClose: () => void
-  onUpdated: (s: ServiceRow) => void
+  onUpdated: () => void
 }) {
-  const t = useTranslations('service')
+  const t      = useTranslations('service')
   const tCommon = useTranslations('common')
   const tErrors = useTranslations('errors')
 
@@ -265,7 +182,7 @@ function RescheduleModal({
       })
       const json = await res.json()
       if (!res.ok) { setError(json.error ?? tErrors('generic')); return }
-      onUpdated(json.service)
+      onUpdated()
       onClose()
     } catch {
       setError(tErrors('generic'))
@@ -299,145 +216,128 @@ function RescheduleModal({
   )
 }
 
-// ─── Service card ──────────────────────────────────────────────────────────────
+// ─── Table row ────────────────────────────────────────────────────────────────────
 
-function ServiceCard({
+function ServiceTableRow({
   s,
   t,
-  tCommon,
   canReschedule,
   onReschedule,
 }: {
   s: ServiceRow
   t: ReturnType<typeof useTranslations>
-  tCommon: ReturnType<typeof useTranslations>
   canReschedule: boolean
   onReschedule: (s: ServiceRow) => void
 }) {
-  const isTerminal = s.status === 'COMPLETED' || s.status === 'CANCELLED'
+  const router     = useRouter()
+  const isScheduled = s.status === 'SCHEDULED'
+  const isTerminal  = s.status === 'COMPLETED' || s.status === 'CANCELLED'
 
-  // Work card counts (exclude CANCELLED cards and system sections with no cards)
-  const allWc   = (s.sections ?? []).flatMap((sec) => sec.workCards).filter((wc) => wc.status !== 'CANCELLED')
-  const doneWc  = allWc.filter((wc) => wc.status === 'COMPLETED').length
-  const totalWc = allWc.length
-  const progress = totalWc > 0 ? doneWc / totalWc : 0
+  const days    = s.startDate ? daysInShop(s.startDate, s.endDate) : null
+  const isStale = !isTerminal && days !== null && days >= 5
 
-  // Days in shop
-  let daysLabel: string | null = null
-  if (s.startDate) {
-    const days = daysInShop(s.startDate, s.endDate)
-    daysLabel = isTerminal
-      ? t('daysInShop', { days })
-      : days === 0 ? t('enteredToday') : t('daysInShop', { days })
-  }
+  const activeWorkCards = s.sections.flatMap((sec) => sec.workCards).filter((wc) => wc.status !== 'CANCELLED' && wc.mechanicName)
+  const firstMechanic   = activeWorkCards[0]?.mechanicName ?? null
+  const extraMechanics  = activeWorkCards.length > 1 ? activeWorkCards.length - 1 : 0
+
+  const dateIso = isScheduled ? s.scheduledDate : (s.startDate ?? s.scheduledDate)
+
+  const daysClass =
+    days === null ? 'text-slate-400 dark:text-gray-600' :
+    days >= 7     ? 'text-red-500 dark:text-red-400 font-bold' :
+    days >= 4     ? 'text-amber-600 dark:text-amber-400 font-semibold' :
+                    'text-slate-600 dark:text-gray-400 font-medium'
+
+  const truckMeta = [
+    s.truck.year,
+    s.truck.currentMileage != null ? fmtMileage(s.truck.currentMileage) : null,
+  ].filter(Boolean).join(' · ')
 
   return (
-    <div className="flex bg-white dark:bg-gray-900 rounded-xl border border-gray-300 dark:border-gray-800 overflow-hidden hover:border-gray-400 dark:hover:border-gray-700 transition-colors group">
-      {/* Status stripe */}
-      <div className={`w-1 shrink-0 ${STATUS_STRIPE[s.status]}`} />
-
-      {/* Main content */}
-      <div className="flex-1 flex flex-wrap gap-x-6 gap-y-3 px-5 py-4 items-center min-w-0">
-
-        {/* Truck identity */}
-        <div className="min-w-37.5 flex-2">
-          <div className="flex items-center gap-2 flex-wrap">
-            <span className="font-mono font-bold text-gray-900 dark:text-white text-base leading-tight">
-              {s.truckPlateSnapshot}
-            </span>
-            {s.truck.isAdr && (
-              <span className="px-1.5 py-0.5 text-[10px] font-bold bg-orange-500/20 text-orange-400 rounded leading-tight">
-                ADR
-              </span>
-            )}
-          </div>
-          <p className="text-xs text-gray-500 mt-0.5">{s.truck.make} {s.truck.model}</p>
-          {s.driverNameSnapshot && (
-            <p className="text-xs text-gray-600 mt-0.5 truncate">{s.driverNameSnapshot}</p>
-          )}
-        </div>
-
-        {/* Dates */}
-        <div className="min-w-27.5 flex-1">
-          <p className="text-[10px] text-gray-600 uppercase tracking-wider font-medium">
-            {t('scheduledDate')}
-          </p>
-          <p className="text-sm text-gray-900 dark:text-white mt-0.5">{fmtDate(s.scheduledDate)}</p>
-          {daysLabel && (
-            <p className={`text-xs mt-0.5 ${isTerminal ? 'text-gray-600' : 'text-amber-400'}`}>
-              {daysLabel}
-            </p>
-          )}
-        </div>
-
-        {/* Status */}
-        <div className="min-w-32.5 flex-1">
-          <StatusBadge status={s.status} label={t(`status.${s.status}`)} />
-        </div>
-
-        {/* Work card progress — only when there are cards */}
-        {totalWc > 0 && (
-          <div className="min-w-27.5 flex-1 hidden md:block">
-            <p className="text-xs text-gray-500 mb-1.5">
-              {doneWc}/{totalWc} {tCommon('workCards')}
-            </p>
-            <div className="h-1.5 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
-              <div
-                className={`h-full rounded-full transition-all ${doneWc === totalWc ? 'bg-green-500' : 'bg-blue-500'}`}
-                style={{ width: `${progress * 100}%` }}
-              />
-            </div>
-          </div>
+    <div
+      role="row"
+      onClick={() => router.push(`/services/${s.id}`)}
+      className={[
+        'grid px-5 py-3 items-center cursor-pointer',
+        'border-b border-slate-100 dark:border-gray-800 last:border-b-0',
+        'hover:bg-slate-50 dark:hover:bg-gray-800/50 transition-colors group',
+        isScheduled ? 'bg-slate-50/50 dark:bg-gray-900/30' : '',
+        isStale     ? 'bg-red-50/40 dark:bg-red-500/5' : '',
+      ].filter(Boolean).join(' ')}
+      style={{ gridTemplateColumns: COL }}
+    >
+      {/* Plate */}
+      <div className="flex items-center gap-1.5 min-w-0">
+        <span className="font-bold text-slate-900 dark:text-white text-sm tracking-wide font-mono truncate">
+          {s.truckPlateSnapshot}
+        </span>
+        {s.truck.isAdr && (
+          <span className="shrink-0 text-[9px] font-bold bg-orange-500/20 text-orange-500 dark:text-orange-400 px-1 py-0.5 rounded leading-tight">
+            ADR
+          </span>
         )}
       </div>
 
-      {/* Actions */}
-      <div className="flex items-center gap-2 px-4 py-4 border-l border-gray-300 dark:border-gray-800 shrink-0">
-        {/* Reschedule icon button — SCHEDULED only */}
-        {canReschedule && s.status === 'SCHEDULED' && (
+      {/* Truck info */}
+      <div className="min-w-0">
+        <div className="text-sm text-slate-800 dark:text-gray-200 truncate">
+          {s.truck.make} {s.truck.model}
+        </div>
+        {truckMeta && (
+          <div className="text-xs text-slate-400 dark:text-gray-500 mt-0.5 truncate">{truckMeta}</div>
+        )}
+      </div>
+
+      {/* Status */}
+      <div>
+        <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${SERVICE_STATUS_COLOR[s.status]}`}>
+          {t(`status.${s.status}`)}
+        </span>
+      </div>
+
+      {/* Mechanic */}
+      <div className="text-sm text-slate-600 dark:text-gray-400 truncate flex items-center gap-1">
+        {firstMechanic
+          ? <>
+              <span className="truncate">{firstMechanic}</span>
+              {extraMechanics > 0 && (
+                <span className="shrink-0 text-xs text-slate-400 dark:text-gray-500">+{extraMechanics}</span>
+              )}
+            </>
+          : <span className="text-slate-300 dark:text-gray-600">—</span>
+        }
+      </div>
+
+      {/* Driver */}
+      <div className="text-sm text-slate-600 dark:text-gray-400 truncate">
+        {s.driverNameSnapshot ?? <span className="text-slate-300 dark:text-gray-600">—</span>}
+      </div>
+
+      {/* Date */}
+      <div className="text-sm text-slate-500 dark:text-gray-500">
+        {fmtDateShort(dateIso)}
+      </div>
+
+      {/* Days / reschedule */}
+      <div className="flex items-center justify-center">
+        {isScheduled && canReschedule ? (
           <button
-            onClick={() => onReschedule(s)}
-            title={t('reschedule')}
-            className="p-2 rounded-lg border border-gray-300 dark:border-gray-700 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:border-gray-400 dark:hover:border-gray-500 transition-colors"
+            onClick={(e) => { e.stopPropagation(); onReschedule(s) }}
+            className="text-xs font-medium px-2 py-1 rounded-md bg-slate-100 dark:bg-gray-800 text-slate-500 dark:text-gray-400 hover:bg-slate-200 dark:hover:bg-gray-700 hover:text-slate-700 dark:hover:text-gray-200 transition-colors"
           >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-            </svg>
+            {t('reschedule')}
           </button>
+        ) : (
+          <span className={`text-sm text-center ${daysClass}`} aria-label={isStale ? 'Просрочен' : undefined}>
+            {days !== null ? String(days) : '—'}
+          </span>
         )}
-
-        {/* Intake protocol print — SCHEDULED and INTAKE */}
-        {(s.status === 'SCHEDULED' || s.status === 'INTAKE') && (
-          <Link
-            href={`/services/${s.id}/intake-protocol`}
-            target="_blank"
-            title={t('intakeProtocol')}
-            className="p-2 rounded-lg border border-gray-300 dark:border-gray-700 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:border-gray-400 dark:hover:border-gray-500 transition-colors"
-          >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-            </svg>
-          </Link>
-        )}
-
-        {/* Open / view button */}
-        <Link
-          href={`/services/${s.id}`}
-          className={`px-3 py-2 text-sm font-semibold rounded-lg transition-colors flex items-center gap-1.5 ${OPEN_BTN[s.status]}`}
-        >
-          {t('open')}
-          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-          </svg>
-        </Link>
       </div>
     </div>
   )
 }
 
-// ─── Main component ────────────────────────────────────────────────────────────
+// ─── Main component ───────────────────────────────────────────────────────────────
 
 type ModalState =
   | 'create'
@@ -449,6 +349,7 @@ export default function ServicesClient({
   initialTotal,
   initialPageSize,
   trucks,
+  statusCounts,
   canCreate,
   canReschedule,
 }: {
@@ -456,6 +357,7 @@ export default function ServicesClient({
   initialTotal: number
   initialPageSize: number
   trucks: Truck[]
+  statusCounts: Record<string, number>
   canCreate: boolean
   canReschedule: boolean
 }) {
@@ -477,93 +379,213 @@ export default function ServicesClient({
     q:        search.trim(),
   })
 
-  const { data, mutate } = useSWR(`/api/services?${params}`, fetcher, {
+  const { data, mutate, isValidating } = useSWR(`/api/services?${params}`, fetcher, {
     refreshInterval:   30_000,
     fallbackData:      { services: initialServices, total: initialTotal, page: 1, pageSize, totalPages: Math.ceil(initialTotal / pageSize) },
     revalidateOnFocus: false,
     keepPreviousData:  true,
   })
 
-  const services:   ServiceRow[] = data?.services   ?? initialServices
-  const total:      number       = data?.total       ?? initialTotal
-  const totalPages: number       = data?.totalPages  ?? Math.ceil(initialTotal / pageSize)
+  const services:   ServiceRow[] = data?.services  ?? initialServices
+  const total:      number       = data?.total      ?? initialTotal
+  const totalPages: number       = data?.totalPages ?? Math.ceil(initialTotal / pageSize)
 
-  function upsert() { mutate() }
+  // Per-status counts for tab badges
+  const activeCount    = (['INTAKE', 'IN_PROGRESS', 'QUALITY_CHECK', 'READY'] as const).reduce((n, s) => n + (statusCounts[s] ?? 0), 0)
+  const scheduledCount = statusCounts['SCHEDULED'] ?? 0
+  const completedCount = statusCounts['COMPLETED'] ?? 0
+
+  const TABS = [
+    { value: 'active',         label: t('filterAll'),              count: activeCount + scheduledCount },
+    { value: 'INTAKE',         label: t('status.INTAKE'),          count: statusCounts['INTAKE']         ?? 0 },
+    { value: 'IN_PROGRESS',    label: t('status.IN_PROGRESS'),     count: statusCounts['IN_PROGRESS']    ?? 0 },
+    { value: 'QUALITY_CHECK',  label: t('status.QUALITY_CHECK'),   count: statusCounts['QUALITY_CHECK']  ?? 0 },
+    { value: 'READY',          label: t('status.READY'),           count: statusCounts['READY']          ?? 0 },
+    { value: 'SCHEDULED',      label: t('status.SCHEDULED'),       count: scheduledCount },
+    { value: 'COMPLETED',      label: t('status.COMPLETED'),       count: null },
+    { value: 'CANCELLED',      label: t('status.CANCELLED'),       count: null },
+  ]
+
+  // Pagination helpers
+  const from  = total === 0 ? 0 : (page - 1) * pageSize + 1
+  const to    = Math.min(page * pageSize, total)
 
   return (
     <>
-      <div className="p-6 lg:p-8">
-        {/* Header */}
-        <div className="flex flex-wrap items-center justify-between gap-3 mb-5">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{t('list')}</h1>
-            <p className="text-sm text-gray-500 mt-0.5">{t('resultsCount', { count: total })}</p>
-          </div>
-          {canCreate && (
-            <button
-              onClick={() => setModal('create')}
-              className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white text-sm font-semibold rounded-xl transition-colors"
-            >
-              <span className="text-lg leading-none">+</span>
-              {t('new')}
-            </button>
-          )}
+      {/* ── Sticky page header ──────────────────────────────────────────────── */}
+      <header className="bg-white dark:bg-gray-900 border-b border-[#c4cdd9] dark:border-gray-800 px-6 md:px-8 py-4 flex items-center justify-between sticky top-0 z-10 gap-4">
+        <div className="min-w-0">
+          <h1 className="font-semibold text-slate-900 dark:text-white text-lg leading-tight">{t('list')}</h1>
+          <p className="text-sm text-slate-500 dark:text-gray-500 mt-0.5 truncate">
+            {t('headerStats', { active: activeCount, scheduled: scheduledCount, completed: completedCount })}
+          </p>
         </div>
+        {canCreate && (
+          <button
+            onClick={() => setModal('create')}
+            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-sm px-4 py-1.5 rounded-lg font-medium transition-colors shadow-sm shrink-0"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+            </svg>
+            {t('new')}
+          </button>
+        )}
+      </header>
 
-        {/* Filters */}
-        <div className="flex items-center gap-2 mb-4 flex-wrap">
-          <Select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
-            <option value="active">{t('filterActive')}</option>
-            <option value="all">{t('filterAll')}</option>
-            {ALL_STATUSES.map((s) => (
-              <option key={s} value={s}>{t(`status.${s}`)}</option>
+      {/* ── Content ──────────────────────────────────────────────────────────── */}
+      <div className="px-6 md:px-8 py-5 flex flex-col gap-4">
+
+        {/* Filters row */}
+        <div className="flex items-center gap-3 flex-wrap">
+          {/* Status tabs */}
+          <div className="flex items-center gap-1 bg-slate-100 dark:bg-gray-800 p-1 rounded-xl overflow-x-auto shrink-0 max-w-full">
+            {TABS.map((tab) => (
+              <button
+                key={tab.value}
+                onClick={() => setStatusFilter(tab.value)}
+                className={[
+                  'text-[13px] font-medium px-3 py-1.5 rounded-lg cursor-pointer whitespace-nowrap transition-all',
+                  statusFilter === tab.value
+                    ? 'bg-white dark:bg-gray-700 text-blue-600 dark:text-blue-400 shadow-[0_1px_3px_rgba(0,0,0,0.1)] border border-[#c4cdd9] dark:border-gray-600'
+                    : 'text-slate-500 dark:text-gray-400 hover:bg-white/60 dark:hover:bg-gray-700/60 hover:text-slate-800 dark:hover:text-gray-200',
+                ].join(' ')}
+              >
+                {tab.label}
+                {tab.count !== null && tab.count > 0 && (
+                  <span className={`ml-1.5 text-xs ${statusFilter === tab.value ? 'text-slate-400 dark:text-gray-500' : 'text-slate-400 dark:text-gray-600'}`}>
+                    {tab.count}
+                  </span>
+                )}
+              </button>
             ))}
-          </Select>
-          <input
-            type="text"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder={t('searchPlaceholder')}
-            className="flex-1 min-w-50 bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-sm text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-hidden focus:ring-2 focus:ring-blue-500"
-          />
+          </div>
+
+          {/* Search */}
+          <div className="relative w-full sm:w-auto sm:min-w-[180px] sm:max-w-xs">
+            <svg className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-gray-500 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+            <input
+              type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder={t('searchPlaceholder')}
+              className="pl-9 pr-4 py-1.5 text-sm border border-slate-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-slate-800 dark:text-gray-200 placeholder-slate-400 dark:placeholder-gray-500 focus:outline-none focus:border-blue-400 dark:focus:border-blue-500 w-full"
+            />
+          </div>
         </div>
 
-        {/* List */}
-        <div className="space-y-2">
-          {services.map((s) => (
-            <ServiceCard
-              key={s.id}
-              s={s}
-              t={t}
-              tCommon={tCommon}
-              canReschedule={canReschedule}
-              onReschedule={(svc) => setModal({ type: 'reschedule', service: svc })}
-            />
-          ))}
-          {services.length === 0 && (
-            <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-300 dark:border-gray-800 px-5 py-12 text-center text-gray-500">
-              {t('noResults')}
+        {/* Table card */}
+        <div className={`bg-white dark:bg-gray-900 rounded-xl border border-[#c4cdd9] dark:border-gray-800 shadow-[0_1px_3px_rgba(0,0,0,0.06)] dark:shadow-none overflow-hidden relative transition-opacity ${isValidating && data ? 'opacity-60 pointer-events-none' : ''}`}>
+          {isValidating && data && (
+            <div className="absolute top-0 left-0 right-0 h-0.5 bg-blue-200 dark:bg-blue-900 z-10">
+              <div className="h-full bg-blue-500 animate-pulse" />
             </div>
           )}
-        </div>
 
-        <div className="mt-2">
-          <Pagination
-            page={page}
-            totalPages={totalPages}
-            total={total}
-            pageSize={pageSize}
-            onPageChange={setPage}
-          />
+          {/* Scrollable table wrapper */}
+          <div className="overflow-x-auto">
+
+            {/* Column header */}
+            <div
+              className="grid px-5 py-2.5 bg-slate-50 dark:bg-gray-800/60 border-b border-slate-200 dark:border-gray-800 text-xs font-semibold text-slate-500 dark:text-gray-500 uppercase tracking-wide"
+              style={{ gridTemplateColumns: COL, minWidth: '720px' }}
+            >
+              <span>{t('colPlate')}</span>
+              <span>{tCommon('truck')}</span>
+              <span>{tCommon('status')}</span>
+              <span>{t('colMechanic')}</span>
+              <span>{t('driver')}</span>
+              <span>{tCommon('date')}</span>
+              <span className="text-center">{t('colDays')}</span>
+            </div>
+
+            {/* Rows */}
+            <div role="rowgroup" style={{ minWidth: '720px' }}>
+              {services.length === 0 ? (
+                <div className="px-5 py-12 text-center text-sm text-slate-400 dark:text-gray-600">
+                  {t('noResults')}
+                </div>
+              ) : (
+                services.map((s) => (
+                  <ServiceTableRow
+                    key={s.id}
+                    s={s}
+                    t={t}
+                    canReschedule={canReschedule}
+                    onReschedule={(svc) => setModal({ type: 'reschedule', service: svc })}
+                  />
+                ))
+              )}
+            </div>
+          </div>
+
+          {/* Pagination footer */}
+          <div className="px-5 py-3 border-t border-slate-200 dark:border-gray-800 flex items-center justify-between gap-4 bg-slate-50 dark:bg-gray-800/30">
+            <span className="text-xs text-slate-500 dark:text-gray-500 shrink-0">
+              {total === 0 ? '0' : `${from}–${to}`} / {total}
+            </span>
+
+            {totalPages > 1 && (
+              <div className="flex items-center gap-1">
+                <button
+                  onClick={() => setPage((p) => Math.max(1, p - 1))}
+                  disabled={page === 1}
+                  className="text-xs px-2.5 py-1.5 rounded border border-slate-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-slate-600 dark:text-gray-400 hover:bg-slate-50 dark:hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                >
+                  ←
+                </button>
+
+                {Array.from({ length: Math.min(totalPages, 7) }, (_, i) => {
+                  // Show pages around current page
+                  const pg = totalPages <= 7
+                    ? i + 1
+                    : page <= 4
+                      ? i + 1
+                      : page >= totalPages - 3
+                        ? totalPages - 6 + i
+                        : page - 3 + i
+                  return (
+                    <button
+                      key={pg}
+                      onClick={() => setPage(pg)}
+                      className={[
+                        'text-xs px-2.5 py-1.5 rounded border transition-colors',
+                        page === pg
+                          ? 'bg-blue-600 text-white border-blue-600'
+                          : 'border-slate-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-slate-600 dark:text-gray-400 hover:bg-slate-50 dark:hover:bg-gray-700',
+                      ].join(' ')}
+                    >
+                      {pg}
+                    </button>
+                  )
+                })}
+
+                <button
+                  onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                  disabled={page === totalPages}
+                  className="text-xs px-2.5 py-1.5 rounded border border-slate-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-slate-600 dark:text-gray-400 hover:bg-slate-50 dark:hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                >
+                  →
+                </button>
+              </div>
+            )}
+
+            <span className="text-xs text-slate-400 dark:text-gray-600 shrink-0">
+              {pageSize} {tCommon('rowsPerPage')}
+            </span>
+          </div>
         </div>
       </div>
 
+      {/* ── Modals ──────────────────────────────────────────────────────────── */}
       {modal === 'create' && (
         <Modal title={t('new')} onClose={() => setModal(null)}>
           <CreateModal
             trucks={trucks}
             onClose={() => setModal(null)}
-            onCreated={upsert}
+            onCreated={() => mutate()}
           />
         </Modal>
       )}
@@ -572,7 +594,7 @@ export default function ServicesClient({
           <RescheduleModal
             service={modal.service}
             onClose={() => setModal(null)}
-            onUpdated={upsert}
+            onUpdated={() => mutate()}
           />
         </Modal>
       )}

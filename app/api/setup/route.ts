@@ -50,7 +50,7 @@ export async function POST(request: Request) {
         username: body.username.trim().toLowerCase(),
         name: body.managerName.trim(),
         passwordHash,
-        role: 'MANAGER',
+        role: 'ADMIN',
         permissions: '[]',
         recoveryCode,
       },

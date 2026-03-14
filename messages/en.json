@@ -68,6 +68,7 @@
     "groupWorkshop": "Workshop",
     "groupConfiguration": "Configuration",
     "groupManagement": "Management",
+    "groupAdmin": "Administration",
     "manager": "Manager",
     "assistant": "Assistant"
   },
@@ -106,6 +107,7 @@
     "inWorkshopCount": "{count} trucks in workshop",
     "inWorkshop": "In Workshop",
     "noTrucksInWorkshop": "No trucks in workshop",
+    "noTrucksInWorkshopHint": "Scheduled trucks will appear here upon intake",
     "upcomingScheduled": "Upcoming Scheduled",
     "noUpcomingScheduled": "No scheduled orders.",
     "mileageAlerts": "Mileage Alerts",
@@ -113,10 +115,27 @@
     "truckRequiresService": "{count} truck requires service",
     "trucksRequireService": "{count} trucks require service",
     "today": "Today",
+    "tomorrow": "Tomorrow",
+    "overdue": "Overdue",
     "dayInService": "{days} day in service",
     "daysInServiceLabel": "{days} days in service",
+    "daysUntil": "{days} days",
     "overLimit": "+{km} over limit",
-    "kmUnit": " km"
+    "kmUnit": " km",
+    "greetingMorning": "Good morning",
+    "greetingAfternoon": "Good afternoon",
+    "greetingEvening": "Good evening",
+    "newOrder": "New Order",
+    "activeOrdersCount": "{count} active orders",
+    "statScheduled": "Scheduled",
+    "statAlerts": "Alerts",
+    "staleWarning": "have been in status too long",
+    "viewAll": "View all",
+    "schedule": "Schedule",
+    "shortINTAKE": "Intake",
+    "shortIN_PROGRESS": "In Prog.",
+    "shortQUALITY_CHECK": "QC",
+    "shortREADY": "Ready"
   },
   "service": {
     "title": "Service Order",
@@ -134,14 +153,14 @@
     "scheduledDate": "Scheduled Date",
     "startDate": "Start Date",
     "endDate": "End Date",
-    "bay": "Bay",
     "driver": "Driver",
     "mileageAtService": "Mileage at Intake",
+    "tripSinceLastService": "Driven since last service",
     "cancellationReason": "Cancellation Reason",
     "cancelOrder": "Cancel Order",
     "reschedule": "Reschedule",
     "moveToIntake": "Accept Order",
-    "moveToIntakeDesc": "You will assign a bay, record the driver and mileage, and perform the intake equipment check.",
+    "moveToIntakeDesc": "You will record the driver and mileage, and perform the intake equipment check.",
     "intakeProtocol": "Intake Protocol",
     "moveToInProgress": "Start Work",
     "moveToQualityCheck": "Quality Check",
@@ -161,9 +180,6 @@
       "title": "Accept Order",
       "submit": "Accept",
       "submitting": "Accepting...",
-      "bayRequired": "Select a bay.",
-      "selectBay": "Select a bay",
-      "bayOccupied": "occupied",
       "noDriver": "No driver",
       "mileagePlaceholder": "e.g. 450000"
     },
@@ -185,6 +201,10 @@
     "filterAll": "All",
     "searchPlaceholder": "Search by plate, make, model...",
     "resultsCount": "{count} results",
+    "headerStats": "{active} active · {scheduled} scheduled · {completed} completed",
+    "colPlate": "Reg. No.",
+    "colDays": "Days",
+    "colMechanic": "Mechanic",
     "open": "Open →",
     "noResults": "No service orders found.",
     "selectTruck": "Select a truck.",
@@ -197,7 +217,7 @@
     "reschedulingOf": "Reschedule",
     "stageGuidance": {
       "SCHEDULED": "Review truck details and scheduled date. Start intake when the truck arrives at the workshop.",
-      "INTAKE": "Assign a bay, record the driver and mileage. Perform the intake equipment check and note any driver-reported issues.",
+      "INTAKE": "Record the driver and mileage. Perform the intake equipment check and note any driver-reported issues.",
       "IN_PROGRESS": "Complete all work cards and the service checklist. Add new sections or work cards as needed.",
       "QUALITY_CHECK": "Review all completed work and perform the exit equipment check before releasing the truck.",
       "READY": "The truck is ready for collection. Review the summary, then confirm completion.",
@@ -252,7 +272,6 @@
     "partsCount": "parts",
     "status": {
       "PENDING": "Pending",
-      "ASSIGNED": "Assigned",
       "IN_PROGRESS": "In Progress",
       "COMPLETED": "Completed",
       "CANCELLED": "Cancelled"
@@ -379,7 +398,10 @@
     "cancelledNote": "Cancelled:",
     "plateNumberShort": "Plate No.",
     "lastService": "Last Service",
-    "alertCount": "{count} need service"
+    "alertCount": "{count} need service",
+    "vin": "VIN",
+    "fuelTankLiters": "Fuel Tank",
+    "avgFuelPer100Km": "Avg. Fuel"
   },
   "mechanic": {
     "title": "Mechanic",
@@ -405,6 +427,7 @@
     "list": "Users",
     "new": "New User",
     "role": {
+      "ADMIN": "Admin",
       "MANAGER": "Manager",
       "ASSISTANT": "Assistant"
     },
@@ -620,5 +643,10 @@
     "genericShort": "Error.",
     "somethingWentWrong": "Something went wrong",
     "unexpectedError": "An unexpected error occurred."
+  },
+  "admin": {
+    "adminPanel": "Admin Panel",
+    "adminRole": "Administrator",
+    "backToWorkshop": "Back to Workshop"
   }
 }

@@ -19,7 +19,7 @@ const STATUS_LABEL: Record<string, string> = {
   QUALITY_CHECK: 'Контрол', READY: 'Готова', COMPLETED: 'Завършена', CANCELLED: 'Отменена',
 }
 const WC_STATUS_LABEL: Record<string, string> = {
-  PENDING: 'Изчакваща', ASSIGNED: 'Назначена', IN_PROGRESS: 'В процес',
+  PENDING: 'Изчакваща', IN_PROGRESS: 'В процес',
   COMPLETED: 'Завършена', CANCELLED: 'Отменена',
 }
 

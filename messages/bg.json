@@ -68,6 +68,7 @@
     "groupWorkshop": "Работилница",
     "groupConfiguration": "Конфигурация",
     "groupManagement": "Управление",
+    "groupAdmin": "Администрация",
     "manager": "Мениджър",
     "assistant": "Асистент"
   },
@@ -106,6 +107,7 @@
     "inWorkshopCount": "{count} камиона в сервиза",
     "inWorkshop": "В сервиза",
     "noTrucksInWorkshop": "Няма камиони в сервиза",
+    "noTrucksInWorkshopHint": "Планирани камиони ще се появят тук при приемане",
     "upcomingScheduled": "Предстоящи планирани",
     "noUpcomingScheduled": "Няма планирани поръчки.",
     "mileageAlerts": "Сигнали за пробег",
@@ -113,10 +115,27 @@
     "truckRequiresService": "{count} камион изисква сервиз",
     "trucksRequireService": "{count} камиона изискват сервиз",
     "today": "Днес",
+    "tomorrow": "Утре",
+    "overdue": "Закъсняла",
     "dayInService": "{days} ден в сервиз",
     "daysInServiceLabel": "{days} дни в сервиз",
+    "daysUntil": "{days} дни",
     "overLimit": "+{km} над лимита",
-    "kmUnit": " км"
+    "kmUnit": " км",
+    "greetingMorning": "Добро утро",
+    "greetingAfternoon": "Добър ден",
+    "greetingEvening": "Добър вечер",
+    "newOrder": "Нова поръчка",
+    "activeOrdersCount": "{count} активни поръчки",
+    "statScheduled": "Планирани",
+    "statAlerts": "Сигнали",
+    "staleWarning": "стоят прекалено дълго в статуса",
+    "viewAll": "Виж всички",
+    "schedule": "Планирай",
+    "shortINTAKE": "Прием.",
+    "shortIN_PROGRESS": "В проц.",
+    "shortQUALITY_CHECK": "КК",
+    "shortREADY": "Готова"
   },
   "service": {
     "title": "Сервизна поръчка",
@@ -134,14 +153,14 @@
     "scheduledDate": "Планирана дата",
     "startDate": "Начална дата",
     "endDate": "Крайна дата",
-    "bay": "Бокс",
     "driver": "Шофьор",
     "mileageAtService": "Пробег при приемане",
+    "tripSinceLastService": "Изминато от последен сервиз",
     "cancellationReason": "Причина за отмяна",
     "cancelOrder": "Откажи поръчката",
     "reschedule": "Пренасрочи",
     "moveToIntake": "Приеми поръчката",
-    "moveToIntakeDesc": "Ще назначите бокс, ще въведете шофьора и пробега и ще извършите входящата проверка на оборудването.",
+    "moveToIntakeDesc": "Ще въведете шофьора и пробега и ще извършите входящата проверка на оборудването.",
     "intakeProtocol": "Приемателен протокол",
     "moveToInProgress": "Започни работа",
     "moveToQualityCheck": "Контрол на качеството",
@@ -161,9 +180,6 @@
       "title": "Приемане на поръчката",
       "submit": "Приеми",
       "submitting": "Приемане...",
-      "bayRequired": "Изберете бокс.",
-      "selectBay": "Изберете бокс",
-      "bayOccupied": "зает",
       "noDriver": "Без шофьор",
       "mileagePlaceholder": "напр. 450000"
     },
@@ -185,6 +201,10 @@
     "filterAll": "Всички",
     "searchPlaceholder": "Търси по рег. номер, марка, модел...",
     "resultsCount": "{count} резултата",
+    "headerStats": "{active} активни · {scheduled} планирани · {completed} завършени",
+    "colPlate": "Рег. Номер",
+    "colDays": "Дни",
+    "colMechanic": "Механик",
     "open": "Отвори →",
     "noResults": "Няма намерени поръчки.",
     "selectTruck": "Изберете камион.",
@@ -197,7 +217,7 @@
     "reschedulingOf": "Пренасрочване",
     "stageGuidance": {
       "SCHEDULED": "Прегледайте данните на камиона и насрочената дата. Стартирайте приемане, когато камионът пристигне в сервиза.",
-      "INTAKE": "Назначете бокс, запишете водача и километража. Извършете проверка на оборудването при приемане и отбележете проблемите, докладвани от водача.",
+      "INTAKE": "Запишете водача и километража. Извършете проверка на оборудването при приемане и отбележете проблемите, докладвани от водача.",
       "IN_PROGRESS": "Завършете всички работни карти и контролния лист. Добавяйте нови секции или работни карти при необходимост.",
       "QUALITY_CHECK": "Прегледайте цялата завършена работа и извършете изходна проверка на оборудването преди освобождаване на камиона.",
       "READY": "Камионът е готов за вземане. Прегледайте резюмето и потвърдете завършването.",
@@ -252,7 +272,6 @@
     "partsCount": "части",
     "status": {
       "PENDING": "Изчакваща",
-      "ASSIGNED": "Назначена",
       "IN_PROGRESS": "В процес",
       "COMPLETED": "Завършена",
       "CANCELLED": "Отменена"
@@ -379,7 +398,10 @@
     "cancelledNote": "Отменена:",
     "plateNumberShort": "Рег. номер",
     "lastService": "Последен сервиз",
-    "alertCount": "{count} за сервиз"
+    "alertCount": "{count} за сервиз",
+    "vin": "VIN",
+    "fuelTankLiters": "Резервоар",
+    "avgFuelPer100Km": "Норма гориво"
   },
   "mechanic": {
     "title": "Механик",
@@ -405,6 +427,7 @@
     "list": "Потребители",
     "new": "Нов потребител",
     "role": {
+      "ADMIN": "Администратор",
       "MANAGER": "Мениджър",
       "ASSISTANT": "Асистент"
     },
@@ -620,5 +643,10 @@
     "genericShort": "Грешка.",
     "somethingWentWrong": "Нещо се обърка",
     "unexpectedError": "Възникна неочаквана грешка."
+  },
+  "admin": {
+    "adminPanel": "Админ панел",
+    "adminRole": "Администратор",
+    "backToWorkshop": "Към работилницата"
   }
 }

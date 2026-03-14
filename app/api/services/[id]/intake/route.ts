@@ -94,6 +94,10 @@ export async function POST(request: Request, { params }: Params) {
       data: { serviceOrderId: serviceId, type: 'EQUIPMENT_CHECK', title: 'Проверка на оборудване', order: 2 },
     })
 
+    await tx.serviceSection.create({
+      data: { serviceOrderId: serviceId, type: 'DRIVER_FEEDBACK', title: 'Обратна връзка от шофьора', order: 3 },
+    })
+
     return tx.serviceOrder.findUnique({
       where: { id: serviceId },
       include: {

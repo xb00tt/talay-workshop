@@ -426,7 +426,7 @@ async function main() {
       feedback: 'Пропуска гарнитурата на главата. Дим от ауспуха.',
       dfItems: ['Пропускаща гарнитура на главата', 'Дим при изпускателната система'],
       wcDesc: 'Смяна на гарнитурата на главата',
-      wcStatus: 'ASSIGNED' as const,
+      wcStatus: 'PENDING' as const,
       midDesc: 'Диагностика на изпускателна система',
       midPart: { name: 'Гарнитура на главата', pn: 'HG-550N', qty: 1, cost: 380 },
     },

@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Services — List</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  body { font-family: 'Inter', sans-serif; background: #eef2f7; }
+  .card { background: white; border: 1px solid #c4cdd9; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+  .nav-item { color: #94a3b8; border-radius: 8px; transition: all 0.15s; }
+  .nav-item:hover { background: rgba(255,255,255,0.08); color: #f1f5f9; }
+  .nav-item.active { background: rgba(59,130,246,0.2); color: #93c5fd; }
+  .badge { font-size: 11px; font-weight: 600; border-radius: 20px; padding: 2px 8px; }
+  ::-webkit-scrollbar { width: 4px; } ::-webkit-scrollbar-track { background: #f1f5f9; } ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+  .tab { font-size: 13px; font-weight: 500; padding: 6px 14px; border-radius: 8px; cursor: pointer; color: #64748b; transition: all 0.15s; white-space: nowrap; }
+  .tab:hover { background: #f1f5f9; color: #1e293b; }
+  .tab.active { background: white; color: #2563eb; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border: 1px solid #c4cdd9; }
+  .row { border-bottom: 1px solid #e9eef4; transition: background 0.1s; cursor: pointer; }
+  .row:hover { background: #f8fafc; }
+  .row:last-child { border-bottom: none; }
+</style>
+</head>
+<body class="text-slate-800 h-screen overflow-hidden flex">
+
+<!-- Sidebar (identical shell) -->
+<aside class="w-60 flex-shrink-0 flex flex-col" style="background:#1e293b; box-shadow: 4px 0 16px rgba(0,0,0,0.15);">
+  <div class="px-5 py-5">
+    <div class="flex items-center gap-3">
+      <div class="w-8 h-8 bg-blue-600 rounded-xl flex items-center justify-center shadow-sm">
+        <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+      </div>
+      <div>
+        <div class="font-bold text-white text-sm leading-tight">Talay Workshop</div>
+        <div class="text-slate-400 text-xs">Управление</div>
+      </div>
+    </div>
+  </div>
+  <nav class="flex-1 px-3 py-2 space-y-0.5 overflow-y-auto">
+    <a href="dashboard.html" class="nav-item flex items-center gap-3 px-3 py-2 text-sm font-medium">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+      Начало
+    </a>
+    <a href="#" class="nav-item active flex items-center gap-3 px-3 py-2 text-sm font-medium">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+      Поръчки
+      <span class="ml-auto badge bg-blue-500/20 text-blue-300">14</span>
+    </a>
+    <a href="#" class="nav-item flex items-center gap-3 px-3 py-2 text-sm font-medium">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+      Календар
+    </a>
+    <div class="pt-4 pb-1 px-3"><p class="text-xs font-semibold uppercase tracking-wider" style="color:rgba(148,163,184,0.5)">Флота</p></div>
+    <a href="#" class="nav-item flex items-center gap-3 px-3 py-2 text-sm font-medium">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10l2 2h8l2-2zM13 16l2-5h3l2 5-2 2h-3l-2-2z"/></svg>
+      Камиони
+      <span class="ml-auto text-xs text-slate-500">152</span>
+    </a>
+    <a href="#" class="nav-item flex items-center gap-3 px-3 py-2 text-sm font-medium">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+      Шофьори
+    </a>
+    <a href="#" class="nav-item flex items-center gap-3 px-3 py-2 text-sm font-medium">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+      Механици
+    </a>
+    <div class="pt-4 pb-1 px-3"><p class="text-xs font-semibold uppercase tracking-wider" style="color:rgba(148,163,184,0.5)">Управление</p></div>
+    <a href="#" class="nav-item flex items-center gap-3 px-3 py-2 text-sm font-medium">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+      Отчети
+    </a>
+  </nav>
+  <div class="px-3 py-4" style="border-top:1px solid rgba(255,255,255,0.08)">
+    <div class="flex items-center gap-3 px-2 py-2 rounded-lg cursor-pointer">
+      <div class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center flex-shrink-0">
+        <span class="text-white text-xs font-bold">БТ</span>
+      </div>
+      <div class="flex-1 min-w-0">
+        <div class="text-sm font-medium text-white truncate">Борислав Т.</div>
+        <div class="text-xs text-slate-400">Мениджър</div>
+      </div>
+      <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l4-4 4 4m0 6l-4 4-4-4"/></svg>
+    </div>
+  </div>
+</aside>
+
+<!-- Main -->
+<main class="flex-1 overflow-y-auto flex flex-col">
+
+  <!-- Page header -->
+  <header class="bg-white border-b border-slate-200 px-8 py-4 flex items-center justify-between sticky top-0 z-10">
+    <div>
+      <h1 class="font-semibold text-slate-900 text-lg">Поръчки</h1>
+      <p class="text-sm text-slate-500 mt-0.5">14 активни · 8 планирани · 327 завършени</p>
+    </div>
+    <div class="flex items-center gap-3">
+      <button class="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-sm px-4 py-1.5 rounded-lg font-medium transition-colors shadow-sm">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+        Нова поръчка
+      </button>
+    </div>
+  </header>
+
+  <div class="px-8 py-5 flex-1 flex flex-col gap-4">
+
+    <!-- Filters row -->
+    <div class="flex items-center gap-3">
+      <!-- Status tabs -->
+      <div class="flex items-center gap-1 bg-slate-100 p-1 rounded-xl flex-shrink-0">
+        <div class="tab active">Всички <span class="ml-1 text-slate-400 font-normal">22</span></div>
+        <div class="tab">Прием <span class="ml-1 text-slate-400 font-normal">3</span></div>
+        <div class="tab">В работа <span class="ml-1 text-slate-400 font-normal">6</span></div>
+        <div class="tab">Контрол <span class="ml-1 text-slate-400 font-normal">2</span></div>
+        <div class="tab">Готов <span class="ml-1 text-slate-400 font-normal">3</span></div>
+        <div class="tab">Планирани <span class="ml-1 text-slate-400 font-normal">8</span></div>
+        <div class="tab">Завършени</div>
+      </div>
+
+      <div class="flex-1"></div>
+
+      <!-- Search -->
+      <div class="relative">
+        <svg class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+        <input type="text" placeholder="Рег. номер, марка…" class="pl-9 pr-4 py-1.5 text-sm border border-slate-300 rounded-lg bg-white focus:outline-none focus:border-blue-400 w-52">
+      </div>
+
+      <!-- Date range -->
+      <button class="flex items-center gap-2 text-sm text-slate-600 border border-slate-300 bg-white px-3 py-1.5 rounded-lg hover:bg-slate-50">
+        <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+        01.03 — 14.03.2026
+        <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+      </button>
+
+      <!-- Mechanic filter -->
+      <button class="flex items-center gap-2 text-sm text-slate-600 border border-slate-300 bg-white px-3 py-1.5 rounded-lg hover:bg-slate-50">
+        Механик
+        <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+      </button>
+    </div>
+
+    <!-- Table -->
+    <div class="card rounded-xl overflow-hidden flex-1 flex flex-col">
+      <!-- Table head -->
+      <div class="grid px-5 py-2.5 bg-slate-50 border-b border-slate-200 text-xs font-semibold text-slate-500 uppercase tracking-wide" style="grid-template-columns:110px 1fr 120px 120px 100px 80px 60px">
+        <span>Рег. Номер</span>
+        <span>Камион</span>
+        <span>Статус</span>
+        <span>Механик</span>
+        <span>Шофьор</span>
+        <span>Дата</span>
+        <span class="text-center">Дни</span>
+      </div>
+
+      <!-- Rows -->
+      <div class="flex-1 overflow-y-auto divide-y divide-slate-100">
+
+        <a href="services-detail-intake.html" class="row grid px-5 py-3 items-center" style="grid-template-columns:110px 1fr 120px 120px 100px 80px 60px;text-decoration:none;color:inherit">
+          <span class="font-bold text-slate-900 text-sm tracking-wide">CB 1234 AB</span>
+          <div><div class="text-sm text-slate-800">Volvo FH 500</div><div class="text-xs text-slate-400 mt-0.5">2019 · 287 450 км</div></div>
+          <span><span class="badge bg-blue-50 text-blue-600 border border-blue-100">Прием</span></span>
+          <span class="text-sm text-slate-600">Г. Иванов</span>
+          <span class="text-sm text-slate-600">С. Симеонов</span>
+          <span class="text-sm text-slate-500">13.03</span>
+          <span class="text-sm text-slate-600 text-center font-medium">1</span>
+        </a>
+
+        <a href="services-detail.html" class="row grid px-5 py-3 items-center" style="grid-template-columns:110px 1fr 120px 120px 100px 80px 60px;text-decoration:none;color:inherit">
+          <span class="font-bold text-slate-900 text-sm tracking-wide">PB 5678 CD</span>
+          <div><div class="text-sm text-slate-800">Scania R 450</div><div class="text-xs text-slate-400 mt-0.5">2022 · 154 200 км</div></div>
+          <span><span class="badge bg-amber-50 text-amber-600 border border-amber-100">В работа</span></span>
+          <span class="text-sm text-slate-600">П. Петров</span>
+          <span class="text-sm text-slate-600">И. Христов</span>
+          <span class="text-sm text-slate-500">10.03</span>
+          <span class="text-sm text-amber-600 text-center font-semibold">4</span>
+        </a>
+
+        <a href="services-detail.html" class="row grid px-5 py-3 items-center" style="grid-template-columns:110px 1fr 120px 120px 100px 80px 60px;text-decoration:none;color:inherit">
+          <span class="font-bold text-slate-900 text-sm tracking-wide">VT 9012 EF</span>
+          <div><div class="text-sm text-slate-800">Mercedes Actros 1845</div><div class="text-xs text-slate-400 mt-0.5">2020 · 412 780 км</div></div>
+          <span><span class="badge bg-amber-50 text-amber-600 border border-amber-100">В работа</span></span>
+          <span class="text-sm text-slate-600">И. Колев</span>
+          <span class="text-sm text-slate-600">Д. Тодоров</span>
+          <span class="text-sm text-slate-500">11.03</span>
+          <span class="text-sm text-amber-600 text-center font-semibold">3</span>
+        </a>
+
+        <a href="services-detail-quality-check.html" class="row grid px-5 py-3 items-center" style="grid-template-columns:110px 1fr 120px 120px 100px 80px 60px;text-decoration:none;color:inherit">
+          <span class="font-bold text-slate-900 text-sm tracking-wide">BH 3456 GH</span>
+          <div><div class="text-sm text-slate-800">DAF XF 480</div><div class="text-xs text-slate-400 mt-0.5">2023 · 98 340 км</div></div>
+          <span><span class="badge bg-violet-50 text-violet-600 border border-violet-100">Контрол</span></span>
+          <span class="text-sm text-slate-600">Г. Иванов</span>
+          <span class="text-sm text-slate-600">П. Георгиев</span>
+          <span class="text-sm text-slate-500">12.03</span>
+          <span class="text-sm text-slate-600 text-center font-medium">2</span>
+        </a>
+
+        <a href="services-detail-ready.html" class="row grid px-5 py-3 items-center" style="grid-template-columns:110px 1fr 120px 120px 100px 80px 60px;text-decoration:none;color:inherit">
+          <span class="font-bold text-slate-900 text-sm tracking-wide">CO 7890 IJ</span>
+          <div><div class="text-sm text-slate-800">MAN TGX 18.480</div><div class="text-xs text-slate-400 mt-0.5">2020 · 331 120 км</div></div>
+          <span><span class="badge bg-emerald-50 text-emerald-600 border border-emerald-100">Готов</span></span>
+          <span class="text-sm text-slate-600">П. Петров</span>
+          <span class="text-sm text-slate-600">Б. Маринов</span>
+          <span class="text-sm text-slate-500">09.03</span>
+          <span class="text-sm text-slate-600 text-center font-medium">5</span>
+        </a>
+
+        <a href="services-detail.html" class="row grid px-5 py-3 items-center bg-red-50/40" style="grid-template-columns:110px 1fr 120px 120px 100px 80px 60px;text-decoration:none;color:inherit">
+          <span class="font-bold text-slate-900 text-sm tracking-wide">SN 2345 KL</span>
+          <div><div class="text-sm text-slate-800">Volvo FM 420</div><div class="text-xs text-slate-400 mt-0.5">2020 · 509 010 км</div></div>
+          <span><span class="badge bg-amber-50 text-amber-600 border border-amber-100">В работа</span></span>
+          <span class="text-sm text-slate-600">И. Колев</span>
+          <span class="text-sm text-slate-600">Н. Атанасов</span>
+          <span class="text-sm text-slate-500">07.03</span>
+          <span class="text-sm text-red-500 text-center font-bold">7 !</span>
+        </a>
+
+        <a href="services-detail-intake.html" class="row grid px-5 py-3 items-center" style="grid-template-columns:110px 1fr 120px 120px 100px 80px 60px;text-decoration:none;color:inherit">
+          <span class="font-bold text-slate-900 text-sm tracking-wide">PB 6789 MN</span>
+          <div><div class="text-sm text-slate-800">Scania S 500</div><div class="text-xs text-slate-400 mt-0.5">2021 · 203 440 км</div></div>
+          <span><span class="badge bg-blue-50 text-blue-600 border border-blue-100">Прием</span></span>
+          <span class="text-sm text-slate-400">—</span>
+          <span class="text-sm text-slate-600">В. Стоянов</span>
+          <span class="text-sm text-slate-500">13.03</span>
+          <span class="text-sm text-slate-600 text-center font-medium">1</span>
+        </a>
+
+        <a href="services-detail-scheduled.html" class="row grid px-5 py-3 items-center opacity-60" style="grid-template-columns:110px 1fr 120px 120px 100px 80px 60px;text-decoration:none;color:inherit">
+          <span class="font-bold text-slate-900 text-sm tracking-wide">CB 5555 DD</span>
+          <div><div class="text-sm text-slate-800">Volvo FH 500</div><div class="text-xs text-slate-400 mt-0.5">2021 · 188 230 км</div></div>
+          <span><span class="badge bg-slate-100 text-slate-500 border border-slate-200">Планирана</span></span>
+          <span class="text-sm text-slate-400">—</span>
+          <span class="text-sm text-slate-400">—</span>
+          <span class="text-sm text-slate-500">15.03</span>
+          <span class="text-sm text-slate-400 text-center">—</span>
+        </a>
+
+        <a href="services-detail-scheduled.html" class="row grid px-5 py-3 items-center opacity-60" style="grid-template-columns:110px 1fr 120px 120px 100px 80px 60px;text-decoration:none;color:inherit">
+          <span class="font-bold text-slate-900 text-sm tracking-wide">PB 7777 EE</span>
+          <div><div class="text-sm text-slate-800">Scania R 450</div><div class="text-xs text-slate-400 mt-0.5">2022 · 121 090 км</div></div>
+          <span><span class="badge bg-slate-100 text-slate-500 border border-slate-200">Планирана</span></span>
+          <span class="text-sm text-slate-400">—</span>
+          <span class="text-sm text-slate-400">—</span>
+          <span class="text-sm text-slate-500">16.03</span>
+          <span class="text-sm text-slate-400 text-center">—</span>
+        </a>
+
+      </div>
+
+      <!-- Pagination -->
+      <div class="px-5 py-3 border-t border-slate-200 flex items-center justify-between bg-slate-50">
+        <span class="text-xs text-slate-500">Показани 1–9 от 22 поръчки</span>
+        <div class="flex items-center gap-1">
+          <button class="text-xs text-slate-400 px-2.5 py-1.5 rounded border border-slate-200 bg-white cursor-not-allowed">← Назад</button>
+          <button class="text-xs text-white px-2.5 py-1.5 rounded bg-blue-600 font-medium">1</button>
+          <button class="text-xs text-slate-600 px-2.5 py-1.5 rounded border border-slate-200 bg-white hover:bg-slate-50">2</button>
+          <button class="text-xs text-slate-600 px-2.5 py-1.5 rounded border border-slate-200 bg-white hover:bg-slate-50">3</button>
+          <button class="text-xs text-slate-600 px-2.5 py-1.5 rounded border border-slate-200 bg-white hover:bg-slate-50">Напред →</button>
+        </div>
+        <div class="flex items-center gap-2 text-xs text-slate-500">
+          Редове:
+          <select class="border border-slate-200 rounded px-1.5 py-1 bg-white text-xs focus:outline-none">
+            <option>10</option><option>20</option><option>50</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<div class="fixed bottom-4 right-4 text-xs bg-blue-600 text-white px-3 py-1.5 rounded-full font-semibold shadow-lg">Services — List</div>
+</body>
+</html>
