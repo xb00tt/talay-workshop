@@ -145,7 +145,7 @@ describe('Permission guard on POST /api/services/[id]/status', () => {
     expect(res.status).toBe(401)
   })
 
-  it('returns 403 when ASSISTANT lacks service.create permission', async () => {
+  it('returns 403 when ASSISTANT lacks service.advance permission', async () => {
     vi.mocked(getServerSession).mockResolvedValue(session('ASSISTANT', []))
     const service = await makeIntakeService()
 
@@ -159,8 +159,8 @@ describe('Permission guard on POST /api/services/[id]/status', () => {
     expect(res.status).toBe(403)
   })
 
-  it('ASSISTANT with service.create can advance service status', async () => {
-    vi.mocked(getServerSession).mockResolvedValue(session('ASSISTANT', ['service.create']))
+  it('ASSISTANT with service.advance can advance service status', async () => {
+    vi.mocked(getServerSession).mockResolvedValue(session('ASSISTANT', ['service.advance']))
     const service = await makeIntakeService()
 
     const res = await advanceStatus(

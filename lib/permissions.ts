@@ -6,6 +6,7 @@
  */
 export const PERMISSIONS = {
   SERVICE_CREATE: 'service.create',
+  SERVICE_ADVANCE: 'service.advance',
   SERVICE_CANCEL: 'service.cancel',
   SERVICE_RESCHEDULE: 'service.reschedule',
   TRUCK_CREATE: 'truck.create',

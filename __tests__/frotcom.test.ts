@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
-import { cleanDriverName, frotcomGet, syncFrotcomMileage } from '@/lib/frotcom'
+import { cleanDriverName, frotcomGet, syncFrotcomMileage, lookupVehicleAt } from '@/lib/frotcom'
 import { prisma } from '@/lib/prisma'
 
 // ─── Mocks ────────────────────────────────────────────────────────────────────
@@ -358,5 +358,130 @@ describe('syncFrotcomMileage', () => {
       where: { id: 'truck-1' },
       data:  { currentMileage: 155000 },
     })
+  })
+})
+
+// ─── lookupVehicleAt ─────────────────────────────────────────────────────────
+
+describe('lookupVehicleAt', () => {
+  beforeEach(() => {
+    mockSettings.findUnique.mockResolvedValue(settingsWithToken as never)
+    mockSettings.update.mockResolvedValue(settingsWithToken as never)
+  })
+
+  it('returns the location closest to the requested timestamp', async () => {
+    const at = new Date('2026-03-17T10:00:00Z')
+    const locations = [
+      { timeStamp: '2026-03-17T09:30:00Z', driverName: 'Far', driverId: 1, odometerCanbus: 100000, odometerGps: 99000 },
+      { timeStamp: '2026-03-17T09:58:00Z', driverName: 'Closest', driverId: 2, odometerCanbus: 110000, odometerGps: 109000 },
+      { timeStamp: '2026-03-17T10:15:00Z', driverName: 'Medium', driverId: 3, odometerCanbus: 120000, odometerGps: 119000 },
+    ]
+
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(mockResponse(200, locations)))
+
+    const result = await lookupVehicleAt('v1', at, true)
+
+    expect(result.driverName).toBe('Closest')
+    expect(result.driverId).toBe('2')
+    expect(result.mileage).toBe(110000)
+  })
+
+  it('uses odometerCanbus when useCanbusMileage is true', async () => {
+    const at = new Date('2026-03-17T10:00:00Z')
+    const locations = [
+      { timeStamp: '2026-03-17T10:00:00Z', driverName: 'Ivan', driverId: 42, odometerCanbus: 150000, odometerGps: 149000 },
+    ]
+
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(mockResponse(200, locations)))
+
+    const result = await lookupVehicleAt('v1', at, true)
+
+    expect(result.mileage).toBe(150000)
+  })
+
+  it('uses odometerGps when useCanbusMileage is false', async () => {
+    const at = new Date('2026-03-17T10:00:00Z')
+    const locations = [
+      { timeStamp: '2026-03-17T10:00:00Z', driverName: 'Ivan', driverId: 42, odometerCanbus: 150000, odometerGps: 149000 },
+    ]
+
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(mockResponse(200, locations)))
+
+    const result = await lookupVehicleAt('v1', at, false)
+
+    expect(result.mileage).toBe(149000)
+  })
+
+  it('falls back to odometerGps when canbus is null and useCanbusMileage is true', async () => {
+    const at = new Date('2026-03-17T10:00:00Z')
+    const locations = [
+      { timeStamp: '2026-03-17T10:00:00Z', driverName: 'Ivan', driverId: 42, odometerCanbus: null, odometerGps: 149000 },
+    ]
+
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(mockResponse(200, locations)))
+
+    const result = await lookupVehicleAt('v1', at, true)
+
+    expect(result.mileage).toBe(149000)
+  })
+
+  it('falls back to odometerCanbus when gps is null and useCanbusMileage is false', async () => {
+    const at = new Date('2026-03-17T10:00:00Z')
+    const locations = [
+      { timeStamp: '2026-03-17T10:00:00Z', driverName: 'Ivan', driverId: 42, odometerCanbus: 150000, odometerGps: null },
+    ]
+
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(mockResponse(200, locations)))
+
+    const result = await lookupVehicleAt('v1', at, false)
+
+    expect(result.mileage).toBe(150000)
+  })
+
+  it('returns all nulls when locations array is empty', async () => {
+    const at = new Date('2026-03-17T10:00:00Z')
+
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(mockResponse(200, [])))
+
+    const result = await lookupVehicleAt('v1', at, true)
+
+    expect(result).toEqual({ driverName: null, driverId: null, mileage: null })
+  })
+
+  it('returns all nulls when response is not an array', async () => {
+    const at = new Date('2026-03-17T10:00:00Z')
+
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(mockResponse(200, { data: [] })))
+
+    const result = await lookupVehicleAt('v1', at, true)
+
+    expect(result).toEqual({ driverName: null, driverId: null, mileage: null })
+  })
+
+  it('cleans driver name by stripping leading asterisks', async () => {
+    const at = new Date('2026-03-17T10:00:00Z')
+    const locations = [
+      { timeStamp: '2026-03-17T10:00:00Z', driverName: '*Ivan Petrov', driverId: 42, odometerCanbus: 150000, odometerGps: 149000 },
+    ]
+
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(mockResponse(200, locations)))
+
+    const result = await lookupVehicleAt('v1', at, true)
+
+    expect(result.driverName).toBe('Ivan Petrov')
+  })
+
+  it('converts numeric driverId to string', async () => {
+    const at = new Date('2026-03-17T10:00:00Z')
+    const locations = [
+      { timeStamp: '2026-03-17T10:00:00Z', driverName: 'Ivan', driverId: 42, odometerCanbus: 150000, odometerGps: 149000 },
+    ]
+
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(mockResponse(200, locations)))
+
+    const result = await lookupVehicleAt('v1', at, true)
+
+    expect(result.driverId).toBe('42')
+    expect(typeof result.driverId).toBe('string')
   })
 })

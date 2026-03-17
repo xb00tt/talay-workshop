@@ -11,12 +11,12 @@ export default async function DashboardPage() {
   const [activeServices, upcomingServices, allActiveTruckIds, trucksForAlerts] =
     await Promise.all([
       prisma.serviceOrder.findMany({
-        where: { status: { in: ['INTAKE', 'IN_PROGRESS', 'QUALITY_CHECK', 'READY'] } },
+        where: { status: { in: ['INTAKE', 'IN_PROGRESS', 'READY'] } },
         include: {
           truck: { select: { make: true, model: true } },
           sections: {
             include: {
-              workCards: { where: { status: { not: 'CANCELLED' } }, select: { mechanicName: true } },
+              workCards: true,
             },
           },
         },
@@ -73,7 +73,8 @@ export default async function DashboardPage() {
     }))
 
   const activeServicesMapped = activeServices.map((s) => {
-    const activeWCs     = s.sections.flatMap((sec) => sec.workCards).filter((wc) => wc.mechanicName)
+    const allWCs        = s.sections.flatMap((sec) => sec.workCards).filter((wc) => wc.status !== 'CANCELLED')
+    const activeWCs     = allWCs.filter((wc) => wc.mechanicName)
     const firstMechanic = activeWCs[0]?.mechanicName ?? null
     const mechanicCount = activeWCs.length
     return {
@@ -81,12 +82,14 @@ export default async function DashboardPage() {
       truckPlateSnapshot: s.truckPlateSnapshot,
       truckMake:          s.truck.make,
       truckModel:         s.truck.model,
-      status:             s.status as 'INTAKE' | 'IN_PROGRESS' | 'QUALITY_CHECK' | 'READY',
+      status:             s.status as 'INTAKE' | 'IN_PROGRESS' | 'READY',
       startDate:          s.startDate?.toISOString() ?? null,
       createdAt:          s.createdAt.toISOString(),
       driverNameSnapshot: s.driverNameSnapshot ?? null,
       firstMechanic,
       mechanicCount,
+      totalWorkCards:     allWCs.length,
+      completedWorkCards: allWCs.filter((wc) => wc.status === 'COMPLETED').length,
     }
   })
 
@@ -95,6 +98,7 @@ export default async function DashboardPage() {
       initialActiveServices={activeServicesMapped}
       upcoming={upcomingServices.map((s) => ({
         id:                 s.id,
+        truckId:            s.truckId,
         truckPlateSnapshot: s.truckPlateSnapshot,
         truckMake:          s.truck.make,
         truckModel:         s.truck.model,

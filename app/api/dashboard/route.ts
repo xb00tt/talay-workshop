@@ -10,12 +10,12 @@ export async function GET() {
   const [activeServices, upcomingServices, allActiveTruckIds, trucksForAlerts] =
     await Promise.all([
       prisma.serviceOrder.findMany({
-        where: { status: { in: ['INTAKE', 'IN_PROGRESS', 'QUALITY_CHECK', 'READY'] } },
+        where: { status: { in: ['INTAKE', 'IN_PROGRESS', 'READY'] } },
         include: {
           truck: { select: { make: true, model: true } },
           sections: {
             include: {
-              workCards: { where: { status: { not: 'CANCELLED' } }, select: { mechanicName: true } },
+              workCards: true,
             },
           },
         },
@@ -70,7 +70,8 @@ export async function GET() {
     }))
 
   const activeServicesMapped = activeServices.map((s) => {
-    const activeWCs     = s.sections.flatMap((sec) => sec.workCards).filter((wc) => wc.mechanicName)
+    const allWCs        = s.sections.flatMap((sec) => sec.workCards).filter((wc) => wc.status !== 'CANCELLED')
+    const activeWCs     = allWCs.filter((wc) => wc.mechanicName)
     const firstMechanic = activeWCs[0]?.mechanicName ?? null
     const mechanicCount = activeWCs.length
     return {
@@ -84,11 +85,14 @@ export async function GET() {
       driverNameSnapshot: s.driverNameSnapshot ?? null,
       firstMechanic,
       mechanicCount,
+      totalWorkCards:     allWCs.length,
+      completedWorkCards: allWCs.filter((wc) => wc.status === 'COMPLETED').length,
     }
   })
 
   const upcoming = upcomingServices.map((s) => ({
     id:                 s.id,
+    truckId:            s.truckId,
     truckPlateSnapshot: s.truckPlateSnapshot,
     truckMake:          s.truck.make,
     truckModel:         s.truck.model,

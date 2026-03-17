@@ -4,27 +4,34 @@ import { authOptions } from '@/lib/auth'
 import { hasPermission } from '@/lib/permissions'
 import { prisma } from '@/lib/prisma'
 import { logAudit, auditActor } from '@/lib/audit'
+import { SERVICE_FULL_INCLUDE } from '@/lib/service-includes'
 
 type Params = { params: Promise<{ id: string }> }
 
-// Allowed status transitions
+// Allowed forward transitions
 const TRANSITIONS: Record<string, string> = {
-  INTAKE:        'IN_PROGRESS',
-  IN_PROGRESS:   'QUALITY_CHECK',
-  QUALITY_CHECK: 'READY',
-  READY:         'COMPLETED',
+  INTAKE:      'IN_PROGRESS',
+  IN_PROGRESS: 'READY',
+  READY:       'COMPLETED',
 }
 
-// POST /api/services/[id]/status — advance to next stage
+// Allowed regression transitions
+const REGRESSIONS: Record<string, string> = {
+  READY: 'IN_PROGRESS',
+}
+
+// POST /api/services/[id]/status — advance or regress stage
 export async function POST(request: Request, { params }: Params) {
   const session = await getServerSession(authOptions)
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  if (!hasPermission(session.user.role, session.user.permissions, 'service.create')) {
+  if (!hasPermission(session.user.role, session.user.permissions, 'service.advance')) {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
   }
 
   const { id } = await params
   const serviceId = Number(id)
+
+  const body = await request.json().catch(() => ({}))
 
   const service = await prisma.serviceOrder.findUnique({
     where:   { id: serviceId },
@@ -40,13 +47,35 @@ export async function POST(request: Request, { params }: Params) {
   })
   if (!service) return NextResponse.json({ error: 'Not found' }, { status: 404 })
 
+  // ── Regression (READY → IN_PROGRESS) ─────────────────────────────────────
+  if (body.action === 'regress') {
+    const prevStatus = REGRESSIONS[service.status]
+    if (!prevStatus) {
+      return NextResponse.json({ error: 'Невалиден преход на статус.' }, { status: 422 })
+    }
+    const updated = await prisma.serviceOrder.update({
+      where: { id: serviceId },
+      data:  { status: prevStatus as 'IN_PROGRESS' },
+      include: SERVICE_FULL_INCLUDE,
+    })
+    await logAudit({
+      ...auditActor(session),
+      action:     'service.status_regress',
+      entityType: 'ServiceOrder',
+      entityId:   serviceId,
+      oldValue:   { status: service.status },
+      newValue:   { status: prevStatus },
+    })
+    return NextResponse.json({ service: updated })
+  }
+
+  // ── Forward transition ──────────────────────────────────────────────────────
   const nextStatus = TRANSITIONS[service.status]
   if (!nextStatus) {
     return NextResponse.json({ error: 'Невалиден преход на статус.' }, { status: 422 })
   }
 
-  const body       = await request.json().catch(() => ({}))
-  const { force }  = body  // if true, skip warnings
+  const { force } = body  // if true, skip warnings
 
   const warnings: string[] = []
 
@@ -66,7 +95,7 @@ export async function POST(request: Request, { params }: Params) {
   }
 
   if (service.status === 'IN_PROGRESS') {
-    // IN_PROGRESS → QUALITY_CHECK: warn if any work cards still Pending/In_Progress
+    // IN_PROGRESS → READY: warn if any work cards still Pending/In_Progress
     const hasOpenCards = service.sections.some((s) =>
       s.workCards.some((wc) =>
         wc.status === 'PENDING' || wc.status === 'IN_PROGRESS',
@@ -75,10 +104,7 @@ export async function POST(request: Request, { params }: Params) {
     if (hasOpenCards) {
       warnings.push('Има незавършени работни карти.')
     }
-  }
-
-  if (service.status === 'QUALITY_CHECK') {
-    // QUALITY_CHECK → READY: warn if exit equipment check not done or items still missing
+    // Warn if exit equipment check not done or items still missing
     const eqSection = service.sections.find((s) => s.type === 'EQUIPMENT_CHECK')
     if (eqSection && !eqSection.exitSkippedAt) {
       const hasExitItems = await prisma.equipmentCheckItem.findFirst({
@@ -144,28 +170,7 @@ export async function POST(request: Request, { params }: Params) {
   const updated = await prisma.serviceOrder.update({
     where:   { id: serviceId },
     data:    updateData,
-    include: {
-      truck:    { select: { id: true, make: true, model: true, year: true, isAdr: true, frotcomVehicleId: true } },
-      driver:   { select: { id: true, name: true } },
-      sections: {
-        orderBy: { order: 'asc' },
-        include: {
-          checklistItems: true,
-          workCards: {
-            include: {
-              mechanic: { select: { id: true, name: true } },
-              parts:    true,
-              notes:    { orderBy: { createdAt: 'asc' } },
-              photos:   true,
-            },
-          },
-        },
-      },
-      equipmentCheckItems: true,
-      driverFeedbackItems: { orderBy: { order: 'asc' } },
-      notes:  { orderBy: { createdAt: 'asc' } },
-      photos: true,
-    },
+    include: SERVICE_FULL_INCLUDE,
   })
 
   await logAudit({

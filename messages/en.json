@@ -17,6 +17,7 @@
     "date": "Date",
     "name": "Name",
     "note": "Note",
+    "notes": "Notes",
     "yes": "Yes",
     "no": "No",
     "active": "Active",
@@ -134,7 +135,6 @@
     "schedule": "Schedule",
     "shortINTAKE": "Intake",
     "shortIN_PROGRESS": "In Prog.",
-    "shortQUALITY_CHECK": "QC",
     "shortREADY": "Ready"
   },
   "service": {
@@ -145,7 +145,6 @@
       "SCHEDULED": "Scheduled",
       "INTAKE": "Intake",
       "IN_PROGRESS": "In Progress",
-      "QUALITY_CHECK": "Quality Check",
       "READY": "Ready",
       "COMPLETED": "Completed",
       "CANCELLED": "Cancelled"
@@ -166,12 +165,16 @@
     "moveToQualityCheck": "Quality Check",
     "moveToReady": "Mark Ready",
     "moveToCompleted": "Complete Order",
+    "returnToInProgress": "Return to In Progress",
     "confirmComplete": "Confirm Completion",
     "driverFeedback": "Reported by Driver",
+    "mechanicFeedback": "Reported by Mechanic",
     "driverFeedbackNotes": "Driver Notes",
+    "mechanicFeedbackNotes": "Mechanic Notes",
     "feedbackNotesPlaceholder": "Additional notes...",
     "noFeedbackItems": "No issues reported.",
     "saveFeedbackNotes": "Save Notes",
+    "openFullOrder": "Open full order",
     "backToOrders": "Back to Orders",
     "advance": "Advance",
     "warnings": "Warnings",
@@ -181,7 +184,15 @@
       "submit": "Accept",
       "submitting": "Accepting...",
       "noDriver": "No driver",
-      "mileagePlaceholder": "e.g. 450000"
+      "mileagePlaceholder": "e.g. 450000",
+      "entryAt": "Vehicle entry date and time",
+      "entryAtRequired": "Entry date and time is required.",
+      "fetchFrotcom": "Fetch driver and mileage from Frotcom",
+      "fetching": "Fetching from Frotcom...",
+      "fetchSuccess": "Frotcom data loaded successfully.",
+      "invalidDateTime": "Invalid date or time. Format: DD.MM.YYYY HH:mm",
+      "fetchEmpty": "No Frotcom data found for this date. Please enter manually.",
+      "driverPlaceholder": "Driver name"
     },
     "cancelModal": {
       "title": "Cancel Order",
@@ -195,7 +206,8 @@
       "modalTitle": "Reported Issue",
       "issueLabel": "Reported Issue",
       "issuePlaceholder": "e.g. Noise when braking",
-      "descRequired": "Enter a description."
+      "descRequired": "Enter a description.",
+      "addPlaceholder": "Enter an issue..."
     },
     "filterActive": "Active",
     "filterAll": "All",
@@ -218,8 +230,7 @@
     "stageGuidance": {
       "SCHEDULED": "Review truck details and scheduled date. Start intake when the truck arrives at the workshop.",
       "INTAKE": "Record the driver and mileage. Perform the intake equipment check and note any driver-reported issues.",
-      "IN_PROGRESS": "Complete all work cards and the service checklist. Add new sections or work cards as needed.",
-      "QUALITY_CHECK": "Review all completed work and perform the exit equipment check before releasing the truck.",
+      "IN_PROGRESS": "Complete all work cards, perform the exit equipment check, and review before releasing the truck.",
       "READY": "The truck is ready for collection. Review the summary, then confirm completion.",
       "COMPLETED": "Service completed. All records are read-only.",
       "CANCELLED": "This service was cancelled."
@@ -301,7 +312,13 @@
     "deletePart": "Delete part?",
     "partNamePlaceholder": "e.g. Oil Filter",
     "partNumberPlaceholder": "e.g. OC90",
-    "adding": "Adding..."
+    "adding": "Adding...",
+    "qty": "Qty",
+    "cost": "Cost",
+    "total": "Total",
+    "scheduledEmpty": "Work cards are created at Intake",
+    "scheduledEmptyDesc": "The checklist and equipment check are also generated automatically when intake starts.",
+    "noWorkCards": "No work cards yet."
   },
   "equipment": {
     "title": "Equipment",
@@ -338,7 +355,9 @@
     "notChecked": "No check performed.",
     "checkAtIntake": "Equipment check is performed at Intake.",
     "skippedPhase": "Check at {phase} was skipped.",
-    "previouslyMissing": "Previously missing at last service"
+    "previouslyMissing": "Previously missing at last service",
+    "firstVisitLabel": "Initial equipment setup",
+    "equipped": "Equipped"
   },
   "truck": {
     "title": "Truck",

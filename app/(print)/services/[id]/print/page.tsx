@@ -16,7 +16,7 @@ function fmtKm(km: number | null) {
 
 const STATUS_LABEL: Record<string, string> = {
   SCHEDULED: 'Планирана', INTAKE: 'Приемане', IN_PROGRESS: 'В процес',
-  QUALITY_CHECK: 'Контрол', READY: 'Готова', COMPLETED: 'Завършена', CANCELLED: 'Отменена',
+  READY: 'Готова', COMPLETED: 'Завършена', CANCELLED: 'Отменена',
 }
 const WC_STATUS_LABEL: Record<string, string> = {
   PENDING: 'Изчакваща', IN_PROGRESS: 'В процес',
@@ -54,7 +54,8 @@ export default async function ServiceOrderPrintPage({
             },
           },
         },
-        driverFeedbackItems: { orderBy: { order: 'asc' } },
+        driverFeedbackItems:   { orderBy: { order: 'asc' } },
+        mechanicFeedbackItems: { orderBy: { order: 'asc' } },
         notes:               { orderBy: { createdAt: 'asc' } },
         equipmentCheckItems: true,
       },
@@ -173,6 +174,23 @@ export default async function ServiceOrderPrintPage({
             )}
             {service.driverFeedbackNotes && (
               <p style={{ marginTop: 4, fontSize: '9.5pt', color: '#444' }}>{service.driverFeedbackNotes}</p>
+            )}
+          </div>
+        )}
+
+        {/* Mechanic feedback */}
+        {(service.mechanicFeedbackItems.length > 0 || service.mechanicFeedbackNotes) && (
+          <div className="section-block">
+            <h2>Докладвано от механика</h2>
+            {service.mechanicFeedbackItems.length > 0 && (
+              <ul style={{ paddingLeft: '16px', fontSize: '9.5pt' }}>
+                {service.mechanicFeedbackItems.map((item) => (
+                  <li key={item.id}>{item.description}</li>
+                ))}
+              </ul>
+            )}
+            {service.mechanicFeedbackNotes && (
+              <p style={{ marginTop: 4, fontSize: '9.5pt', color: '#444' }}>{service.mechanicFeedbackNotes}</p>
             )}
           </div>
         )}

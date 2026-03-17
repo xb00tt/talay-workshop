@@ -58,11 +58,12 @@ function throw429(res: Response): never {
 
 export async function frotcomGet<T>(path: string): Promise<T> {
   const token = await getToken()
-  let res = await fetch(buildUrl(path, token))
+  const signal = AbortSignal.timeout(5000)
+  let res = await fetch(buildUrl(path, token), { signal })
 
   if (res.status === 401) {
     const newToken = await reauth()
-    res = await fetch(buildUrl(path, newToken))
+    res = await fetch(buildUrl(path, newToken), { signal })
   }
 
   if (res.status === 429) throw429(res)
@@ -126,6 +127,59 @@ export async function syncFrotcomMileage(): Promise<{ updated: number; errors: s
   await Promise.all(updates)
 
   return { updated: updates.length, errors }
+}
+
+// ─── Vehicle lookup at a point in time ───────────────────────────────────────
+
+type FrotcomLocation = {
+  timeStamp: string
+  driverId: number | null
+  driverName: string | null
+  odometerCanbus: number | null
+  odometerGps: number | null
+}
+
+/**
+ * GET /v2/vehicles/{id}/locations?df=<start>&dt=<end>
+ *
+ * Returns an array of VehicleLocation records for the given period.
+ * Each record includes driverId, driverName, odometerCanbus, odometerGps.
+ * We query a ±1h window around `at` and pick the record closest in time.
+ */
+export async function lookupVehicleAt(
+  frotcomVehicleId: string,
+  at: Date,
+  useCanbusMileage: boolean,
+): Promise<{ driverName: string | null; driverId: string | null; mileage: number | null }> {
+  const windowMs = 60 * 60 * 1000 // 1 hour
+  const df = new Date(at.getTime() - windowMs).toISOString()
+  const dt = new Date(at.getTime() + windowMs).toISOString()
+
+  const locations = await frotcomGet<FrotcomLocation[]>(
+    `/vehicles/${frotcomVehicleId}/locations?df=${encodeURIComponent(df)}&dt=${encodeURIComponent(dt)}`,
+  )
+
+  if (!Array.isArray(locations) || locations.length === 0) {
+    return { driverName: null, driverId: null, mileage: null }
+  }
+
+  // Find the location record closest to the requested time
+  const atMs = at.getTime()
+  let best = locations[0]
+  let bestDiff = Math.abs(new Date(best.timeStamp).getTime() - atMs)
+  for (const loc of locations) {
+    const diff = Math.abs(new Date(loc.timeStamp).getTime() - atMs)
+    if (diff < bestDiff) { best = loc; bestDiff = diff }
+  }
+
+  const driverName = best.driverName ? cleanDriverName(best.driverName) : null
+  const driverId   = best.driverId != null ? String(best.driverId) : null
+
+  const mileage = useCanbusMileage
+    ? (best.odometerCanbus ?? best.odometerGps ?? null)
+    : (best.odometerGps    ?? best.odometerCanbus ?? null)
+
+  return { driverName, driverId, mileage }
 }
 
 // ─── Driver name validation ────────────────────────────────────────────────────

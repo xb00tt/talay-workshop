@@ -4,7 +4,7 @@ import path from 'path'
 export default defineConfig({
   test: {
     environment: 'node',
-    globals: true,
+    globals: false,
     globalSetup: ['__tests__/integration/globalSetup.ts'],
     include: ['__tests__/integration/**/*.test.ts'],
     // Run test files serially — shared SQLite DB, no concurrent writes

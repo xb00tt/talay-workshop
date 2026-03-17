@@ -7,7 +7,7 @@ import { useTranslations, useLocale } from 'next-intl'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-type ServiceStatus = 'SCHEDULED' | 'INTAKE' | 'IN_PROGRESS' | 'QUALITY_CHECK' | 'READY' | 'COMPLETED' | 'CANCELLED'
+type ServiceStatus = 'SCHEDULED' | 'INTAKE' | 'IN_PROGRESS' | 'READY' | 'COMPLETED' | 'CANCELLED'
 
 interface CalService {
   id: number
@@ -30,13 +30,12 @@ const STATUS_COLOR: Record<ServiceStatus, string> = {
   SCHEDULED:     'bg-amber-100 text-amber-800 dark:bg-amber-600/30 dark:text-amber-300',
   INTAKE:        'bg-blue-100 text-blue-800 dark:bg-blue-600/30 dark:text-blue-300',
   IN_PROGRESS:   'bg-indigo-100 text-indigo-800 dark:bg-indigo-600/30 dark:text-indigo-300',
-  QUALITY_CHECK: 'bg-purple-100 text-purple-800 dark:bg-purple-600/30 dark:text-purple-300',
   READY:         'bg-green-100 text-green-800 dark:bg-green-600/30 dark:text-green-300',
   COMPLETED:     'bg-gray-100 text-gray-600 dark:bg-gray-600/30 dark:text-gray-400',
   CANCELLED:     'bg-red-100 text-red-700 dark:bg-red-600/30 dark:text-red-400',
 }
 
-const ACTIVE_STATUSES: ServiceStatus[] = ['INTAKE', 'IN_PROGRESS', 'QUALITY_CHECK', 'READY']
+const ACTIVE_STATUSES: ServiceStatus[] = ['INTAKE', 'IN_PROGRESS', 'READY']
 
 // ─── Span helpers ─────────────────────────────────────────────────────────────
 

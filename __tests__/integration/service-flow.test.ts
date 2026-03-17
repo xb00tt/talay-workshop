@@ -101,7 +101,7 @@ describe('POST /api/services — create service order', () => {
 // ─── Service intake ───────────────────────────────────────────────────────────
 
 describe('POST /api/services/[id]/intake', () => {
-  it('advances SCHEDULED → INTAKE, creates CHECKLIST + EQUIPMENT_CHECK sections', async () => {
+  it('advances SCHEDULED → INTAKE, creates CHECKLIST + DRIVER_FEEDBACK + EQUIPMENT_CHECK sections', async () => {
     const truck   = await createTruck('TX1111AX')
     const service = await db.serviceOrder.create({
       data: { truckId: truck.id, truckPlateSnapshot: truck.plateNumber, scheduledDate: new Date(), status: 'SCHEDULED' },
@@ -116,7 +116,7 @@ describe('POST /api/services/[id]/intake', () => {
     const { service: updated } = await res.json()
     expect(updated.status).toBe('INTAKE')
     const types = updated.sections.map((s: { type: string }) => s.type).sort()
-    expect(types).toEqual(['CHECKLIST', 'EQUIPMENT_CHECK'])
+    expect(types).toEqual(['CHECKLIST', 'DRIVER_FEEDBACK', 'EQUIPMENT_CHECK'])
   })
 
   it('copies active checklist template items into the CHECKLIST section', async () => {
@@ -220,9 +220,9 @@ describe('POST /api/services/[id]/status — stage transitions', () => {
     expect(current?.status).toBe('INTAKE')
   })
 
-  it('completes the full lifecycle: INTAKE → IN_PROGRESS → QUALITY_CHECK → READY → COMPLETED', async () => {
+  it('completes the full lifecycle: INTAKE → IN_PROGRESS → READY → COMPLETED', async () => {
     const service = await setupIntakeService()
-    const stages  = ['IN_PROGRESS', 'QUALITY_CHECK', 'READY', 'COMPLETED']
+    const stages  = ['IN_PROGRESS', 'READY', 'COMPLETED']
 
     for (const expectedStatus of stages) {
       const res = await advanceStatus(
@@ -258,8 +258,8 @@ describe('POST /api/services/[id]/status — stage transitions', () => {
       data:  { exitSkippedAt: new Date(), exitSkipNote: 'Skipped in test' },
     })
 
-    // Run through to COMPLETED
-    for (let i = 0; i < 4; i++) {
+    // Run through to COMPLETED (3 transitions: IN_PROGRESS → READY → COMPLETED)
+    for (let i = 0; i < 3; i++) {
       await advanceStatus(
         postReq(`http://localhost/api/services/${service.id}/status`, { force: true }),
         routeParams(service.id),
@@ -305,6 +305,44 @@ describe('POST /api/services/[id]/status — stage transitions', () => {
     expect(res.status).toBe(422)
   })
 
+  it('warns when transitioning IN_PROGRESS → READY with uncompleted work cards', async () => {
+    const service  = await setupIntakeService()
+    // Advance to IN_PROGRESS first
+    await advanceStatus(
+      postReq(`http://localhost/api/services/${service.id}/status`, { force: true }),
+      routeParams(service.id),
+    )
+
+    // Create a work card that is still IN_PROGRESS
+    const section  = await db.serviceSection.findFirst({ where: { serviceOrderId: service.id, type: 'CHECKLIST' } })
+    const mechanic = await db.mechanic.create({ data: { name: 'Георги Тестов', isActive: true } })
+    await db.workCard.create({
+      data: {
+        serviceSectionId:  section!.id,
+        mechanicId:        mechanic.id,
+        mechanicName:      mechanic.name,
+        description:       'Незавършена задача',
+        status:            'IN_PROGRESS',
+      },
+    })
+
+    // Try to advance without force — should get warning
+    const res = await advanceStatus(
+      postReq(`http://localhost/api/services/${service.id}/status`, { force: false }),
+      routeParams(service.id),
+    )
+
+    expect(res.status).toBe(200)
+    const body = await res.json()
+    expect(body.warnings).toBeDefined()
+    expect(body.warnings.length).toBeGreaterThan(0)
+    expect(body.warnings[0]).toContain('незавършени работни карти')
+
+    // Service must NOT have advanced
+    const current = await db.serviceOrder.findUnique({ where: { id: service.id } })
+    expect(current?.status).toBe('IN_PROGRESS')
+  })
+
   it('auto-advances PENDING work cards to IN_PROGRESS when service moves to IN_PROGRESS', async () => {
     const service  = await setupIntakeService()
     const section  = await db.serviceSection.findFirst({ where: { serviceOrderId: service.id, type: 'CHECKLIST' } })
@@ -326,5 +364,100 @@ describe('POST /api/services/[id]/status — stage transitions', () => {
 
     const updated = await db.workCard.findUnique({ where: { id: workCard.id } })
     expect(updated?.status).toBe('IN_PROGRESS')
+  })
+})
+
+// ─── Status regression ───────────────────────────────────────────────────────
+
+describe('POST /api/services/[id]/status — regression', () => {
+  /** Creates a service at INTAKE with both required sections present. */
+  async function setupIntakeService() {
+    const truck   = await createTruck()
+    const service = await db.serviceOrder.create({
+      data: {
+        truckId:           truck.id,
+        truckPlateSnapshot: truck.plateNumber,
+        scheduledDate:     new Date(),
+        status:            'INTAKE',
+        startDate:         new Date(),
+      },
+    })
+    await db.serviceSection.createMany({
+      data: [
+        { serviceOrderId: service.id, type: 'CHECKLIST',       title: 'Checklist', order: 1 },
+        { serviceOrderId: service.id, type: 'EQUIPMENT_CHECK', title: 'Equipment', order: 2 },
+      ],
+    })
+    return service
+  }
+
+  it('regresses READY → IN_PROGRESS with action: regress', async () => {
+    const service = await setupIntakeService()
+
+    // Advance INTAKE → IN_PROGRESS → READY
+    await advanceStatus(
+      postReq(`http://localhost/api/services/${service.id}/status`, { force: true }),
+      routeParams(service.id),
+    )
+    await advanceStatus(
+      postReq(`http://localhost/api/services/${service.id}/status`, { force: true }),
+      routeParams(service.id),
+    )
+
+    // Verify we are at READY
+    const atReady = await db.serviceOrder.findUnique({ where: { id: service.id } })
+    expect(atReady?.status).toBe('READY')
+
+    // Regress
+    const res = await advanceStatus(
+      postReq(`http://localhost/api/services/${service.id}/status`, { action: 'regress' }),
+      routeParams(service.id),
+    )
+
+    expect(res.status).toBe(200)
+    expect((await res.json()).service.status).toBe('IN_PROGRESS')
+  })
+
+  it('returns 422 when attempting to regress from IN_PROGRESS', async () => {
+    const service = await setupIntakeService()
+
+    // Advance to IN_PROGRESS
+    await advanceStatus(
+      postReq(`http://localhost/api/services/${service.id}/status`, { force: true }),
+      routeParams(service.id),
+    )
+
+    const res = await advanceStatus(
+      postReq(`http://localhost/api/services/${service.id}/status`, { action: 'regress' }),
+      routeParams(service.id),
+    )
+
+    expect(res.status).toBe(422)
+  })
+
+  it('returns 422 when attempting to regress from COMPLETED', async () => {
+    const service = await setupIntakeService()
+    await db.serviceOrder.update({
+      where: { id: service.id },
+      data:  { status: 'COMPLETED', endDate: new Date() },
+    })
+
+    const res = await advanceStatus(
+      postReq(`http://localhost/api/services/${service.id}/status`, { action: 'regress' }),
+      routeParams(service.id),
+    )
+
+    expect(res.status).toBe(422)
+  })
+
+  it('returns 422 when attempting to regress from INTAKE', async () => {
+    const service = await setupIntakeService()
+
+    const res = await advanceStatus(
+      postReq(`http://localhost/api/services/${service.id}/status`, { action: 'regress' }),
+      routeParams(service.id),
+    )
+
+    expect(res.status).toBe(422)
   })
 })

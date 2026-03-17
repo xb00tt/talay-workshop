@@ -19,7 +19,6 @@ enum ServiceStatus {
   SCHEDULED
   INTAKE
   IN_PROGRESS
-  QUALITY_CHECK
   READY
   COMPLETED
   CANCELLED
@@ -138,8 +137,9 @@ model ServiceOrder {
   driverId            Int?
   driver              Driver?       @relation(fields: [driverId], references: [id])
   driverNameSnapshot  String?
-  driverFeedbackNotes String?
-  cancellationReason  String?
+  driverFeedbackNotes   String?
+  mechanicFeedbackNotes String?
+  cancellationReason    String?
   createdAt           DateTime      @default(now())
   updatedAt           DateTime      @updatedAt
 
@@ -147,6 +147,7 @@ model ServiceOrder {
   equipmentCheckItems     EquipmentCheckItem[]
   truckEquipmentSnapshots TruckEquipmentSnapshot[]
   driverFeedbackItems     DriverFeedbackItem[]
+  mechanicFeedbackItems   MechanicFeedbackItem[]
   photos                  Photo[]
   notes                   Note[]
 }
@@ -263,6 +264,14 @@ model TruckEquipmentSnapshotItem {
 }
 
 model DriverFeedbackItem {
+  id             Int          @id @default(autoincrement())
+  serviceOrderId Int
+  serviceOrder   ServiceOrder @relation(fields: [serviceOrderId], references: [id])
+  description    String
+  order          Int
+}
+
+model MechanicFeedbackItem {
   id             Int          @id @default(autoincrement())
   serviceOrderId Int
   serviceOrder   ServiceOrder @relation(fields: [serviceOrderId], references: [id])

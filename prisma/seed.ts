@@ -43,7 +43,7 @@ async function main() {
       passwordHash: bcrypt.hashSync('assist123', 10),
       role: 'ASSISTANT',
       permissions: JSON.stringify([
-        'service.create', 'workcard.create', 'workcard.complete',
+        'service.create', 'service.advance', 'workcard.create', 'workcard.complete',
         'photo.upload', 'note.create', 'report.view',
       ]),
       preferredLocale: 'bg',
@@ -520,7 +520,7 @@ async function main() {
   console.log('✓ 1 INTAKE service order')
 
   // ══════════════════════════════════════════════════════════════════════════
-  // QUALITY_CHECK service order  (1)
+  // IN_PROGRESS service order (with completed work cards — ready for review)
   // ══════════════════════════════════════════════════════════════════════════
 
   {
@@ -530,7 +530,7 @@ async function main() {
       data: {
         truckId: truck.id,
         truckPlateSnapshot: truck.plateNumber,
-        status: 'QUALITY_CHECK',
+        status: 'IN_PROGRESS',
         scheduledDate: dt('2026-03-05'),
         startDate: dt('2026-03-05', '07:30:00'),
         mileageAtService: 389000,
@@ -558,9 +558,9 @@ async function main() {
     await prisma.part.create({ data: { workCardId: wc.id, name: 'Турбокомпресор', partNumber: 'TURBO-3803714', quantity: 1, unitCost: 1850 } })
 
     await addNote(so.id, 'Всички работни карти приключени. Предстои изходна проверка на оборудването.')
-    await addAudit(so.id, 'IN_PROGRESS', 'QUALITY_CHECK')
+    await addAudit(so.id, 'INTAKE', 'IN_PROGRESS')
   }
-  console.log('✓ 1 QUALITY_CHECK service order')
+  console.log('✓ 1 IN_PROGRESS service order (review stage)')
 
   // ══════════════════════════════════════════════════════════════════════════
   // READY service order  (1)
@@ -608,7 +608,7 @@ async function main() {
     }
 
     await addNote(so.id, 'Камионът готов за предаване. Уведомен е водачът.')
-    await addAudit(so.id, 'QUALITY_CHECK', 'READY')
+    await addAudit(so.id, 'IN_PROGRESS', 'READY')
   }
   console.log('✓ 1 READY service order')
 

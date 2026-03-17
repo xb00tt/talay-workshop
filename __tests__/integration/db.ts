@@ -18,6 +18,7 @@ export async function cleanDb() {
   await db.truckEquipmentSnapshotItem.deleteMany()
   await db.truckEquipmentSnapshot.deleteMany()
   await db.equipmentCheckItem.deleteMany()
+  await db.mechanicFeedbackItem.deleteMany()
   await db.driverFeedbackItem.deleteMany()
   await db.note.deleteMany()
   await db.serviceSection.deleteMany()

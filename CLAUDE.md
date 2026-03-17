@@ -18,13 +18,12 @@ Workshop management app for an international transport company tracking heavy-du
 ## Domain Rules
 
 ### Service Order Flow
-`SCHEDULED → INTAKE → IN_PROGRESS → QUALITY_CHECK → READY → COMPLETED`
+`SCHEDULED → INTAKE → IN_PROGRESS → READY → COMPLETED`
 Also: `CANCELLED` (reason required, manager only; kept in history)
 
 ### Stage Transition Warnings (warn, not block)
 - Intake → InProgress: warn if intake equipment check not completed/skipped
-- InProgress → QualityCheck: warn if any work cards still PENDING/ASSIGNED/IN_PROGRESS
-- QualityCheck → Ready: warn if exit equipment check not completed/skipped or items still MISSING
+- InProgress → Ready: warn if any work cards still PENDING/IN_PROGRESS, exit equipment check not completed/skipped, or items still MISSING
 - Ready → Completed: confirmation only
 
 ### Key Hard Blocks

@@ -13,7 +13,7 @@ const fetcher = (url: string) => fetch(url).then((r) => r.json())
 // ─── Types ───────────────────────────────────────────────────────────────────────
 
 type ServiceStatus =
-  | 'SCHEDULED' | 'INTAKE' | 'IN_PROGRESS' | 'QUALITY_CHECK'
+  | 'SCHEDULED' | 'INTAKE' | 'IN_PROGRESS'
   | 'READY' | 'COMPLETED' | 'CANCELLED'
 
 interface ServiceRow {
@@ -391,7 +391,7 @@ export default function ServicesClient({
   const totalPages: number       = data?.totalPages ?? Math.ceil(initialTotal / pageSize)
 
   // Per-status counts for tab badges
-  const activeCount    = (['INTAKE', 'IN_PROGRESS', 'QUALITY_CHECK', 'READY'] as const).reduce((n, s) => n + (statusCounts[s] ?? 0), 0)
+  const activeCount    = (['INTAKE', 'IN_PROGRESS', 'READY'] as const).reduce((n, s) => n + (statusCounts[s] ?? 0), 0)
   const scheduledCount = statusCounts['SCHEDULED'] ?? 0
   const completedCount = statusCounts['COMPLETED'] ?? 0
 
@@ -399,7 +399,6 @@ export default function ServicesClient({
     { value: 'active',         label: t('filterAll'),              count: activeCount + scheduledCount },
     { value: 'INTAKE',         label: t('status.INTAKE'),          count: statusCounts['INTAKE']         ?? 0 },
     { value: 'IN_PROGRESS',    label: t('status.IN_PROGRESS'),     count: statusCounts['IN_PROGRESS']    ?? 0 },
-    { value: 'QUALITY_CHECK',  label: t('status.QUALITY_CHECK'),   count: statusCounts['QUALITY_CHECK']  ?? 0 },
     { value: 'READY',          label: t('status.READY'),           count: statusCounts['READY']          ?? 0 },
     { value: 'SCHEDULED',      label: t('status.SCHEDULED'),       count: scheduledCount },
     { value: 'COMPLETED',      label: t('status.COMPLETED'),       count: null },

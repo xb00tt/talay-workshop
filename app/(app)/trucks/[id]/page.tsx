@@ -11,7 +11,6 @@ const STATUS_COLOR: Record<string, string> = {
   SCHEDULED:     'bg-amber-600/20 text-amber-400',
   INTAKE:        'bg-blue-600/20 text-blue-400',
   IN_PROGRESS:   'bg-indigo-600/20 text-indigo-400',
-  QUALITY_CHECK: 'bg-purple-600/20 text-purple-400',
   READY:         'bg-green-600/20 text-green-400',
   COMPLETED:     'bg-gray-600/20 text-gray-400',
   CANCELLED:     'bg-red-600/20 text-red-400',

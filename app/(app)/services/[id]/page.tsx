@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { hasPermission } from '@/lib/permissions'
 import { prisma } from '@/lib/prisma'
+import { SERVICE_FULL_INCLUDE } from '@/lib/service-includes'
 import ServiceOrderClient from './ServiceOrderClient'
 
 export default async function ServiceOrderPage({ params }: { params: Promise<{ id: string }> }) {
@@ -13,33 +14,11 @@ export default async function ServiceOrderPage({ params }: { params: Promise<{ i
   const serviceId = Number(id)
   if (isNaN(serviceId)) notFound()
 
-  const [service, drivers, mechanics, equipmentItems, adrEquipmentItems] = await Promise.all([
+  const [service, mechanics, equipmentItems, adrEquipmentItems] = await Promise.all([
     prisma.serviceOrder.findUnique({
       where: { id: serviceId },
-      include: {
-        truck:    { select: { id: true, make: true, model: true, year: true, isAdr: true, frotcomVehicleId: true } },
-        driver:   { select: { id: true, name: true } },
-        sections: {
-          orderBy: { order: 'asc' },
-          include: {
-            checklistItems: true,
-            workCards: {
-              include: {
-                mechanic: { select: { id: true, name: true } },
-                parts:    true,
-                notes:    { orderBy: { createdAt: 'asc' } },
-                photos:   true,
-              },
-            },
-          },
-        },
-        equipmentCheckItems: true,
-        driverFeedbackItems: { orderBy: { order: 'asc' } },
-        notes:  { orderBy: { createdAt: 'asc' } },
-        photos: true,
-      },
+      include: SERVICE_FULL_INCLUDE,
     }),
-    prisma.driver.findMany({ where: { isActive: true }, orderBy: { name: 'asc' } }),
     prisma.mechanic.findMany({ where: { isActive: true }, orderBy: { name: 'asc' } }),
     prisma.equipmentItem.findMany({ where: { isActive: true }, orderBy: { order: 'asc' } }),
     prisma.adrEquipmentItem.findMany({ where: { isActive: true }, orderBy: { order: 'asc' } }),
@@ -47,17 +26,24 @@ export default async function ServiceOrderPage({ params }: { params: Promise<{ i
 
   if (!service) notFound()
 
-  // Compute km driven since last completed service for this truck
+  // Compute km driven since last completed service + last equipment snapshot
   let tripSinceLastService: number | null = null
-  if (service.mileageAtService != null) {
-    const prevService = await prisma.serviceOrder.findFirst({
-      where:   { truckId: service.truckId, status: 'COMPLETED', id: { not: serviceId } },
-      orderBy: { endDate: 'desc' },
-      select:  { mileageAtService: true },
-    })
-    if (prevService?.mileageAtService != null) {
-      tripSinceLastService = service.mileageAtService - prevService.mileageAtService
-    }
+  const [prevService, lastSnapshot] = await Promise.all([
+    service.mileageAtService != null
+      ? prisma.serviceOrder.findFirst({
+          where:   { truckId: service.truckId, status: 'COMPLETED', id: { not: serviceId } },
+          orderBy: { endDate: 'desc' },
+          select:  { mileageAtService: true },
+        })
+      : null,
+    prisma.truckEquipmentSnapshot.findFirst({
+      where:   { truckId: service.truckId, serviceOrderId: { not: serviceId } },
+      orderBy: { createdAt: 'desc' },
+      include: { items: { select: { itemName: true, status: true } } },
+    }),
+  ])
+  if (prevService?.mileageAtService != null && service.mileageAtService != null) {
+    tripSinceLastService = service.mileageAtService - prevService.mileageAtService
   }
 
   const { role, permissions } = session.user
@@ -95,7 +81,6 @@ export default async function ServiceOrderPage({ params }: { params: Promise<{ i
     <ServiceOrderClient
       initialService={ser(service)}
       tripSinceLastService={tripSinceLastService}
-      drivers={drivers}
       mechanics={mechanics}
       userName={session.user.name ?? ''}
       canReschedule={hasPermission(role, permissions, 'service.reschedule')}
@@ -108,6 +93,7 @@ export default async function ServiceOrderPage({ params }: { params: Promise<{ i
       canUploadPhoto={hasPermission(role, permissions, 'photo.upload')}
       equipmentItems={equipmentItems}
       adrEquipmentItems={adrEquipmentItems}
+      lastSnapshot={lastSnapshot?.items ?? []}
     />
   )
 }

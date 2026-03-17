@@ -3,8 +3,8 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { hasPermission } from '@/lib/permissions'
 import { prisma } from '@/lib/prisma'
-import { frotcomGet } from '@/lib/frotcom'
 import { logAudit, auditActor } from '@/lib/audit'
+import { SERVICE_FULL_INCLUDE } from '@/lib/service-includes'
 
 type Params = { params: Promise<{ id: string }> }
 
@@ -26,39 +26,24 @@ export async function POST(request: Request, { params }: Params) {
   }
 
   const body = await request.json()
-  const { driverId, mileageAtService } = body
+  const entryAt          = body.entryAt ? new Date(body.entryAt) : new Date()
+  const driverId         = body.driverId ? Number(body.driverId) : null
+  const driverName       = body.driverName ?? null
+  const mileageAtService = body.mileageAtService != null ? Number(body.mileageAtService) : null
 
+  // If mileage provided, update the truck's current mileage too
+  if (mileageAtService != null) {
+    await prisma.truck.update({ where: { id: service.truckId }, data: { currentMileage: mileageAtService } })
+  }
+
+  // Resolve driver record if driverId provided
   let driverRecord: { id: number; name: string } | null = null
   if (driverId) {
-    driverRecord = await prisma.driver.findUnique({ where: { id: Number(driverId) } })
-    if (!driverRecord) return NextResponse.json({ error: 'Шофьорът не е намерен.' }, { status: 404 })
+    driverRecord = await prisma.driver.findUnique({ where: { id: driverId } })
   }
 
-  // Auto-pull mileage from Frotcom if truck is linked and no manual override provided
-  let resolvedMileage: number | null = mileageAtService ? Number(mileageAtService) : null
-  if (resolvedMileage === null) {
-    const truck = await prisma.truck.findUnique({
-      where:  { id: service.truckId },
-      select: { frotcomVehicleId: true, useCanbusMileage: true },
-    })
-    if (truck?.frotcomVehicleId) {
-      try {
-        const vehicles = await frotcomGet('/vehicles') as {
-          id: string; odometerCanbus: number | null; odometerGps: number | null
-        }[]
-        const v = vehicles.find((x) => x.id === truck.frotcomVehicleId)
-        if (v) {
-          resolvedMileage = truck.useCanbusMileage
-            ? (v.odometerCanbus ?? v.odometerGps ?? null)
-            : (v.odometerGps   ?? v.odometerCanbus ?? null)
-          // Also update truck's currentMileage
-          if (resolvedMileage !== null) {
-            await prisma.truck.update({ where: { id: service.truckId }, data: { currentMileage: resolvedMileage } })
-          }
-        }
-      } catch (err) { console.warn('[intake] Frotcom mileage sync failed:', err) }
-    }
-  }
+  // Snapshot driver name: prefer DB record name, fallback to provided driverName
+  const snapshotName = driverRecord?.name ?? driverName ?? null
 
   const templateItems = await prisma.checklistTemplate.findMany({
     where: { isActive: true },
@@ -71,9 +56,9 @@ export async function POST(request: Request, { params }: Params) {
       data: {
         status:             'INTAKE',
         driverId:           driverRecord?.id ?? null,
-        driverNameSnapshot: driverRecord?.name ?? null,
-        startDate:          new Date(),
-        mileageAtService:   resolvedMileage,
+        driverNameSnapshot: snapshotName,
+        startDate:          entryAt,
+        mileageAtService:   mileageAtService,
       },
     })
 
@@ -100,28 +85,7 @@ export async function POST(request: Request, { params }: Params) {
 
     return tx.serviceOrder.findUnique({
       where: { id: serviceId },
-      include: {
-        truck:    { select: { id: true, make: true, model: true, year: true, isAdr: true, frotcomVehicleId: true } },
-        driver:   { select: { id: true, name: true } },
-        sections: {
-          orderBy: { order: 'asc' },
-          include: {
-            checklistItems: true,
-            workCards: {
-              include: {
-                mechanic: { select: { id: true, name: true } },
-                parts:    true,
-                notes:    { orderBy: { createdAt: 'asc' } },
-                photos:   true,
-              },
-            },
-          },
-        },
-        equipmentCheckItems: true,
-        driverFeedbackItems: { orderBy: { order: 'asc' } },
-        notes:  { orderBy: { createdAt: 'asc' } },
-        photos: true,
-      },
+      include: SERVICE_FULL_INCLUDE,
     })
   })
 
@@ -130,7 +94,7 @@ export async function POST(request: Request, { params }: Params) {
     action:     'service.intake',
     entityType: 'ServiceOrder',
     entityId:   serviceId,
-    newValue:   { driverName: driverRecord?.name ?? null, mileageAtService: resolvedMileage },
+    newValue:   { entryAt: entryAt.toISOString(), driverName: snapshotName, mileageAtService },
   })
 
   return NextResponse.json({ service: updated })

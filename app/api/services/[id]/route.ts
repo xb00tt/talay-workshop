@@ -4,6 +4,7 @@ import { authOptions } from '@/lib/auth'
 import { hasPermission } from '@/lib/permissions'
 import { prisma } from '@/lib/prisma'
 import { logAudit, auditActor } from '@/lib/audit'
+import { SERVICE_FULL_INCLUDE } from '@/lib/service-includes'
 
 type Params = { params: Promise<{ id: string }> }
 
@@ -15,28 +16,7 @@ export async function GET(_req: Request, { params }: Params) {
   const { id } = await params
   const service = await prisma.serviceOrder.findUnique({
     where: { id: Number(id) },
-    include: {
-      truck:    { select: { id: true, make: true, model: true, year: true, isAdr: true, frotcomVehicleId: true } },
-      driver:   { select: { id: true, name: true } },
-      sections: {
-        orderBy:  { order: 'asc' },
-        include: {
-          checklistItems: true,
-          workCards: {
-            include: {
-              mechanic: { select: { id: true, name: true } },
-              parts:    true,
-              notes:    { orderBy: { createdAt: 'asc' } },
-              photos:   true,
-            },
-          },
-        },
-      },
-      equipmentCheckItems: true,
-      driverFeedbackItems: { orderBy: { order: 'asc' } },
-      notes:  { orderBy: { createdAt: 'asc' } },
-      photos: true,
-    },
+    include: SERVICE_FULL_INCLUDE,
   })
 
   if (!service) return NextResponse.json({ error: 'Not found' }, { status: 404 })
@@ -118,6 +98,19 @@ export async function PATCH(request: Request, { params }: Params) {
     const updated = await prisma.serviceOrder.update({
       where: { id: serviceId },
       data:  { driverFeedbackNotes: body.driverFeedbackNotes?.trim() ?? null },
+      include: { truck: { select: { make: true, model: true } } },
+    })
+    return NextResponse.json({ service: updated })
+  }
+
+  // Update mechanic feedback notes
+  if ('mechanicFeedbackNotes' in body) {
+    if (!hasPermission(session.user.role, session.user.permissions, 'service.create')) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+    }
+    const updated = await prisma.serviceOrder.update({
+      where: { id: serviceId },
+      data:  { mechanicFeedbackNotes: body.mechanicFeedbackNotes?.trim() ?? null },
       include: { truck: { select: { make: true, model: true } } },
     })
     return NextResponse.json({ service: updated })

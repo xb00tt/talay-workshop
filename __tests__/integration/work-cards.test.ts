@@ -81,7 +81,7 @@ beforeEach(async () => {
 // ─── Work card creation ───────────────────────────────────────────────────────
 
 describe('POST /api/services/[id]/sections/[sectionId]/work-cards — create', () => {
-  it('creates a work card with PENDING status on a MID_SERVICE section', async () => {
+  it('creates a work card with IN_PROGRESS status when service is IN_PROGRESS', async () => {
     const { service, midSection } = await setupActiveService()
 
     const res = await createWorkCard(
@@ -93,7 +93,7 @@ describe('POST /api/services/[id]/sections/[sectionId]/work-cards — create', (
 
     expect(res.status).toBe(201)
     const { workCard } = await res.json()
-    expect(workCard.status).toBe('PENDING')
+    expect(workCard.status).toBe('IN_PROGRESS')
     expect(workCard.description).toBe('Проверка на спирачки')
   })
 
